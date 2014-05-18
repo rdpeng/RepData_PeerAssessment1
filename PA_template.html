@@ -1,65 +1,39 @@
 Reproducible Research Peer Assessment 1
-========================================================
-
 
 Part 1 - Loading and preprocessing the data
------------------------------------------------
-```{r}
+
 setwd("C:/Users/reddy_k/Desktop/PhD/Online Courses/Coursera/Reproducible Research")
 activity <- read.csv("activity.csv",header=T) 
 activity$date <- strptime(activity$date,"%Y-%m-%d")
-```
-
-
-
 Part 2 - What is mean total number of steps taken per day?
------------------------------------------------
-```{r fig.width=6, fig.height=6}
+
 hist(activity$steps, main="Total no. of Steps taken each day", xlab="", ylab="Frequency",col="blue")
 
-```
 The mean and median of total number of steps taken per day is as follows
-```{r}
+
 mean(activity$steps,na.rm=T)
-```
-
-```{r}
 median(activity$steps,na.rm=T)
-```
-
-
 Part 3 - What is the average daily activity pattern?**
---------------------------------------------------------
 
-Time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r}
+Time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
 daily_pattern_df <- data.frame(x=as.numeric(unique(activity$interval)))
 
 for(i in 1:288){
   activity_temp <- activity[activity$interval == daily_pattern_df[i,1],]
   daily_pattern_df[i,2] <- mean(activity_temp$steps,na.rm=T)
 }
-```
-
-```{r fig.height=6, fig.width=6}
 plot(x=daily_pattern_df$x, y=daily_pattern_df$V2, type="l", xlab="Intervals", ylab="Average number of steps taken", main="DAily Activity Pattern")
-```
-
 Following 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps:
-```{r}
-daily_pattern_df[which.max(daily_pattern_df$V2),1]
-```
 
+daily_pattern_df[which.max(daily_pattern_df$V2),1]
 Part 4 - Imputing missing values
------------------------------------------------
 
 The total number of missing values in the dataset (i.e. the total number of rows with NAs) are
-```{r}
-sum(is.na(activity))
-```
 
+sum(is.na(activity))
 Strategy for filling in all of the missing values in the dataset. Use the mean for that 5-minute interval and Create a new dataset that is equal to the original dataset but with the missing data filled in.
-```{r}
+
 activity_new <- data.frame()
 activity_new <- activity
 for(i in 1:nrow(activity)){
@@ -73,29 +47,20 @@ for(i in 1:nrow(activity)){
   }
 }
 sum(is.na(activity_new))
-```
-  
 Histogram of the total number of steps taken each day for new data
-```{r fig.width=6, fig.height=6}
+
 hist(activity_new$steps, main="Total no. of Steps taken each day(NEW)", xlab="", ylab="Frequency",col="blue")
 
-```
-
 The mean and median total number of steps taken per day for new data is as follows
-```{r}
+
 mean(activity_new$steps)
-```
-
-```{r}
 median(activity_new$steps)
-```
-
 Values of mean and median do not differ from the estimates from the first part of the assignment. No impact of imputing missing data on the estimates of the total daily number of steps.
 
 Part 5 - Are there differences in activity patterns between weekdays and weekends?
---------------------------------------
+
 Create a new factor variable in the dataset with two levels â âweekdayâ and âweekendâ indicating whether a given date is a weekday or weekend day.
-```{r}
+
 
 week_days <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 activity_new["Weekdayfind"] <- NA
@@ -107,10 +72,8 @@ for(i in 1:nrow(activity_new)){
     activity_new[i,4] <- "weekend"
     }
 }
-```
+Panel plot containing a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis):
 
-Panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis):
-```{r fig.height=12, fig.width=6}
 activity_weekday <- activity_new[activity_new$Weekdayfind == "weekday",]
 daily_pattern_weekday <- data.frame(x=as.numeric(unique(activity_weekday$interval)))
 for(i in 1:288){
@@ -128,5 +91,3 @@ for(i in 1:288){
 par(mfrow = c(2,1),mar=c(3,1,1,0),oma=c(1,1,0,0))
 plot(x=daily_pattern_weekday$x, y=daily_pattern_weekday$V2, type="l", xlab="", ylab="", main="Weekday",cex.main=1)
 plot(x=daily_pattern_weekend$x, y=daily_pattern_weekend$V2, type="l", xlab="", ylab="", main="Weekend",cex.main=1)
-```
-
