@@ -7,7 +7,7 @@
 ### Welcome  
 
 Hi,  
-Welcome to my Course Project / Peer Assessment Assignment.  
+Welcome to my first Course Project / Peer Assessment Assignment.  
 The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions.  
   
 This code was prepared in the following environment:
@@ -16,7 +16,8 @@ This code was prepared in the following environment:
    - tools (3.0.2)
    - knitr (1.6)
   
-I'll start by preparing the environment to always display the code chunks in the final html file and also to load required packages.  
+I'll start by preparing the environment to load required packages and to always display the code chunks in the html output file.  
+
 ```{r Setup}
 library(tools)
 library(knitr)
@@ -25,9 +26,52 @@ opts_chunk$set(echo=TRUE, results="markup")
 ```
    
 -------------------
-## Loading and preprocessing the data
+### Loading and preprocessing the data
 
+I will use two separate code chunks.  
+  
+The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
+If something goes wrong during execution an error should be rised. In case no handled error ocurrs a message is returned to let user know everything is fine.
 
+```{r Loading}
+
+kRemote <- "https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip"
+kFile   <- "activity.zip"
+kFileDt <- "activity.csv"
+kFileMd <- "activity.md5"
+    
+if (!file.exists(kFile)){
+    # File is not present at the working directory. Let's download it!
+    method <-"auto"  # Default method: shall be fine for MS Windows (untested!)
+    if (.Platform$OS.type=="unix") method <- "curl"  # Use for unix-like systems
+    download.file(kRemote, kFile, method, FALSE, "wb")
+    if (!file.exists(kFile))
+        stop("Download failed!")
+} else {
+    # File is now present (it was before or it was sucessfully downloaded).
+    # Let's check if it is the expected file. I'll compare it's MD5 hash with
+    # a precomputed one.
+    if (readLines(kFileMd)!= as.vector(md5sum(kFile))){
+        stop("File is not correct!")
+    } else {
+        # The correct file shall be present. I'll read the data directly from 
+        # inside the Zip file.
+        myConn <- unz(kFile, kFileDt)
+        dataset <- read.csv(myConn, na.strings="NA", stringsAsFactors=FALSE)
+        print("Data sucessfully loaded!")
+    }
+}
+```
+
+``` {r Preprocessing}
+if (!exists("dataset")) {
+    stop("It looks something went wrong in the 'Loading' chunk!")
+} else {
+    
+}
+
+```
+-------------------
 ## What is mean total number of steps taken per day?
 
 
