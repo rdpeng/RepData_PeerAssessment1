@@ -32,7 +32,9 @@ opts_knit$set(verbose=TRUE)
 I will use two separate code chunks.  
   
 The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
-If something goes wrong during execution an error should be raised. In case no handled error occurs a message is returned to let user know everything is fine.
+First the code checks if the file is present (it should since it is in the repository, but I'll test it just in case). In case it is not present the script tries to download the data from the [course web site](https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip) (and raises an error in case the download did not complete successfully).  
+If the file is present I'll make sure it is the right file by comparing its MD5 hash with a previously computed one. MD5 isn't cryptographically secure anymore, but it's enough for my checksumming needs. You can find more information about MD5 [here](http://en.wikipedia.org/wiki/MD5). If the hashes do not match the code will not continue.  
+If something goes wrong during execution an error should be raised. In case no handled error occurs the data is loaded from inside the zip file and message is returned to let user know everything is fine.
 
 ```{r Loading}
 kRemote <- "https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip"
@@ -66,12 +68,25 @@ if (!file.exists(kFile)){
 }
 
 ```
+  
+    
+A second phase is the data preprocessing to make it suitable for further analysis.  
+To start with, I will add 4-length zeros to the begining of the interval data. This will result in a 24h time format 'hhmm'.
+
 
 ``` {r Preprocessing}
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' chunk!")
 } else {
-    
+    # Processing Time information by adding x times a 0 (zero) before the actual
+    # data
+    f <- dataset$interval
+    f <- ifelse(nchar(f)==3, paste0("0", f), f)
+    f <- ifelse(nchar(f)==2, paste0("00", f), f)
+    f <- ifelse(nchar(f)==1, paste0("000", f), f)
+    dataset$time <- f
+    dataset <- dataset[, -3] #remove interval
+    print("Preprocessing finished!")
 }
 
 ```
