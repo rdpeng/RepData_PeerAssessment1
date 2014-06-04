@@ -22,6 +22,7 @@ I'll start by preparing the environment to load required packages and to always 
 library(tools)
 library(knitr)
 opts_chunk$set(echo=TRUE, results="markup")
+opts_knit$set(verbose=TRUE)
 
 ```
    
@@ -31,10 +32,9 @@ opts_chunk$set(echo=TRUE, results="markup")
 I will use two separate code chunks.  
   
 The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
-If something goes wrong during execution an error should be rised. In case no handled error ocurrs a message is returned to let user know everything is fine.
+If something goes wrong during execution an error should be raised. In case no handled error occurs a message is returned to let user know everything is fine.
 
 ```{r Loading}
-
 kRemote <- "https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip"
 kFile   <- "activity.zip"
 kFileDt <- "activity.csv"
@@ -45,8 +45,11 @@ if (!file.exists(kFile)){
     method <-"auto"  # Default method: shall be fine for MS Windows (untested!)
     if (.Platform$OS.type=="unix") method <- "curl"  # Use for unix-like systems
     download.file(kRemote, kFile, method, FALSE, "wb")
-    if (!file.exists(kFile))
-        stop("Download failed!")
+}
+# stop() doesn't work inside knitr. Aarrghh! :(
+# I had to change the way the test is preformed. I can actualy use print()
+if (!file.exists(kFile)){
+    stop("Download failed!")
 } else {
     # File is now present (it was before or it was sucessfully downloaded).
     # Let's check if it is the expected file. I'll compare it's MD5 hash with
@@ -61,6 +64,7 @@ if (!file.exists(kFile)){
         print("Data sucessfully loaded!")
     }
 }
+
 ```
 
 ``` {r Preprocessing}
