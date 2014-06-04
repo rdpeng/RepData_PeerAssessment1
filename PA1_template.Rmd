@@ -1,8 +1,31 @@
-# Reproducible Research: Peer Assessment 1
+# Reproducible Research (Peer Assessment 1)  
+**Data Science -> Reproducible Research -> Peer Assessment 1**   
+   
+   
+-------------------  
 
+### Welcome  
 
+Hi,  
+Welcome to my Course Project / Peer Assessment Assignment.  
+The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions.  
+  
+This code was prepared in the following environment:
+ - OS: Linux x86_64 (3.12.15-pclos1)
+ - R/RStudio: 3.0.2 / 99.9.9, with the following packages:
+   - tools (3.0.2)
+   - knitr (1.6)
+  
+I'll start by preparing the environment to always display the code chunks in the final html file and also to load required packages.  
+```{r Setup}
+library(tools)
+library(knitr)
+opts_chunk$set(echo=TRUE, results="markup")
+
+```
+   
+-------------------
 ## Loading and preprocessing the data
-
 
 
 ## What is mean total number of steps taken per day?
