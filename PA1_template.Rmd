@@ -12,7 +12,7 @@ The purpose of this work is to produce a R Markdown document with all the code n
   
 This code was prepared in the following environment:
  - OS: Linux x86_64 (3.12.15-pclos1)
- - R/RStudio: 3.0.2 / 99.9.9, with the following packages:
+ - R/RStudio: 3.0.2 / 0.98.481, with the following packages:
    - tools (3.0.2)
    - knitr (1.6)
    - ggplot2 (1.0.0)
@@ -25,6 +25,8 @@ library(knitr)
 library(ggplot2)
 opts_chunk$set(echo=TRUE, results="markup")
 opts_knit$set(verbose=TRUE)
+
+cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 
 ```
    
@@ -42,7 +44,7 @@ If something goes wrong during execution an error should be raised. In case no h
 kRemote <- "https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip"
 kFile   <- "activity.zip"
 kFileDt <- "activity.csv"
-kFileMd <- "activity.md5"
+kMd5    <- "61e0c1f8c4a736ff1ab0f8863344b301"
     
 if (!file.exists(kFile)){
     # File is not present at the working directory. Let's download it!
@@ -58,7 +60,7 @@ if (!file.exists(kFile)){
     # File is now present (it was before or it was sucessfully downloaded).
     # Let's check if it is the expected file. I'll compare it's MD5 hash with
     # a precomputed one.
-    if (readLines(kFileMd)!= as.vector(md5sum(kFile))){
+    if (as.vector(md5sum(kFile))!=kMd5){
         stop("File is not correct!")
     } else {
         # The correct file shall be present. I'll read the data directly from 
