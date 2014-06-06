@@ -179,8 +179,39 @@ if (!exists("average")) {
 ```
 -------------------  
 
-## Imputing missing values
+### Imputing missing values
+
+Now it is time to fill in the missing values (coded as `NA`) present at the data. To complete this point we'll need to complete several steps.  
+  
+  
+First we'll compute and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s).  
+
+```{r ComputeNA}
+# I'll use the data loaded in the 'Loading' chunk.
+if (!exists("dataset")) {
+    stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
+} else {
+    # number od NA's
+    countNa <- sum(is.na(dataset$steps))
+    cat("There are", format(countNa, big.mark=","), "NA's in the original data set.\n")
+    cat("This is about ", round(countNa/nrow(dataset)*100, 2), "% of the data.", sep="")
+}
+
+```
+
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r Filler}
+
+```
+
+
+4. Make a histogram of the total number of steps taken each day and Calculate and report the *mean* and *median* total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+
+-------------------
+
+### Are there differences in activity patterns between weekdays and weekends?
