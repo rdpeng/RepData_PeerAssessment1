@@ -29,8 +29,8 @@ opts_knit$set(verbose=TRUE)
 cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 
 ```
-   
--------------------
+-------------------  
+
 ### Loading and preprocessing the data
 
 I will use two separate code chunks.  
@@ -88,20 +88,20 @@ if (!exists("dataset")) {
     f <- ifelse(nchar(f)==3, paste0("0", f), f)
     f <- ifelse(nchar(f)==2, paste0("00", f), f)
     f <- ifelse(nchar(f)==1, paste0("000", f), f)
-    dataset$time <- as.factor(f)
     dataset <- dataset[, -3] #remove interval
     #Transform date field from chr to date+time.
-    dataset$date <- as.POSIXct(paste(dataset$date,f), format="%Y-%m-%d %H%M")
+    dataset$date <- as.POSIXlt(paste(dataset$date,f), format="%Y-%m-%d %H%M")
+    dataset$timedecimal <- dataset$date$hour + dataset$date$min/60
     #Finishing
     print("Preprocessing finished!")
 }
 
 ```
--------------------
+-------------------  
 
 ### What is mean total number of steps taken per day?
 
-After loading and cleaing the data a little bit, we need to do the following:  
+After loading and cleaning the data a little bit, we need to do the following:  
 1. Make a histogram of the total number of steps taken each day;  
 2. Calculate and report the *mean* and *median* total number of steps taken per day.  
   
@@ -118,9 +118,8 @@ if (!exists("dataset")) {
     hist <- ggplot(group, aes(Date, Steps))
     hist <- hist + geom_histogram(stat="identity", col="gold1", fill="royalblue")
     hist <- hist + labs(title="Number of Steps by Date", x="Date", y="# Steps")
-    hist <- hist + theme_classic(base_size=14)
-    
-    #Outputting the histogram
+    hist <- hist + theme_classic(base_size=15)
+    #Printing the histogram
     print(hist)
 }
 
@@ -139,11 +138,46 @@ if (!exists("group")) {
 }
 
 ```
--------------------
+-------------------  
 
-## What is the average daily activity pattern?
+### What is the average daily activity pattern?  
+
+We're now instructed to make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).  
 
 
+```{r TimeSeries, dev='png', fig.width=10, fig.height=5}
+if (!exists("dataset")) {
+    stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
+} else {
+    # average of the number of steps by interval
+    average <- aggregate(steps~timedecimal, dataset, mean)
+    
+    ts <- ggplot(average, aes(timedecimal, steps))
+    ts <- ts + geom_line(col = "royalblue", size = 2)
+    ts <- ts + labs(title = "Average number of steps (5min interval)", x = "", y = "Average number of steps")
+    ts <- ts + scale_x_continuous(breaks=c(0, 3, 6, 9, 12, 15, 18, 21, 24),
+                                  labels=c("00h", "", "06h", "", "12h", "", "18h", "", "24h"))
+    ts <- ts + theme_classic(base_size = 15)
+    #Printing the plot
+    print(ts)
+}
+
+```
+
+Then, we were asked which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?  
+
+```{r MaxAvgSteps}
+if (!exists("average")) {
+    stop("It looks something went wrong in the 'TimeSeries' chunk!")
+} else {
+    #computing timeperiod with more steps and getting its timedecimal value.
+    high <- average[average$steps==max(average$steps), 1]
+    cat("The maximum average number of steps happens in the 5min period begining at ", 
+        as.integer(high),"h",(high-as.integer(high))*60,"m.", sep="")
+}
+
+```
+-------------------  
 
 ## Imputing missing values
 
