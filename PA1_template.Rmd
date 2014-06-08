@@ -265,3 +265,54 @@ After filling the NA's, both the mean and median are lower.
 -------------------
 
 ### Are there differences in activity patterns between weekdays and weekends?
+
+In first place we were required to create a factor variable in the dataset with two levels.  
+I used "weekend" and "workday" (not "weekday" as requested, because I think this wording is more clear: strictly speaking, Saturday and Sunday are 2 of the 7 weekdays), indicating whether a given date is in weekend or not.  
+
+```{r Weekdays}
+if (!exists("filledIn")) {
+    stop("It looks something went wrong in the 'Filler' chunk!")
+} else {
+    whichDaytype <- function(dates){
+        wd <- weekdays(dates)
+        ww <- ifelse(wd=="Saturday" | wd=="Sunday", "weekend", "workday")
+        ww <- factor(ww, c("weekend", "workday"))
+        return(ww)
+    }
+    
+    filledIn$daytype <- whichDaytype(filledIn$date)
+    print("Weekdays sucessfully completed!")
+}
+
+```
+
+It's now time to make a panel plot containing the average number of steps taken, averaged across all workday days or weekend days.  
+
+```{r TimeSeriesByDaytype, dev='png', fig.width=10, fig.height=5}
+if (!exists("filledIn")) {
+    stop("It looks something went wrong in the 'Filler' chunk!")
+} else {
+    # average of the number of steps by interval
+    averageByDaytype <- aggregate(steps~timeDecimal+daytype, filledIn, mean)
+    names(averageByDaytype) <- c("timeDecimal", "daytype", "avgSteps")
+    
+    tsd <- ggplot(averageByDaytype, aes(timeDecimal, avgSteps))
+    tsd <- tsd + geom_line(col = "indianred2", size = 2)
+    tsd <- tsd + facet_grid(daytype~.)
+    tsd <- tsd + labs(title = "Average number of steps (5min interval)", 
+                      x     = "", 
+                      y     = "Average number of steps")
+    tsd <- tsd + scale_x_continuous(breaks = c(0, 3, 6, 9, 12, 15, 18, 21, 24),
+                                    labels = c("00h", "", 
+                                               "06h", "", 
+                                               "12h", "", 
+                                               "18h", "", 
+                                               "24h"))
+    tsd <- tsd + theme_classic(base_size = 15)
+    #Printing the plot
+    print(tsd)
+}
+
+```
+
+-------------------
