@@ -91,7 +91,7 @@ if (!exists("dataset")) {
     dataset <- dataset[, -3] #remove interval
     #Transform date field from chr to date+time.
     dataset$date <- as.POSIXlt(paste(dataset$date,f), format="%Y-%m-%d %H%M")
-    dataset$timedecimal <- dataset$date$hour + dataset$date$min/60
+    dataset$timeDecimal <- dataset$date$hour + dataset$date$min/60
     #Finishing
     print("Preprocessing finished!")
 }
@@ -113,9 +113,9 @@ if (!exists("dataset")) {
 } else {
     # sum the number of steps by date
     group <- aggregate(steps~as.Date(date), dataset, sum)
-    names(group) <- c("Date", "Steps")
+    names(group) <- c("date", "steps")
     
-    hist <- ggplot(group, aes(Date, Steps))
+    hist <- ggplot(group, aes(date, steps))
     hist <- hist + geom_histogram(stat="identity", col="gold1", fill="royalblue")
     hist <- hist + labs(title="Number of Steps by Date", x="Date", y="# Steps")
     hist <- hist + theme_classic(base_size=15)
@@ -133,8 +133,8 @@ I'll reuse the grouped data computed for the Histogram, so I start by checking t
 if (!exists("group")) {
     stop("It looks something went wrong in the 'Histogram' chunk!")
 } else {
-    cat("Mean:", mean(group$Steps), "\n")
-    cat("Median:", median(group$Steps), "\n")
+    cat("Mean:", format(round(mean(group$steps), 2), big.m=","), "\n")
+    cat("Median:", format(round(median(group$steps), 2), big.m=","), "\n")
 }
 
 ```
@@ -150,9 +150,10 @@ if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
     # average of the number of steps by interval
-    average <- aggregate(steps~timedecimal, dataset, mean)
+    average <- aggregate(steps~timeDecimal, dataset, mean)
+    names(average) <- c("timeDecimal", "avgSteps")
     
-    ts <- ggplot(average, aes(timedecimal, steps))
+    ts <- ggplot(average, aes(timeDecimal, avgSteps))
     ts <- ts + geom_line(col = "royalblue", size = 2)
     ts <- ts + labs(title = "Average number of steps (5min interval)", x = "", y = "Average number of steps")
     ts <- ts + scale_x_continuous(breaks=c(0, 3, 6, 9, 12, 15, 18, 21, 24),
@@ -171,7 +172,7 @@ if (!exists("average")) {
     stop("It looks something went wrong in the 'TimeSeries' chunk!")
 } else {
     #computing timeperiod with more steps and getting its timedecimal value.
-    high <- average[average$steps==max(average$steps), 1]
+    high <- average[average$avgSteps==max(average$avgSteps), 1]
     cat("The maximum average number of steps happens in the 5min period begining at ", 
         as.integer(high),"h",(high-as.integer(high))*60,"m.", sep="")
 }
@@ -181,7 +182,7 @@ if (!exists("average")) {
 
 ### Imputing missing values
 
-Now it is time to fill in the missing values (coded as `NA`) present at the data. To complete this point we'll need to complete several steps.  
+Now it is time to fill in the missing values present at the data. To complete this point we'll need to complete several steps.  
   
   
 First we'll compute and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s).  
@@ -199,18 +200,67 @@ if (!exists("dataset")) {
 
 ```
 
-Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-Create a new dataset that is equal to the original dataset but with the missing data filled in.
+After trying some random number generation with the log-normal (rlnorm) and uniform (runif) distributions, I will finally fill these missing values with the average number of steps computed for the same 5 minutes interval I need to fill.
 
 ```{r Filler}
+getNum <- function(tD) {
+    un <- round(average[average$timeDecimal==tD, 2], 0)
+    return(un)
+}
+
+
+if (!exists("dataset")) {
+    stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
+} else {
+    if (!exists("average")) {
+        stop("It looks something went wrong in the 'TimeSeries' chunk!")
+    } else {
+        filledIn <- dataset
+        
+        for (r in 1:nrow(filledIn)) {
+            if(is.na(filledIn$steps[r])){
+                filledIn$steps[r] <- getNum(filledIn$timeDecimal[r])
+            }
+        }
+    }
+}
 
 ```
 
 
-4. Make a histogram of the total number of steps taken each day and Calculate and report the *mean* and *median* total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+It's now time to make a histogram of the total number of steps taken each day and calculate and report the *mean* and *median* total number of steps taken per day. 
 
 
+```{r HistogramFill, dev='png', fig.width=10, fig.height=5}
+if (!exists("filledIn")) {
+    stop("It looks something went wrong in the 'Filler' chunk!")
+} else {
+    # sum the number of steps by date
+    groupFill <- aggregate(steps~as.Date(date), filledIn, sum)
+    names(groupFill) <- c("date", "steps")
+    
+    hist <- ggplot(groupFill, aes(date, steps))
+    hist <- hist + geom_histogram(stat="identity", col="gold", fill="indianred2")
+    hist <- hist + labs(title="Number of Steps by Date", x="Date", y="# Steps")
+    hist <- hist + theme_classic(base_size=15)
+    
+    #Printing the histogram
+    print(hist)
+}
 
+```
+
+```{r M&MFill}
+if (!exists("groupFill")) {
+    stop("It looks something went wrong in the 'HistogramFill' chunk!")
+} else {
+    cat("Mean:", format(round(mean(groupFill$steps), 2), big.m=","), "\n")
+    cat("Median:", format(round(median(groupFill$steps), 2), big.m=","), "\n")
+}
+```
+
+
+After filling the NA's, both the mean and median are lower.
 
 -------------------
 
