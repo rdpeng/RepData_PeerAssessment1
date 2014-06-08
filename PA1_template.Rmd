@@ -40,13 +40,13 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 I will use two separate code chunks.  
   
 The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
-First the code checks if the file is present (it should since it is in the repository, but I'll test it just in case). In case it is not present the script tries to download the data from the [course web site](https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip) (and raises an error in case the download did not complete successfully).  
+First the code checks if the file is present (it should since it is in the repository, but I'll test it just in case). In case it is not present the script tries to download the data from the [assignment repository](https://github.com/bpvg/DS_RepRes_Peer1) (and raises an error in case the download did not complete successfully).  
 If the file is present I'll make sure it is the right file by comparing its MD5 hash with a previously computed one. MD5 isn't cryptographically secure anymore, but it's enough for my checksumming needs. You can find more information about MD5 [here](http://en.wikipedia.org/wiki/MD5). If the hashes do not match the code will not continue because it might mean the file has the wrong data.  
 If something goes wrong during execution an error should be raised. In case no handled error occurs the data is loaded from inside the zip file and message is returned to let user know everything is fine.
 
 ```{r Loading}
 # Loading
-kRemote <- "https://d396qusza40orc.cloudfront.net/repdata/data/activity.zip"
+kRemote <- "https://raw.githubusercontent.com/bpvg/DS_RepRes_Peer1/master/activity.zip"
 kFile   <- "activity.zip"
 kFileDt <- "activity.csv"
 kMd5    <- "61e0c1f8c4a736ff1ab0f8863344b301"
