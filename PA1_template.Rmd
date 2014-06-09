@@ -25,6 +25,7 @@ I'll start by preparing the environment to load required packages and to always 
 ```{r Setup}
 # Setup
 library(tools)
+library(knitr)
 library(ggplot2)
 library(grid)
 opts_chunk$set(echo=TRUE, results="markup")

@@ -26,6 +26,7 @@ I'll start by preparing the environment to load required packages and to always 
 ```r
 # Setup
 library(tools)
+library(knitr)
 library(ggplot2)
 library(grid)
 opts_chunk$set(echo=TRUE, results="markup")
@@ -35,7 +36,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-10 00:29:45 CEST
+## Report generated on: 2014-06-10 00:52:51 CEST
 ```
 -------------------  
 
