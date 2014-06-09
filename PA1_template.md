@@ -35,7 +35,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-09 22:31:13 CEST
+## Report generated on: 2014-06-09 23:24:47 CEST
 ```
 -------------------  
 
@@ -177,16 +177,16 @@ if (!exists("group")) {
     stop("It looks something went wrong in the 'Histogram' chunk!")
 } else {
     cat("Mean:", 
-        format(round(mean(group$steps), 2), big.mark=","), 
+        format(mean(group$steps), big.mark=",", nsmall=2), 
         "\n")
     cat("Median:", 
-        format(round(median(group$steps), 2), big.mark=","), 
+        format(median(group$steps), big.mark=",", nsmall=2), 
         "\n")
 }
 ```
 
 ```
-## Mean: 10,766 
+## Mean: 10,766.19 
 ## Median: 10,765
 ```
 -------------------  
@@ -363,17 +363,17 @@ if (!exists("groupFill")) {
     stop("It looks something went wrong in the 'HistogramFill' chunk!")
 } else {
     cat("Mean:", 
-        format(round(mean(groupFill$steps), 2), big.m=","), 
+        format(mean(groupFill$steps), big.m=",", nsmall=2), 
         "\n")
     cat("Median:", 
-        format(round(median(groupFill$steps), 2), big.m=","), 
+        format(median(groupFill$steps), big.m=",", nsmall=2), 
         "\n")
 }
 ```
 
 ```
-## Mean: 10,766 
-## Median: 10,762
+## Mean: 10,765.64 
+## Median: 10,762.00
 ```
 
 

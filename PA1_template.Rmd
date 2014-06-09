@@ -162,10 +162,10 @@ if (!exists("group")) {
     stop("It looks something went wrong in the 'Histogram' chunk!")
 } else {
     cat("Mean:", 
-        format(round(mean(group$steps), 2), big.mark=","), 
+        format(mean(group$steps), big.mark=",", nsmall=2), 
         "\n")
     cat("Median:", 
-        format(round(median(group$steps), 2), big.mark=","), 
+        format(median(group$steps), big.mark=",", nsmall=2), 
         "\n")
 }
 
@@ -330,10 +330,10 @@ if (!exists("groupFill")) {
     stop("It looks something went wrong in the 'HistogramFill' chunk!")
 } else {
     cat("Mean:", 
-        format(round(mean(groupFill$steps), 2), big.m=","), 
+        format(mean(groupFill$steps), big.m=",", nsmall=2), 
         "\n")
     cat("Median:", 
-        format(round(median(groupFill$steps), 2), big.m=","), 
+        format(median(groupFill$steps), big.m=",", nsmall=2), 
         "\n")
 }
 ```

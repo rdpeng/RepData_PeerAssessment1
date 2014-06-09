@@ -219,7 +219,7 @@ opts_knit$set(verbose=TRUE)
 cat(&quot;Report generated on:&quot;, format(Sys.time(), &quot;%Y-%m-%d %H:%M:%S %Z&quot;))
 </code></pre>
 
-<pre><code>## Report generated on: 2014-06-09 22:31:13 CEST
+<pre><code>## Report generated on: 2014-06-09 23:24:47 CEST
 </code></pre>
 
 <hr/>
@@ -351,15 +351,15 @@ if (!exists(&quot;group&quot;)) {
     stop(&quot;It looks something went wrong in the &#39;Histogram&#39; chunk!&quot;)
 } else {
     cat(&quot;Mean:&quot;, 
-        format(round(mean(group$steps), 2), big.mark=&quot;,&quot;), 
+        format(mean(group$steps), big.mark=&quot;,&quot;, nsmall=2), 
         &quot;\n&quot;)
     cat(&quot;Median:&quot;, 
-        format(round(median(group$steps), 2), big.mark=&quot;,&quot;), 
+        format(median(group$steps), big.mark=&quot;,&quot;, nsmall=2), 
         &quot;\n&quot;)
 }
 </code></pre>
 
-<pre><code>## Mean: 10,766 
+<pre><code>## Mean: 10,766.19 
 ## Median: 10,765
 </code></pre>
 
@@ -520,16 +520,16 @@ if (!exists(&quot;groupFill&quot;)) {
     stop(&quot;It looks something went wrong in the &#39;HistogramFill&#39; chunk!&quot;)
 } else {
     cat(&quot;Mean:&quot;, 
-        format(round(mean(groupFill$steps), 2), big.m=&quot;,&quot;), 
+        format(mean(groupFill$steps), big.m=&quot;,&quot;, nsmall=2), 
         &quot;\n&quot;)
     cat(&quot;Median:&quot;, 
-        format(round(median(groupFill$steps), 2), big.m=&quot;,&quot;), 
+        format(median(groupFill$steps), big.m=&quot;,&quot;, nsmall=2), 
         &quot;\n&quot;)
 }
 </code></pre>
 
-<pre><code>## Mean: 10,766 
-## Median: 10,762
+<pre><code>## Mean: 10,765.64 
+## Median: 10,762.00
 </code></pre>
 
 <p>After filling the NA&#39;s, both the mean and median are lower.</p>
