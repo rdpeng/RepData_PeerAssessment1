@@ -11,7 +11,7 @@ Welcome to my first Course Project / Peer Assessment Assignment.
 The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions.  
   
 This code was prepared in the following environment:
- - OS: Linux x86_64 (3.12.15-pclos1)
+ - OS: Linux x86_64 (3.14.6-pclos1)
  - R: 3.0.2
  - RStudio: 0.98.481
  - The following packages were used:
@@ -35,7 +35,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-08 22:53:55 CEST
+## Report generated on: 2014-06-09 22:31:13 CEST
 ```
 -------------------  
 
