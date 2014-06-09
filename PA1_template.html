@@ -219,7 +219,7 @@ opts_knit$set(verbose=TRUE)
 cat(&quot;Report generated on:&quot;, format(Sys.time(), &quot;%Y-%m-%d %H:%M:%S %Z&quot;))
 </code></pre>
 
-<pre><code>## Report generated on: 2014-06-09 23:24:47 CEST
+<pre><code>## Report generated on: 2014-06-10 00:29:45 CEST
 </code></pre>
 
 <hr/>
@@ -453,11 +453,6 @@ if (!exists(&quot;dataset&quot;)) {
 
 <pre><code class="r"># Filler
 
-getNum &lt;- function(tD) {
-    un &lt;- round(average[average$timeDecimal==tD, 2], 0)
-    return(un)
-}
-
 if (!exists(&quot;dataset&quot;)) {
     stop(&quot;It looks something went wrong in the &#39;Loading&#39; or &#39;Preprocessing&#39; chunk!&quot;)
 } else {
@@ -466,11 +461,10 @@ if (!exists(&quot;dataset&quot;)) {
     } else {
         filledIn &lt;- dataset
 
-        for (r in 1:nrow(filledIn)) {
-            if(is.na(filledIn$steps[r])){
-                filledIn$steps[r] &lt;- getNum(filledIn$timeDecimal[r])
-            }
-        }
+        fillNums &lt;- rep(round(average$avgSteps, 0), times=61)
+        filledIn$steps &lt;- ifelse(is.na(filledIn$steps), 
+                                 fillNums,
+                                 filledIn$steps) 
     }
 }
 </code></pre>

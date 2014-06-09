@@ -35,7 +35,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-09 23:24:47 CEST
+## Report generated on: 2014-06-10 00:29:45 CEST
 ```
 -------------------  
 
@@ -290,11 +290,6 @@ After trying some random number generation with the log-normal (rlnorm) and unif
 ```r
 # Filler
 
-getNum <- function(tD) {
-    un <- round(average[average$timeDecimal==tD, 2], 0)
-    return(un)
-}
-
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
@@ -303,11 +298,10 @@ if (!exists("dataset")) {
     } else {
         filledIn <- dataset
         
-        for (r in 1:nrow(filledIn)) {
-            if(is.na(filledIn$steps[r])){
-                filledIn$steps[r] <- getNum(filledIn$timeDecimal[r])
-            }
-        }
+        fillNums <- rep(round(average$avgSteps, 0), times=61)
+        filledIn$steps <- ifelse(is.na(filledIn$steps), 
+                                 fillNums,
+                                 filledIn$steps) 
     }
 }
 ```
