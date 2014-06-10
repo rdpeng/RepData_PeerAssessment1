@@ -20,7 +20,7 @@ This code was prepared in the following environment:
    - ggplot2 (1.0.0)
    - grid (3.0.2)
   
-I'll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is usefull for debugging.  
+I'll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is useful for debugging.  
 
 
 ```r
@@ -36,7 +36,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-10 00:52:51 CEST
+## Report generated on: 2014-06-11 00:40:05 CEST
 ```
 -------------------  
 
@@ -58,7 +58,7 @@ kFileDt <- "activity.csv"
 kMd5    <- "61e0c1f8c4a736ff1ab0f8863344b301"
     
 if (!file.exists(kFile)){
-    # File is not present at the working directory. Let's download it!
+    # File is not present at the working directory. Lets download it!
     method <-"auto"  # Default method: shall be fine for MS Windows (untested!)
     if (.Platform$OS.type=="unix") method <- "curl"  # Use for unix-like systems
     download.file(kRemote, kFile, method, FALSE, "wb")
@@ -69,7 +69,7 @@ if (!file.exists(kFile)){
     stop("Download failed!")
 } else {
     # File is now present (it was before or it was sucessfully downloaded).
-    # Let's check if it is the expected file. I'll compare it's MD5 hash with
+    # Lets check if it is the expected file. I'll compare it's MD5 hash with
     # a precomputed one.
     if (as.vector(md5sum(kFile))!=kMd5){
         stop("File is not correct!")

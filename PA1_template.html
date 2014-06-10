@@ -207,7 +207,7 @@ The purpose of this work is to produce a R Markdown document with all the code n
 </ul></li>
 </ul>
 
-<p>I&#39;ll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is usefull for debugging.  </p>
+<p>I&#39;ll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is useful for debugging.  </p>
 
 <pre><code class="r"># Setup
 library(tools)
@@ -220,7 +220,7 @@ opts_knit$set(verbose=TRUE)
 cat(&quot;Report generated on:&quot;, format(Sys.time(), &quot;%Y-%m-%d %H:%M:%S %Z&quot;))
 </code></pre>
 
-<pre><code>## Report generated on: 2014-06-10 00:52:51 CEST
+<pre><code>## Report generated on: 2014-06-11 00:40:05 CEST
 </code></pre>
 
 <hr/>
@@ -241,7 +241,7 @@ kFileDt &lt;- &quot;activity.csv&quot;
 kMd5    &lt;- &quot;61e0c1f8c4a736ff1ab0f8863344b301&quot;
 
 if (!file.exists(kFile)){
-    # File is not present at the working directory. Let&#39;s download it!
+    # File is not present at the working directory. Lets download it!
     method &lt;-&quot;auto&quot;  # Default method: shall be fine for MS Windows (untested!)
     if (.Platform$OS.type==&quot;unix&quot;) method &lt;- &quot;curl&quot;  # Use for unix-like systems
     download.file(kRemote, kFile, method, FALSE, &quot;wb&quot;)
@@ -252,7 +252,7 @@ if (!file.exists(kFile)){
     stop(&quot;Download failed!&quot;)
 } else {
     # File is now present (it was before or it was sucessfully downloaded).
-    # Let&#39;s check if it is the expected file. I&#39;ll compare it&#39;s MD5 hash with
+    # Lets check if it is the expected file. I&#39;ll compare it&#39;s MD5 hash with
     # a precomputed one.
     if (as.vector(md5sum(kFile))!=kMd5){
         stop(&quot;File is not correct!&quot;)
