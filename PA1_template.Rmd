@@ -2,6 +2,25 @@
 
 ## Loading and preprocessing the data
 
+Required R libraries:
+
+* ggplot2
+* knitr
+
+```{r, echo=FALSE}
+library(ggplot2)
+
+#Function to transform an interval to an hour
+intervalToHour <- function(maxtime) {
+
+  strftime(as.POSIXct(Sys.Date()) +              
+             as.difftime(round(maxtime/100), units="hours") +
+             as.difftime(maxtime%%100, units="mins"),
+           "%r",
+           tz="UTC")
+}
+```
+
 The data for this assignment can be downloaded from the course web site:
 
 * Dataset: [Activity monitoring data [52K]] (https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
@@ -13,16 +32,6 @@ activity <- read.csv("./activity.csv")
 activity$date <- as.Date(activity$date)
 summary(activity)
 ```
-
-Required R libraries:
-
-* ggplot2
-* knitr
-
-```{r, echo=FALSE}
-library(ggplot2)
-```
-
 
 ## What is mean total number of steps taken per day?
 
@@ -57,7 +66,55 @@ median_steps<-median(tapply(activity$steps, activity$date, sum, na.rm = TRUE))
 
 ## What is the average daily activity pattern?
 
+To answer the question we can try to make a time series plot.
 
+In the axis x it will be represented the intervals, seeing the column data of interval we can see that it's represented in intervals of 5 minutes
+
+In the axis y it will be represented the average number of steps taken for each interval.
+
+Graphic representation:
+
+```{r, "Q2 - time series plot with average daily activity pattern", fig.path="./figures/"}
+
+
+average_steps<-data.frame(cbind(activity$interval,
+                                tapply(activity$steps,
+                                       activity$interval, 
+                                       mean, 
+                                       na.rm = TRUE)))
+
+
+colnames(average_steps) <- c("interval", "steps")
+
+ggplot(data=average_steps,
+       aes(x=interval,
+           y=steps)) + 
+  geom_line(color='blue',
+            size=0.5) + 
+  ggtitle("Daily activity pattern") +
+  xlab("Intervals of 5 minutes") +
+  ylab("Number of steps") 
+
+```
+
+Calculate the maximum and minimun frequency in an interval:
+
+```{r}
+max_steps_interval <- average_steps[which.max(average_steps$steps),
+                                    "interval"]
+min_steps_interval <- average_steps[which.min(average_steps$steps),
+                                    "interval"]
+
+paste("Max steps interval:",
+      max_steps_interval,
+      "- Time:",
+      intervalToHour(max_steps_interval))
+
+paste("Min steps interval:",
+      min_steps_interval,
+      "- Time:",
+      intervalToHour(min_steps_interval))
+```
 
 ## Imputing missing values
 

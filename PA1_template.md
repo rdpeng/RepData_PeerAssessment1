@@ -2,6 +2,13 @@
 
 ## Loading and preprocessing the data
 
+Required R libraries:
+
+* ggplot2
+* knitr
+
+
+
 The data for this assignment can be downloaded from the course web site:
 
 * Dataset: [Activity monitoring data [52K]] (https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
@@ -25,14 +32,6 @@ summary(activity)
 ##  Max.   :806.0   Max.   :2012-11-30   Max.   :2355  
 ##  NA's   :2304
 ```
-
-Required R libraries:
-
-* ggplot2
-* knitr
-
-
-
 
 ## What is mean total number of steps taken per day?
 
@@ -69,7 +68,66 @@ median_steps<-median(tapply(activity$steps, activity$date, sum, na.rm = TRUE))
 
 ## What is the average daily activity pattern?
 
+To answer the question we can try to make a time series plot.
 
+In the axis x it will be represented the intervals, seeing the column data of interval we can see that it's represented in intervals of 5 minutes
+
+In the axis y it will be represented the average number of steps taken for each interval.
+
+Graphic representation:
+
+
+```r
+average_steps<-data.frame(cbind(activity$interval,
+                                tapply(activity$steps,
+                                       activity$interval, 
+                                       mean, 
+                                       na.rm = TRUE)))
+
+
+colnames(average_steps) <- c("interval", "steps")
+
+ggplot(data=average_steps,
+       aes(x=interval,
+           y=steps)) + 
+  geom_line(color='blue',
+            size=0.5) + 
+  ggtitle("Daily activity pattern") +
+  xlab("Intervals of 5 minutes") +
+  ylab("Number of steps") 
+```
+
+![plot of chunk Q2 - time series plot with average daily activity pattern](./figures/Q2 - time series plot with average daily activity pattern.png) 
+
+Calculate the maximum and minimun frequency in an interval:
+
+
+```r
+max_steps_interval <- average_steps[which.max(average_steps$steps),
+                                    "interval"]
+min_steps_interval <- average_steps[which.min(average_steps$steps),
+                                    "interval"]
+
+paste("Max steps interval:",
+      max_steps_interval,
+      "- Time:",
+      intervalToHour(max_steps_interval))
+```
+
+```
+## [1] "Max steps interval: 835 - Time: 08:35:00 "
+```
+
+```r
+paste("Min steps interval:",
+      min_steps_interval,
+      "- Time:",
+      intervalToHour(min_steps_interval))
+```
+
+```
+## [1] "Min steps interval: 40 - Time: 12:40:00 "
+```
 
 ## Imputing missing values
 
