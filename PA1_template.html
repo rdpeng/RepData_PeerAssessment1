@@ -188,16 +188,26 @@ hljs.initHighlightingOnLoad();
 <h3>Welcome</h3>
 
 <p>Hi,<br/>
-Welcome to my first Course Project / Peer Assessment Assignment.<br/>
-The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions.  </p>
+Welcome to the first Course Project / Peer Assessment Assignment.<br/>
+The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions in a reproducible way.  </p>
 
-<p>This code was prepared in the following environment:</p>
+<p>This report was programed, tested and &#39;<em>knitred</em>&#39; in the following environment:  </p>
+
+<ul>
+<li><p><strong>Hardware</strong></p>
+
+<ul>
+<li>CPU: Intel&reg; Core&trade; i3-350M  @ 2.27GHz<br/></li>
+<li>RAM: 4GB DDR3<br/></li>
+<li>Videocard: ATI Mobility Radeon HD 5470<br/></li>
+</ul></li>
+<li><p><strong>Software</strong></p>
 
 <ul>
 <li>OS: Linux x86_64 (3.14.6-pclos1)</li>
 <li>R: 3.0.2</li>
 <li>RStudio: 0.98.481</li>
-<li>The following packages were used:
+<li>The following R packages were used:
 
 <ul>
 <li>tools (3.0.2)</li>
@@ -205,9 +215,11 @@ The purpose of this work is to produce a R Markdown document with all the code n
 <li>ggplot2 (1.0.0)</li>
 <li>grid (3.0.2)</li>
 </ul></li>
+<li>Please check the following file at this repository for further details on the installed software: snapshot20140611.log<br/></li>
+</ul></li>
 </ul>
 
-<p>I&#39;ll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is useful for debugging.  </p>
+<p>I&#39;ll start the analysis preparing the environment by loading required packages and setting up knitr to always display the code chunks in the html output file and also to display verbose messages while processing the .Rmd file since this is useful for debugging.  </p>
 
 <pre><code class="r"># Setup
 library(tools)
@@ -220,7 +232,7 @@ opts_knit$set(verbose=TRUE)
 cat(&quot;Report generated on:&quot;, format(Sys.time(), &quot;%Y-%m-%d %H:%M:%S %Z&quot;))
 </code></pre>
 
-<pre><code>## Report generated on: 2014-06-11 00:40:05 CEST
+<pre><code>## Report generated on: 2014-06-11 21:12:46 CEST
 </code></pre>
 
 <hr/>

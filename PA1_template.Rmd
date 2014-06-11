@@ -7,20 +7,28 @@
 ### Welcome  
 
 Hi,  
-Welcome to my first Course Project / Peer Assessment Assignment.  
-The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions.  
+Welcome to the first Course Project / Peer Assessment Assignment.  
+The purpose of this work is to produce a R Markdown document with all the code needed to answer the required questions in a reproducible way.  
   
-This code was prepared in the following environment:
- - OS: Linux x86_64 (3.14.6-pclos1)
- - R: 3.0.2
- - RStudio: 0.98.481
- - The following packages were used:
-   - tools (3.0.2)
-   - knitr (1.6)
-   - ggplot2 (1.0.0)
-   - grid (3.0.2)
+This report was programed, tested and '*knitred*' in the following environment:  
+
+ - **Hardware**
+   - CPU: Intel(R) Core(TM) i3-350M  @ 2.27GHz  
+   - RAM: 4GB DDR3  
+   - Videocard: ATI Mobility Radeon HD 5470  
   
-I'll start by preparing the environment to load required packages and to always display the code chunks in the html output file. I will also configure knitr to display verbose output since this is useful for debugging.  
+ - **Software**
+   - OS: Linux x86_64 (3.14.6-pclos1)
+   - R: 3.0.2
+   - RStudio: 0.98.481
+   - The following R packages were used:
+     - tools (3.0.2)
+     - knitr (1.6)
+     - ggplot2 (1.0.0)
+     - grid (3.0.2)
+   - Please check the following file at this repository for further details on the installed software: snapshot20140611.log  
+  
+I'll start the analysis preparing the environment by loading required packages and setting up knitr to always display the code chunks in the html output file and also to display verbose messages while processing the .Rmd file since this is useful for debugging.  
 
 ```{r Setup}
 # Setup
