@@ -44,7 +44,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-11 21:51:39 CEST
+## Report generated on: 2014-06-12 20:05:44 CEST
 ```
 -------------------  
 
@@ -389,7 +389,7 @@ After filling the NA's, both the mean and median are lower.
 ### Are there differences in activity patterns between weekdays and weekends?
 
 In first place we were required to create a factor variable in the dataset with two levels.  
-I used "weekend" and "weekday", indicating whether a given date is in weekend or not.  
+I used "weekend" and "weekday", indicating whether a given date is in weekend or not. Since my dates are in POSIXlt format, I can use its 'wday' named vector to  access the day number (it returns a number in the 0 to 6 range, for Sunday to Saturday days of the week).   
 
 
 ```r
@@ -397,8 +397,8 @@ if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
 } else {
     whichDaytype <- function(dates){
-        wd <- weekdays(dates)
-        ww <- ifelse(wd=="Saturday" | wd=="Sunday", "weekend", "weekday")
+        wd <- dates$wday
+        ww <- ifelse(wd==0 | wd==6, "weekend", "weekday")
         ww <- factor(ww, c("weekend", "weekday"))
         return(ww)
     }
@@ -444,5 +444,9 @@ if (!exists("filledIn")) {
 ```
 
 ![plot of chunk TimeSeriesByDaytype](figure/TimeSeriesByDaytype.png) 
+
+From the charts, it looks there are some diferences in the steps pattern between weekdays and weekends.
+It looks the subject starts its daily activity earlier during the weekdays, because the number of steps rise from zero during the night to about 50 little before 6h00m, and during weekend the first signs of activity are more difuse and usualy start later.  
+Another finding is it looks during the weekdays there are 3 average step peaks: arround lunch time (12h), in the middle of the afternoon (16h) and then about dinner time (21h). During the weekends the activity is more disperse across the day.    
 
 -------------------
