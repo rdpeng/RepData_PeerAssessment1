@@ -30,7 +30,8 @@ This report was programmed, tested and '*knitred*' in the following environment:
   
 I'll start the analysis preparing the environment by loading required packages and setting up knitr to always display the code chunks in the html output file and also to display verbose messages while processing the .Rmd file since this is useful for debugging.  
 
-```{r Setup}
+
+```r
 # Setup
 library(tools)
 library(knitr)
@@ -40,7 +41,10 @@ opts_chunk$set(echo=TRUE, results="markup")
 opts_knit$set(verbose=TRUE)
 
 cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
+```
 
+```
+## Report generated on: 2014-06-14 14:46:53 CEST
 ```
 -------------------  
 
@@ -53,7 +57,8 @@ First the code checks if the file is present (it should since it is in the repos
 If the file is present I'll make sure it is the right file by comparing its MD5 hash with a previously computed one. MD5 isn't cryptographically secure anymore, but it's enough for my checksumming needs. You can find more information about MD5 [here](http://en.wikipedia.org/wiki/MD5). If the hashes do not match the code will not continue because it might mean the file has the wrong data or is corrupt.  
 If something goes wrong during execution an error should be raised. In case no handled error occurs the data is loaded from inside the zip file and message is returned to let user know everything is fine.
 
-```{r Loading}
+
+```r
 # Loading
 kRemote <- "https://raw.githubusercontent.com/bpvg/DS_RepRes_Peer1/master/activity.zip"
 kFile   <- "activity.zip"
@@ -84,7 +89,10 @@ if (!file.exists(kFile)){
         print("Data sucessfully loaded!")
     }
 }
+```
 
+```
+## [1] "Data sucessfully loaded!"
 ```
   
     
@@ -92,7 +100,8 @@ A second phase is the data preprocessing to make it suitable for further analysi
 To start with, I will add a variable number of zeros (computed as 4 minus string length) to the beginning of the interval data. This will result in a 24h time format 'hhmm'.  
 I will also create a new variable, containing the time encoded as a decimal value to allow smoother scaling in plots.  
 
-``` {r Preprocessing}
+
+```r
 # Preprocessing
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' chunk!")
@@ -110,7 +119,10 @@ if (!exists("dataset")) {
     #Finishing
     print("Preprocessing finished!")
 }
+```
 
+```
+## [1] "Preprocessing finished!"
 ```
 -------------------  
 
@@ -122,7 +134,8 @@ After loading and cleaning the data a little bit, we need to do the following:
   
 To do this I'll start by grouping the original dataset by each day. Since this step depends on the data loaded and computed before I'll check the data actually exists before proceeding.  
 
-```{r Histogram, dev='png', fig.width=10, fig.height=7}
+
+```r
 #Histogram
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
@@ -159,14 +172,16 @@ if (!exists("dataset")) {
     print(bar, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
     print(hist, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))    
 }
-
 ```
+
+![plot of chunk Histogram](figure/Histogram.png) 
 
 Now it's time to compute the *mean* and *median*.  
 I'll reuse the grouped data computed for the Histogram, so I will start by checking the `group` variable exists.  
 
 
-```{r M&M}
+
+```r
 # M&M
 if (!exists("group")) {
     stop("It looks something went wrong in the 'Histogram' chunk!")
@@ -178,7 +193,11 @@ if (!exists("group")) {
         format(median(group$steps), big.mark=",", nsmall=2), 
         "\n")
 }
+```
 
+```
+## Mean: 10,766.19 
+## Median: 10,765
 ```
 -------------------  
 
@@ -187,7 +206,8 @@ if (!exists("group")) {
 We're now instructed to make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).  
 
 
-```{r TimeSeries, dev='png', fig.width=10, fig.height=5}
+
+```r
 # TimeSeries
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
@@ -214,13 +234,15 @@ if (!exists("dataset")) {
     #Printing the plot
     print(ts)
 }
-
 ```
+
+![plot of chunk TimeSeries](figure/TimeSeries.png) 
 
 Then, we were asked which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?  
 To answer this question I will use the averages computed before to check which `timeDecimal` has the higher average number of steps.  
 
-```{r MaxAvgSteps}
+
+```r
 #MaxAvgSteps 
 if (!exists("average")) {
     stop("It looks something went wrong in the 'TimeSeries' chunk!")
@@ -234,7 +256,10 @@ if (!exists("average")) {
         "m.", 
         sep="")
 }
+```
 
+```
+## The maximum average number of steps happens in the 5min period begining at 8h35m.
 ```
 -------------------  
 
@@ -245,7 +270,8 @@ Now it is time to fill in the missing values present at the data. To complete th
   
 First I'll compute and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s).  
 
-```{r ComputeNA}
+
+```r
 # ComputeNA
 
 # I'll use the data loaded in the 'Loading' chunk.
@@ -262,12 +288,17 @@ if (!exists("dataset")) {
         "% of the data.", 
         sep="")
 }
+```
 
+```
+## There are 2,304 NA's in the original data set.
+## This is about 13.11% of the data.
 ```
 
 After trying some random number generation algorithms with the log-normal (to avoid negative number of steps) and uniform (between zero and the max number of steps in each 5 minutes interval) distributions, I will finally fill the missing values with the average number of steps computed for the same 5 minutes interval I need to fill, rounded to the nearest unit (to avoid using fractional steps!).  
 
-```{r Filler}
+
+```r
 # Filler
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
@@ -283,14 +314,14 @@ if (!exists("dataset")) {
                                  filledIn$steps) 
     }
 }
-
 ```
 
 
 It's now time to make a histogram of the total number of steps taken each day and calculate and report the *mean* and *median* total number of steps taken per day.  I will use the dataset after NA filling.   
 
 
-```{r HistogramFill, dev='png', fig.width=10, fig.height=7}
+
+```r
 #HistogramFill
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
@@ -325,10 +356,12 @@ if (!exists("filledIn")) {
     print(bar, vp = viewport(layout.pos.row = 1, layout.pos.col = 1))
     print(hist, vp = viewport(layout.pos.row = 2, layout.pos.col = 1))    
 }
-
 ```
 
-```{r M&MFill}
+![plot of chunk HistogramFill](figure/HistogramFill.png) 
+
+
+```r
 # M&MFill
 if (!exists("groupFill")) {
     stop("It looks something went wrong in the 'HistogramFill' chunk!")
@@ -342,6 +375,11 @@ if (!exists("groupFill")) {
 }
 ```
 
+```
+## Mean: 10,765.64 
+## Median: 10,762.00
+```
+
 
 After filling the NA's, both the mean and median are lower.
 
@@ -352,7 +390,8 @@ After filling the NA's, both the mean and median are lower.
 In first place we were required to create a factor variable in the dataset with two levels.  
 I used "weekend" and "weekday", indicating whether a given date is in weekend or not. Since my dates are in POSIXlt format, I can use its 'wday' named vector to  access the day number (it returns a number in the 0 to 6 range, for Sunday to Saturday days of the week).   
 
-```{r Weekdays}
+
+```r
 # Weekdays
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
@@ -367,12 +406,16 @@ if (!exists("filledIn")) {
     filledIn$daytype <- whichDaytype(filledIn$date)
     print("Weekdays sucessfully completed!")
 }
+```
 
+```
+## [1] "Weekdays sucessfully completed!"
 ```
 
 It's now time to make a panel plot containing the average number of steps taken, averaged across all day types and time frames.  
 
-```{r TimeSeriesByDaytype, dev='png', fig.width=10, fig.height=5}
+
+```r
 # TimeSeriesByDaytype
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
@@ -399,8 +442,9 @@ if (!exists("filledIn")) {
     #Printing the plot
     print(tsd)
 }
-
 ```
+
+![plot of chunk TimeSeriesByDaytype](figure/TimeSeriesByDaytype.png) 
 
 From the charts, it looks there are some differences in the steps pattern between weekdays and weekends.
 It looks the subject starts its daily activity earlier during the weekdays, because the number of steps rise from zero during the night to about 50 little before 6h00m, and during weekend the first signs of activity are more diffuse and usually start later. It also looks during the weekend the daily activity use to end later than during weekdays.    
