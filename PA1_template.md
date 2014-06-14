@@ -44,7 +44,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 ```
 
 ```
-## Report generated on: 2014-06-12 20:05:44 CEST
+## Report generated on: 2014-06-14 14:46:53 CEST
 ```
 -------------------  
 
@@ -52,7 +52,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 
 I will use two separate code chunks.  
   
-The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
+The first code chunk is responsible for making sure the right data file is in the directory and then it loads it the `dataset` variable.  
 First the code checks if the file is present (it should since it is in the repository, but I'll test it just in case). In case it is not present the script tries to download the data from the [assignment repository](https://github.com/bpvg/DS_RepRes_Peer1) (and raises an error in case the download did not complete successfully).  
 If the file is present I'll make sure it is the right file by comparing its MD5 hash with a previously computed one. MD5 isn't cryptographically secure anymore, but it's enough for my checksumming needs. You can find more information about MD5 [here](http://en.wikipedia.org/wiki/MD5). If the hashes do not match the code will not continue because it might mean the file has the wrong data or is corrupt.  
 If something goes wrong during execution an error should be raised. In case no handled error occurs the data is loaded from inside the zip file and message is returned to let user know everything is fine.
@@ -278,7 +278,7 @@ First I'll compute and report the total number of missing values in the dataset 
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
-    # number od NA's
+    # number of NA's
     countNa <- sum(is.na(dataset$steps))
     cat("There are", 
         format(countNa, big.mark=","), 
@@ -300,7 +300,6 @@ After trying some random number generation algorithms with the log-normal (to av
 
 ```r
 # Filler
-
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
@@ -393,6 +392,7 @@ I used "weekend" and "weekday", indicating whether a given date is in weekend or
 
 
 ```r
+# Weekdays
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
 } else {
@@ -412,10 +412,11 @@ if (!exists("filledIn")) {
 ## [1] "Weekdays sucessfully completed!"
 ```
 
-It's now time to make a panel plot containing the average number of steps taken, averaged across all daytypes and timeframes.  
+It's now time to make a panel plot containing the average number of steps taken, averaged across all day types and time frames.  
 
 
 ```r
+# TimeSeriesByDaytype
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
 } else {
@@ -445,8 +446,8 @@ if (!exists("filledIn")) {
 
 ![plot of chunk TimeSeriesByDaytype](figure/TimeSeriesByDaytype.png) 
 
-From the charts, it looks there are some diferences in the steps pattern between weekdays and weekends.
-It looks the subject starts its daily activity earlier during the weekdays, because the number of steps rise from zero during the night to about 50 little before 6h00m, and during weekend the first signs of activity are more difuse and usualy start later.  
-Another finding is it looks during the weekdays there are 3 average step peaks: arround lunch time (12h), in the middle of the afternoon (16h) and then about dinner time (21h). During the weekends the activity is more disperse across the day.    
+From the charts, it looks there are some differences in the steps pattern between weekdays and weekends.
+It looks the subject starts its daily activity earlier during the weekdays, because the number of steps rise from zero during the night to about 50 little before 6h00m, and during weekend the first signs of activity are more diffuse and usually start later. It also looks during the weekend the daily activity use to end later than during weekdays.    
+Another finding is it looks during the weekdays there are 3 average step peaks: around lunch time (12h), in the middle of the afternoon (16h) and then about dinner time (19h). During the weekends the activity is more disperse across the day.    
 
 -------------------

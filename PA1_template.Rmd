@@ -48,7 +48,7 @@ cat("Report generated on:", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"))
 
 I will use two separate code chunks.  
   
-The first code chunk is responsible to make sure the right data file is in the directory and then it loads it the `dataset` variable.  
+The first code chunk is responsible for making sure the right data file is in the directory and then it loads it the `dataset` variable.  
 First the code checks if the file is present (it should since it is in the repository, but I'll test it just in case). In case it is not present the script tries to download the data from the [assignment repository](https://github.com/bpvg/DS_RepRes_Peer1) (and raises an error in case the download did not complete successfully).  
 If the file is present I'll make sure it is the right file by comparing its MD5 hash with a previously computed one. MD5 isn't cryptographically secure anymore, but it's enough for my checksumming needs. You can find more information about MD5 [here](http://en.wikipedia.org/wiki/MD5). If the hashes do not match the code will not continue because it might mean the file has the wrong data or is corrupt.  
 If something goes wrong during execution an error should be raised. In case no handled error occurs the data is loaded from inside the zip file and message is returned to let user know everything is fine.
@@ -252,7 +252,7 @@ First I'll compute and report the total number of missing values in the dataset 
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
-    # number od NA's
+    # number of NA's
     countNa <- sum(is.na(dataset$steps))
     cat("There are", 
         format(countNa, big.mark=","), 
@@ -269,7 +269,6 @@ After trying some random number generation algorithms with the log-normal (to av
 
 ```{r Filler}
 # Filler
-
 if (!exists("dataset")) {
     stop("It looks something went wrong in the 'Loading' or 'Preprocessing' chunk!")
 } else {
@@ -354,6 +353,7 @@ In first place we were required to create a factor variable in the dataset with 
 I used "weekend" and "weekday", indicating whether a given date is in weekend or not. Since my dates are in POSIXlt format, I can use its 'wday' named vector to  access the day number (it returns a number in the 0 to 6 range, for Sunday to Saturday days of the week).   
 
 ```{r Weekdays}
+# Weekdays
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
 } else {
@@ -373,6 +373,7 @@ if (!exists("filledIn")) {
 It's now time to make a panel plot containing the average number of steps taken, averaged across all day types and time frames.  
 
 ```{r TimeSeriesByDaytype, dev='png', fig.width=10, fig.height=5}
+# TimeSeriesByDaytype
 if (!exists("filledIn")) {
     stop("It looks something went wrong in the 'Filler' chunk!")
 } else {
