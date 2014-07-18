@@ -18,12 +18,14 @@ if (!file.exists("activity.csv")){
 
 act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 
-tot.step.hist <- aggregate(steps ~ date,data=act.df,FUN=sum)
+tot.step <- aggregate(steps ~ date,data=act.df,FUN=sum)
 
-png("./figures/tot.step.hist.png",height=5)
-plot(tot.step.hist$date,tot.step.hist$steps,
+png("./figures/tot.step.hist.png",height=350,width=450)
+plot(tot.step$date,tot.step$steps,
      type="h",
      lwd=5,
      xlab="Date",
      ylab="Total steps per day")
 dev.off()
+
+list(Mean=mean(tot.step$steps), Median=median(tot.step$steps))

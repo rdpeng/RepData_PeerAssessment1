@@ -37,14 +37,14 @@ act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 Now a new data frame `tot.step.hist` is created to sum steps per day.
 
 ```{r, echo=TRUE}
-tot.step.hist <- aggregate(steps ~ date,data=act.df,FUN=sum)
+tot.step <- aggregate(steps ~ date,data=act.df,FUN=sum)
 ```
 
 And the plot:
 
 ```{r, echo=TRUE,results="hide"}
-png("./figures/tot.step.hist.png",height=350,width=450)
-plot(tot.step.hist$date,tot.step.hist$steps,
+png("./figures/tot.step.png",height=350,width=450)
+plot(tot.step$date,tot.step$steps,
      type="h",
      lwd=5,
      xlab="Date",
@@ -54,8 +54,12 @@ dev.off()
 
 The resulting image:
 
-![tot.step.hist](./figures/tot.step.hist.png)
+![tot.step.hist](./figures/tot.step.png)
 
+The mean and the median of the total steps per day are:
+```{r, echo=TRUE}
+list(Mean=mean(tot.step$steps), Median=median(tot.step$steps))
+```
 ## What is mean total number of steps taken per day?
 
 
