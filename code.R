@@ -20,7 +20,7 @@ act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 
 tot.step.hist <- aggregate(steps ~ date,data=act.df,FUN=sum)
 
-svg("./figures/tot.step.hist.svg",height=4,width=5)
+png("./figures/tot.step.hist.png",height=5)
 plot(tot.step.hist$date,tot.step.hist$steps,
      type="h",
      lwd=5,

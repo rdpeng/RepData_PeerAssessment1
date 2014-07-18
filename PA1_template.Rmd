@@ -40,10 +40,10 @@ Now a new data frame `tot.step.hist` is created to sum steps per day.
 tot.step.hist <- aggregate(steps ~ date,data=act.df,FUN=sum)
 ```
 
-And create a histogram saved as svg because it's nicer than png.
+And the plot:
 
 ```{r, echo=TRUE,results="hide"}
-svg("./figures/tot.step.hist.svg",height=4,width=5)
+png("./figures/tot.step.hist.png",height=350,width=450)
 plot(tot.step.hist$date,tot.step.hist$steps,
      type="h",
      lwd=5,
@@ -54,7 +54,7 @@ dev.off()
 
 The resulting image:
 
-![tot.step.hist](./figures/tot.step.hist.svg)
+![tot.step.hist](./figures/tot.step.hist.png)
 
 ## What is mean total number of steps taken per day?
 
