@@ -1,20 +1,120 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "PA1_template"
+author: "JP"
+date: "July 18, 2014"
+output: html_document
+##  For Markdown document, see also ==> http://rpubs.com/jpOmaha/22288 
+---
 
+This is Project 1 for the Reproducible Research course in the Coursera/JHU Certificate Program.
+It also is my first attempt to use the Markdown language.
 
-## Loading and preprocessing the data
+First, I cleansed my R workspace and set my Working Directory:
 
+```{r, , eval=TRUE, echo=TRUE}
+rm(list = ls())
+setwd("~/Desktop/JHU DS Certif/C5 Repro Research")
+```
 
+## Q0:  Loading and preprocessing the data
+## VARIABLES:
+## steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+## date: The date on which the measurement was taken in YYYY-MM-DD format
+## interval: Identifier for the 5-minute interval in which measurement was taken
 
-## What is mean total number of steps taken per day?
+```{r, , eval=TRUE, echo=TRUE}
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", destfile="Course5Project1", mode="wb")
+activity.csv <- unzip("Course5Project1", list=F, exdir = "Course5Project1Unzipped")
+activity <- read.csv("~/Desktop/JHU DS Certif/C5 Repro Research/activity.csv", stringsAsFactors=FALSE)
+activity$date <- as.Date(activity$date)
+## str(activity)
+```
 
+## Q1:  What is mean total number of steps taken per day?
+ 
+```{r, , eval=TRUE, echo=TRUE}
+countSteps <- aggregate(steps ~ date, data = activity, sum) 
+length(countSteps$steps)
+# 53
+require(ggplot2)
+plot1 <- qplot(data = countSteps, steps, geom = "histogram")
+plot1
+meanWITHna <- mean(countSteps$steps, na.rm=T)
+meanWITHna # 10766.19
+medianWITHna <-median(countSteps$steps, na.rm=T)
+medianWITHna # 10765
+```
 
+Leaving the NAs, the mean number steps were 'r meanWITHna', and median number steps were 'r medianWITHna'.
 
-## What is the average daily activity pattern?
+## Q2:  What is the average daily activity pattern?
 
+```{r, , eval=TRUE, echo=TRUE}
+head(activity)
+stepsBYinterval <-aggregate(activity$steps, by = list(activity$interval), data = activity, FUN = "mean", na.rm=T)
+stepsBYinterval$AveNumStepsPerInt <- stepsBYinterval$x
+stepsBYinterval$Interval<- stepsBYinterval$Group.1
+plot2 <- ggplot(data=stepsBYinterval, aes(x = Interval, y = AveNumStepsPerInt))
+plot2 <- plot2 + geom_line()
+plot2
+maxSteps <- aggregate(stepsBYinterval$Interval, by = list(stepsBYinterval$AveNumStepsPerInt), FUN= max)
+numberSteps <- dim(maxSteps)[1]
+maxSteps[numberSteps, ]
+# At interval 835 MAXIMUM average is reached with 206.1698 steps
+```
 
+## Q3:  Imputing missing values
 
-## Imputing missing values
+```{r, , eval=TRUE, echo=TRUE}
+rows.complete <- sum(complete.cases(activity))
+rows.w.NA <- sum(!complete.cases(activity))
+rows.all <- sum(complete.cases(activity)) + sum(!complete.cases(activity))
+rows.w.NA  ## Total number of rows with NAs = 2304
+plug <- median(stepsBYinterval$AveNumStepsPerInt)   ## Crude plug for NAs in 'steps' = 34.11
+## New dataset w/o NAs
+activity2 <- activity
+activity2$steps[is.na(activity$steps)] <- plug
+countSteps2 <- aggregate(steps ~ date, data = activity2, sum)
+length(countSteps2$steps) # 61
+plot3 <- qplot(data = countSteps2, steps, geom = "histogram")
+plot3
+meanWITHOUTna <- mean(countSteps$steps)
+meanWITHOUTna # 10766.19 ~ NO CHANGE!!!
+medianWITHOUTna <- median(countSteps$steps)
+medianWITHOUTna # 10765 ~ NO CHANGE!!!
+## Impact of imputing NAs ~ ZIP!!!
+meanDelta <- (meanWITHna - meanWITHOUTna) / meanWITHna
+meanDelta # 0
+medianDelta <- (medianWITHna - medianWITHOUTna) / medianWITHna
+medianDelta # 0
+```
 
+## Q4:  Are there differences in activity patterns between weekdays and weekends?
 
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r, , eval=TRUE, echo=TRUE}
+require(timeDate)
+activity2$typeDay <- as.factor(isWeekend(activity2$date))
+levels(activity2$typeDay) <- list(weekday = "FALSE", weekend = "TRUE")
+summary(activity2$typeDay)
+# 12960 weekday 
+#  4608 weekend 
+# 17568 TOTAL observations
+activity2wkday <- activity2[activity2$typeDay == 'weekday', ]
+activity2wkend <- activity2[activity2$typeDay == 'weekend', ]
+##
+stepsBYinterval2wkday <-aggregate(activity2wkday$steps, by = list(activity2wkday$interval), data = activity2wkday, FUN = "mean")
+stepsBYinterval2wkday$AveNumStepsPerInt <- stepsBYinterval2wkday$x
+stepsBYinterval2wkday$Interval<- stepsBYinterval2wkday$Group.1
+plot4 <- ggplot(data=stepsBYinterval2wkday, aes(x = Interval, y = AveNumStepsPerInt))
+plot4 <- plot4 + geom_line() 
+plot4 <- plot4 + ggtitle(paste("WEEKDAYS"))
+##
+stepsBYinterval2wkend <-aggregate(activity2wkend$steps, by = list(activity2wkend$interval), data = activity2wkend, FUN = "mean")
+stepsBYinterval2wkend$AveNumStepsPerInt <- stepsBYinterval2wkend$x
+stepsBYinterval2wkend$Interval<- stepsBYinterval2wkend$Group.1
+plot5 <- ggplot(data=stepsBYinterval2wkend, aes(x = Interval, y = AveNumStepsPerInt))
+plot5 <- plot5 + geom_line() 
+plot5 <- plot5 + ggtitle(paste("WEEKENDS"))
+require(gridExtra)
+grid.arrange(plot4, plot5, nrow = 2)
+```
