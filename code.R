@@ -20,12 +20,11 @@ act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 
 tot.step <- aggregate(steps ~ date,data=act.df,FUN=sum)
 
-png("./figures/tot.step.hist.png",height=350,width=450)
-plot(tot.step$date,tot.step$steps,
-     type="h",
-     lwd=5,
-     xlab="Date",
-     ylab="Total steps per day")
+png("./figures/tot.step.png",height=300,width=400)
+hist(tot.step$steps,
+     breaks="FD",
+     main=NULL,
+     xlab="Total steps per day")
 dev.off()
 
 list(Mean=mean(tot.step$steps), Median=median(tot.step$steps))

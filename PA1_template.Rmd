@@ -43,12 +43,11 @@ tot.step <- aggregate(steps ~ date,data=act.df,FUN=sum)
 And the plot:
 
 ```{r, echo=TRUE,results="hide"}
-png("./figures/tot.step.png",height=350,width=450)
-plot(tot.step$date,tot.step$steps,
-     type="h",
-     lwd=5,
-     xlab="Date",
-     ylab="Total steps per day")
+png("./figures/tot.step.png",height=300,width=400)
+hist(tot.step$steps,
+     breaks="FD",
+     main=NULL,
+     xlab="Total steps per day")
 dev.off()
 ```
 
