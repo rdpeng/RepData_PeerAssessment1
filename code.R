@@ -1,3 +1,6 @@
+# This file creates the png files. For explanations and further comments
+# see the markdown file.
+
 setwd("~/RepData_PeerAssessment1/")
 
 if (!file.exists("./figures/")){
@@ -64,3 +67,43 @@ act.na.merged <- rbind(act.narm,act.na.unspl)
 # Order the new data frame so it looks nice
 act.df.na <- act.na.merged[order(act.na.merged$date,
                                  act.na.merged$interval),]
+
+
+tot.step.na <- aggregate(steps ~ date,data=act.df.na,FUN=sum)
+
+png("./figures/tot.step.na.png",height=300,width=400)
+hist(tot.step.na$steps,
+     breaks="FD",
+     main=NULL,
+     xlab="Total steps per day")
+dev.off()
+
+list(Mean=mean(tot.step.na$steps), Median=median(tot.step.na$steps))
+
+week.day <- factor(ifelse(weekdays(act.df.na$date) %in% c("Saturday","Sunday"),
+                          "Weekend","Weekday"))
+act.df.fac <- cbind(act.df.na,week.day)
+
+act.wd <- act.df.fac[act.df.fac$week.day=="Weekday",]
+act.we <- act.df.fac[act.df.fac$week.day=="Weekend",]
+
+avg.int.wd <- aggregate(steps ~ interval,data=act.wd,FUN=mean)
+avg.int.we <- aggregate(steps ~ interval,data=act.we,FUN=mean)
+
+png("./figures/avg.int.wd.png",height=300,width=400)
+plot(avg.int.wd$interval,
+     avg.int.wd$steps,
+     type="l",
+     xlab="5-minute interval",
+     ylab="Mean steps across days",
+     main="Weekdays")
+dev.off()
+
+png("./figures/avg.int.we.png",height=300,width=400)
+plot(avg.int.we$interval,
+     avg.int.we$steps,
+     type="l",
+     xlab="5-minute interval",
+     ylab="Mean steps across days",
+     main="Weekends")
+dev.off()
