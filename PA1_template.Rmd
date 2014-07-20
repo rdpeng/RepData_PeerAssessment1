@@ -1,14 +1,14 @@
 # Reproducible Research: Peer Assessment 1
 =============================================================
 
-A data of steps given by a person, measured at 5 minutes interval across the day, was registred for Octover and November of 2012,  with a Nike Fuelband device and a samsung galaxy S4 with android 4.1 cellphone.
+Data of steps given by a person, measured at 5 minutes interval across the day, was registered for October and November of 2012, with a Nike Fuelband device and a samsung galaxy S4 with android 4.1 phone.
 
 The data was downloaded from <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"> this url </a>, consulted in 15-07-2014 in teh working directory of R-Studio 0.98.507.  
 
 
 ## Loading and preprocessing the data
 
-The data was loaded and processed, keeping only the complete cases (rows without NA) as valid data, the rows with al least one NA value was deleted.
+The data was loaded and processed, keeping only the complete cases (rows without NA) as valid data, the rows with al least one NA value was deleted. 
 ```{r Parte 1, results='hide'}
 rm(list=ls()) #cleaning vars
 cat("\014")  #clear screen
@@ -23,7 +23,7 @@ datos<-crudos[complete.cases(crudos),]
 
 ## What is mean total number of steps taken per day?
 
-The total, mean and median of the steps was calculater per each day.
+The total, mean and median of the steps per each day, was calculated.
 ```{r,results='hide'}
 # Grouping data per day
 A<-1;AA<-1;AAA<-1;fechas<-datos$date[datos$interval==0]
@@ -42,16 +42,16 @@ In brief, we have the following scenario for each day analyzed:
 DD
 ```
 
-A histogram of the steps per interval, considering all days, is shown below:
+A histogram of the steps in an average day, is shown below:
 ```{r fig.width=7, fig.height=6}
-# histogram of total steps
+# histogram of total
 hist(DD$steps,xlab="interval")
 ```
 
 
 ## What is the average daily activity pattern?
 
-The data was gruoped per interval, across all days, and their mean, median and total steps were calculated.
+The data was grouped per interval, across all days, and their mean, median and total steps were calculated.
 ```{r,results='hide'}
 ## INTERVAL ANALYSIS
 #Grouping dat per interval
@@ -77,7 +77,7 @@ A plot of the mean of steps per interval is as follow:
 plot(ID$interval,ID$mean,xlab="interval",ylab="mean")
 ```
 
-The interval with the max steps in average is:
+The interval with the maximum steps in average is:
 ```{r}
 #Interval with max average steps
 ID[ID$mean==max(ID$mean),]
@@ -93,7 +93,7 @@ NANumber<-length(crudos$steps[is.na(crudos$steps)])
 NANumber
 ```
 
-Considering the total the raw data, the NA values represent a percentaje of (expressed as decimal):
+Considering the total the raw data, the NA values represent a percentage of (expressed as decimal):
 ```{r,results='asis'}
 NANumber/length(crudos$steps)
 ```
@@ -113,11 +113,11 @@ for (i in 1:length(RD$steps)){
 
 A sample of the original and replaced data is shown below:
 ```{r}
-data.frame(crudos[280:300,],RD[280:300,],Int.mena=c(ID$mean[280:288],ID$mean[1:12]))
+data.frame(crudos[280:300,],RD[280:300,],Int.mean=c(ID$mean[280:288],ID$mean[1:12]))
 ```
-From left to right, the columnos 1, 2 and 3 represent the original data. Columns 4, 5 and 6 represent the replaced data, and the last one show the mean for the ith interval.
+From left to right, the column 1, 2 and 3 represent the raw data. Columns 4, 5 and 6 represent the replaced data, and the last one show the mean of the respective interval.
 
-The data replaced was grouped per day, as previus analysis.
+Replaced data were grouped by day, as was done with the previous set.
 ```{r,results='hide'}
 #Grouping NEW data per day
 AR<-1;AAR<-1;AAAR<-1; fechasR<-as.Date(RD$date[RD$interval==0])
@@ -135,16 +135,16 @@ RDD<-data.frame(steps=AR[AR!=0],mean=AAR[AR!=0],median=AAAR[AR!=0], date=as.Date
 #hist(RDD$steps)
 ```
 
-The scenario for each day, with replaced data, es shown below:
+The scenario for each day, with replaced data is:
 ```{r}
+# Total, mean and median of steps per day, with replaced data
 RDD
 ```
 
-
 ## Are there differences in activity patterns between weekdays and weekends?
 
-An analysis of the steps per interval was separated in days of the week and weekend.
-```{r,results='hide'}
+A final analysis was made, looking for differences in the mean of the intervals, in days of week and weekend days. The data was divided, according if came from a day of the week or of a day of weekend.
+```{r}
 ##WEEK WEEKEND PATTERN (in revised data)
 # Creating two levels variable with week and weekend days
 days<-as.factor(c("weekday","weekend"))
@@ -164,14 +164,11 @@ for (i in 1:length(intervalos)){
 }
 ```
 
-A plot comparing both patterns is shown below: 
-```{r fig.width=7, fig.height=6}
+
+Figures 3 and 4 show the respective pattern for a week day and weekend respectively. 
+```{r}
 par(mfrow=c(2,1))
-plot(intervalos,C, main=" Figure 1: weekdays")
-plot(intervalos,D, main=" Figure 2: weekend")
-
+plot(intervalos,C, main=" Figure 3: weekdays")
+plot(intervalos,D, main=" Figure 4: weekend")
 ```
-
-
-
 
