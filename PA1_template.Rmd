@@ -117,6 +117,12 @@ data.frame(crudos[280:300,],RD[280:300,],Int.mean=c(ID$mean[280:288],ID$mean[1:1
 ```
 From left to right, the column 1, 2 and 3 represent the raw data. Columns 4, 5 and 6 represent the replaced data, and the last one show the mean of the respective interval.
 
+A histogram of the steps in an average day, of the replaced data is shown below:
+```{r fig.width=7, fig.height=6}
+# histogram of total
+hist(RD$steps,xlab="interval")
+```
+
 Replaced data were grouped by day, as was done with the previous set.
 ```{r,results='hide'}
 #Grouping NEW data per day
@@ -162,6 +168,10 @@ for (i in 1:length(intervalos)){
     C[i]<-mean(RDW$steps[RDW$interval==intervalos[i] & RDW$days=="weekday"])
     D[i]<-mean(RDW$steps[RDW$interval==intervalos[i] & RDW$days=="weekend"])  
 }
+
+
+
+
 ```
 
 
@@ -171,4 +181,3 @@ par(mfrow=c(2,1))
 plot(intervalos,C, main=" Figure 3: weekdays")
 plot(intervalos,D, main=" Figure 4: weekend")
 ```
-
