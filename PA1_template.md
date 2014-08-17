@@ -50,6 +50,8 @@ On Average across all the days in the data set, **Interval 835** has the maximum
 ## Imputing missing values
 The total number of missing values in the dataset (i.e. the total number of rows with NAs) are: **2304**
 
+**STRATEGY**: The NAs are filled with the mean from the 5-minute interval
+
 ```r
 # The NA are filled with the mean from the 5-minute interval and a new
 # dataset is created
@@ -76,7 +78,11 @@ hist(data3$TotalSteps, main = "Histogram of the total number of steps taken each
 - *the Mean is 1.0766 &times; 10<sup>4</sup> &*
 - *the Median is 1.0766 &times; 10<sup>4</sup>*
 
-### Difference between estimates
+**Difference between estimates**
+Frequency between the range of steps 10000 and 15000 has increased from a frequency of 25 to 35. Comparing the mean from the 2 estimates, there is no significant change.
+
+Mean of Estimate1: **1.0766 &times; 10<sup>4</sup>**  vs Mean of Estimate2: **1.0766 &times; 10<sup>4</sup>**
+
 
 ```r
 # Differ between the estimates from the first part of the assignment!
@@ -93,9 +99,6 @@ hist(data3$TotalSteps, main = "Histogram of the total number of steps taken each
 
 
 
-Frequency between the range of steps 10000 and 15000 has increased from a frequency of 25 to 35. Comparing the mean from the 2 estimates, there is no significant change.
-
-Mean of Estimate1: **1.0766 &times; 10<sup>4</sup>**  vs Mean of Estimate2: **1.0766 &times; 10<sup>4</sup>**
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -103,45 +106,29 @@ Mean of Estimate1: **1.0766 &times; 10<sup>4</sup>**  vs Mean of Estimate2: **1.
 # Creating new factor variable in the dataset with two levels - 'weekday'
 # and 'weekend' indicating whether a given date is a weekday or weekend day.
 activity_NA_filled_w_Mean$day = weekdays(as.Date(activity_NA_filled_w_Mean$date))
-data3$day = weekdays(as.Date(data3$date))
 activity_NA_filled_w_Mean$weekday = NA
-data3$weekday = NA
 
 # Creating factors Weekend and Weekday
 activity_NA_filled_w_Mean[row.names(subset(activity_NA_filled_w_Mean, day %in% 
     c("Saturday", "Sunday"))), "weekday"] = "weekend"
-
 activity_NA_filled_w_Mean[row.names(subset(activity_NA_filled_w_Mean, !(day %in% 
     c("Saturday", "Sunday")))), "weekday"] = "weekday"
 
-data3[row.names(subset(data3, day %in% c("Saturday", "Sunday"))), "weekday"] = "weekend"
-data3[row.names(subset(data3, !(day %in% c("Saturday", "Sunday")))), "weekday"] = "weekday"
-
 # Creating Dataset for Weekday and Weekend analysis
 data_weekday = subset(activity_NA_filled_w_Mean, weekday == "weekday")
-data4 = ddply(data_weekday, "interval", function(x) c(AvgSteps = mean(x$steps, 
-    na.rm = TRUE)))
 data_weekend = subset(activity_NA_filled_w_Mean, weekday == "weekend")
-data5 = ddply(data_weekend, "interval", function(x) c(AvgSteps = mean(x$steps, 
+
+# Dataset to show the difference in activity patterns
+data7 = ddply(activity_NA_filled_w_Mean, c("interval", "weekday"), function(x) c(AvgSteps = mean(x$steps, 
     na.rm = TRUE)))
 ```
 
-  
-### Comparison between Weekday and Weekend on the Average number of steps taken per day
+**Comparison between Weekday and Weekend on the Average number of steps taken per day**
 
 ```r
-# Time series plot (i.e. type = 'l') of the 5-minute interval (x-axis) and
-# the average number of steps taken, averaged across all weekday days or
-# weekend days (y-axis).
-par(mfrow = c(2, 1))
-plot(data4$interval, data4$AvgSteps, type = "l", xlim = c(0, 2500), ylim = c(0, 
-    200), main = "weekday", xlab = "Interval", ylab = "Number of Steps")
-plot(data5$interval, data5$AvgSteps, type = "l", xlim = c(0, 2500), ylim = c(0, 
-    200), main = "weekend", xlab = "Interval", ylab = "Number of Steps")
+xyplot(data7$AvgSteps ~ data7$interval | data7$weekday, type = "l", layout = c(1, 
+    2), xlab = "Interval", ylab = "Number of steps")
 ```
 
 ![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11.png) 
-
-
-
 
