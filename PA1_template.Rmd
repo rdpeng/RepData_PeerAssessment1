@@ -98,13 +98,20 @@ stepsByDayMedianImputed <- median(stepsByDayImputed)
 ----
 
 ## Are there differences in activity patterns between weekdays and weekends?
+##### 1.Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
 ```{r}
 activityDataImputed$dateType <-  ifelse(as.POSIXlt(activityDataImputed$date)$wday %in% c(0,6), 'weekend', 'weekday')
-averages <- aggregate(steps ~ interval + dateType, data=activityDataImputed, mean)
-ggplot(averages, aes(interval, steps)) + 
+```
+
+##### 2.Make a panel plot containing a time series plot
+
+```{r}
+averagedActivityDataImputed <- aggregate(steps ~ interval + dateType, data=activityDataImputed, mean)
+ggplot(averagedActivityDataImputed, aes(interval, steps)) + 
     geom_line() + 
     facet_grid(dateType ~ .) +
     xlab("5-minute interval") + 
-  ylab("Number of steps")
+    ylab("avarage number of steps")
 ```
 
