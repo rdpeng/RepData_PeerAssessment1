@@ -2,8 +2,17 @@
 
 
 ## Loading and preprocessing the data
+```{r}
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+destfile<- "activity-monitoring-data.zip"
 
+# if the file does not exist download and unzip to working directory
+if(!file.exists(destfile))
+  download.file(url=url, destfile=destfile, method="curl")
+  unzip(destfile)
 
+amd <- read.csv("activity.csv", header=TRUE)
+```
 
 ## What is mean total number of steps taken per day?
 
