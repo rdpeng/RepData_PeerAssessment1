@@ -147,11 +147,11 @@ stepsByDayMedianImputed &lt;- median(stepsByDayImputed)</code></pre>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 <div id="create-a-new-factor-variable-in-the-dataset-with-two-levels-weekday-and-weekend-indicating-whether-a-given-date-is-a-weekday-or-weekend-day." class="section level5">
-<h5>1.Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</h5>
+<h5>1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</h5>
 <pre class="r"><code>activityDataImputed$dateType &lt;-  ifelse(as.POSIXlt(activityDataImputed$date)$wday %in% c(0,6), 'weekend', 'weekday')</code></pre>
 </div>
 <div id="make-a-panel-plot-containing-a-time-series-plot" class="section level5">
-<h5>2.Make a panel plot containing a time series plot</h5>
+<h5>2. Make a panel plot containing a time series plot</h5>
 <pre class="r"><code>averagedActivityDataImputed &lt;- aggregate(steps ~ interval + dateType, data=activityDataImputed, mean)
 ggplot(averagedActivityDataImputed, aes(interval, steps)) + 
     geom_line() + 
