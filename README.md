@@ -137,11 +137,11 @@ using any plotting system you choose.
 
 To submit the assignment:
 
-1. Commit the your completed `PA1_template.Rmd` file to the `master` branch of your git repository (you should already be on the `master` branch unless you created new ones)
+1. Commit your completed `PA1_template.Rmd` file to the `master` branch of your git repository (you should already be on the `master` branch unless you created new ones)
 
-2. Commit your `PA1_template.md` and `PA1_template.html` files produced by processing your R markdown file with `knit2html()` function in R (from the **knitr** package)
+2. Commit your `PA1_template.md` and `PA1_template.html` files produced by processing your R markdown file with the `knit2html()` function in R (from the **knitr** package)
 
-3. If your document has figures included (it should) then they should have been placed in the `figures/` directory by default (unless you overrided the default). Add and commit the `figures/` directory to yoru git repository.
+3. If your document has figures included (it should) then they should have been placed in the `figures/` directory by default (unless you overrode the default). Add and commit the `figures/` directory to your git repository.
 
 4. Push your `master` branch to GitHub.
 
@@ -151,9 +151,9 @@ In addition to submitting the URL for your GitHub repository, you will
 need to submit the 40 character SHA-1 hash (as string of numbers from
 0-9 and letters from a-f) that identifies the repository commit that
 contains the version of the files you want to submit. You can do this
-in GitHub by doing the following
+in GitHub by doing the following:
 
-1. Going to your GitHub repository web page for this assignment
+1. Go into your GitHub repository web page for this assignment
 
 2. Click on the "?? commits" link where ?? is the number of commits you have in the repository. For example, if you made a total of 10 commits to this repository, the link should say "10 commits".
 
