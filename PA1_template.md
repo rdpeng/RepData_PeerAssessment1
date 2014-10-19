@@ -1,9 +1,11 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  html_document:
+    keep_md: true
+---
 
 
-```
-## Loading required package: knitr
-```
 
 ## Loading and preprocessing the data
 
@@ -14,6 +16,7 @@ library(lubridate) # useful for manipulating dates and times
 ```
 
 ```
+## Loading required package: methods
 ## 
 ## Attaching package: 'lubridate'
 ## 
@@ -61,7 +64,7 @@ steps <- tapply(dat$steps, dat$date, sum, na.rm = T)  # daily steps taken
 hist(steps, breaks = length(steps), col = "red")
 ```
 
-![plot of chunk unnamed-chunk-3](./PA1_template_files/figure-html/unnamed-chunk-3.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3.png) 
 
 I now calculate the mean and median total number of steps taken per day:
 
@@ -95,7 +98,7 @@ names(means_interval_5)[2] <- "means"
 plot(type = "l", x = means_interval_5$interval, y = means_interval_5$means, xlab = "5 minute intervals", ylab = "mean of steps per interval per day", main = "Time series of number of steps taken", col = "red", lwd = 1.5)
 ```
 
-![plot of chunk unnamed-chunk-5](./PA1_template_files/figure-html/unnamed-chunk-5.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
 We now find the 5-minute interval that has the maximum number of steps:
 
@@ -163,7 +166,7 @@ hist(daily_steps.i$steps, col = "red", xlab = "Steps",
      breaks = length(daily_steps.i$date), bg = "grey")
 ```
 
-![plot of chunk unnamed-chunk-10](./PA1_template_files/figure-html/unnamed-chunk-10.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
 
 ```r
 # library(ggplot2)
@@ -225,7 +228,7 @@ ggplot(melted, aes(interval, value, col = "red")) +
         labs(y = "mean of steps taken", title = "Time series of steps taken on weekdays and weekends")
 ```
 
-![plot of chunk unnamed-chunk-13](./PA1_template_files/figure-html/unnamed-chunk-13.png) 
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
 
 ```r
 # # another way is to plot both on the same graph.
