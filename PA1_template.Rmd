@@ -1,25 +1,52 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible Research, Peer Assessment 1"
+author: "elwin"
+date: "Sunday, October 19, 2014"
+output: html_document
 ---
 
-
-## Loading and preprocessing the data
-
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
 
-## What is mean total number of steps taken per day?
+**Reading the CSV:**
 
 
+```{r}
+unzip(zipfile = "activity.zip")
+data <- read.csv("activity.csv")
+```
 
-## What is the average daily activity pattern?
+**Mean and median:**
+
+```{r}
+totalsteps <- tapply(data$steps, data$date, sum, na.rm=TRUE)
+summary(totalsteps, na.rm=TRUE)
+```
+
+**Histogram for number of steps per day:**
+
+```{r}
+library(ggplot2)
+qplot(totalsteps, binwidth = 1000, xlab = "total no of steps per day")
+
+```
+
+**Average daily activity pattern:**
+
+```{r}
+stepsinterval <-aggregate(steps ~ interval, data = data, FUN = mean)
+plot(stepsinterval, type = "l")
+
+```
+
+**Interval with max no. of steps:**
+
+```{r}
+stepsinterval$interval[which.max(stepsinterval$steps)]
+```
+
+**Imouting missing values**
+
+**Are there differences in activity patterns between weekdays and weekends?**
 
 
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
