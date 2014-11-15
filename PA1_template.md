@@ -1,14 +1,10 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 First, set the working directory and create the figures directory.
-```{r, echo=TRUE}
+
+```r
 setwd("~/RepData_PeerAssessment1/")
 
 if (!file.exists("./figures/")){
@@ -21,7 +17,8 @@ here for completeness.
 
 This part checks whether the file has been downloaded and unzipped, and if not
 then it does it.
-```{r, echo=TRUE}
+
+```r
 act.file = "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 
 if (!file.exists("activity.zip")){
@@ -38,7 +35,8 @@ if (!file.exists("activity.csv")){
 Next, it reads the file to a data frame (`act.df`). Note that the dates are
 read in the correct class.
 
-```{r, echo=TRUE}
+
+```r
 act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 ```
 
@@ -46,34 +44,49 @@ act.df <- read.csv("activity.csv",colClasses=c("numeric","Date","numeric"))
 
 Now a new data frame `tot.step` is created to sum steps per day.
 
-```{r, echo=TRUE}
+
+```r
 tot.step <- aggregate(steps ~ date,data=act.df,FUN=sum)
 ```
 
 And the plot:
 
-```{r, echo=TRUE,results="hide"}
+
+```r
 hist(tot.step$steps,
      breaks="FD",
      main=NULL,
      xlab="Total steps per day")
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+
 The resulting image:
 
 The mean and the median of the total steps per day are:
-```{r, echo=TRUE}
+
+```r
 list(Mean=mean(tot.step$steps), Median=median(tot.step$steps))
+```
+
+```
+## $Mean
+## [1] 10766
+## 
+## $Median
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
 The `aggregate()` function for this part is similar to the previous one.
-```{r, echo=TRUE}
+
+```r
 avg.int <- aggregate(steps ~ interval,data=act.df,FUN=mean)
 ```
 The resulting image:
-```{r,echo=TRUE}
+
+```r
 plot(avg.int$interval,
      avg.int$steps,
      type="l",
@@ -81,25 +94,35 @@ plot(avg.int$interval,
      ylab="Mean steps across days")
 ```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8.png) 
+
 Finding the max value is easy:
 
-```{r, echo=TRUE}
+
+```r
 max.idx <- which.max(avg.int$steps)
 ```
 
 Make the interval a little bit prettier, using modulo and integer division:
 
-```{r, echo=TRUE}
+
+```r
 max.hr <- avg.int[max.idx,]$interval %/% 100
 max.mn <- avg.int[max.idx,]$interval %% 100
 hr.mn <- paste(max.hr,":",max.mn,sep="")
 ```
 And finally display it all:
 
-```{r,echo=TRUE}
+
+```r
 data.frame(AvgSteps=avg.int[max.idx,]$steps,
            Interval=avg.int[max.idx,]$interval,
            Time=hr.mn)
+```
+
+```
+##   AvgSteps Interval Time
+## 1    206.2      835 8:35
 ```
 
 Not that both in the plot and in the data, there is a high peak at around 8:35.
@@ -111,7 +134,8 @@ The method I used for imputing NAs is to give each interval the average step per
 interval calculated before. Note that I `round` the steps because steps can only
 be an integer. The code is not trivial, so comments added in the code.
 
-```{r, echo=TRUE}
+
+```r
 # Create a data frame containing only the NA rows
 act.na <- act.df[is.na(act.df$steps),]
 # Split this data frame on the date, prerequisite for lapply
@@ -134,7 +158,8 @@ act.df.na <- act.na.merged[order(act.na.merged$date,
 The next part is similar to the previous section, but with the new NA
 transformed data frame.
 
-```{r, echo=TRUE,results='hide'}
+
+```r
 tot.step.na <- aggregate(steps ~ date,data=act.df.na,FUN=sum)
 
 hist(tot.step.na$steps,
@@ -143,8 +168,19 @@ hist(tot.step.na$steps,
      xlab="Total steps per day")
 ```
 
-```{r,echo=TRUE}
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13.png) 
+
+
+```r
 list(Mean=mean(tot.step.na$steps), Median=median(tot.step.na$steps))
+```
+
+```
+## $Mean
+## [1] 10766
+## 
+## $Median
+## [1] 10762
 ```
 
 The histogram shows a higher bin at the average value, which makes sense because
@@ -155,7 +191,8 @@ only a little bit, showing that the data are skewed.
 
 The following chunk checks whether the date is a weekday or a weekend, then
 factors it to two levels and combines it with the data frame.
-```{r,echo=TRUE}
+
+```r
 week.day <- factor(ifelse(weekdays(act.df.na$date) %in% c("Saturday","Sunday"),
                           "Weekend","Weekday"))
 act.df.fac <- cbind(act.df.na,week.day)
@@ -163,7 +200,8 @@ act.df.fac <- cbind(act.df.na,week.day)
 
 Now to subset it according to the factors and calculate the means:
 
-```{r,echo=TRUE}
+
+```r
 act.wd <- act.df.fac[act.df.fac$week.day=="Weekday",]
 act.we <- act.df.fac[act.df.fac$week.day=="Weekend",]
 avg.int.wd <- aggregate(steps ~ interval,data=act.wd,FUN=mean)
@@ -172,14 +210,19 @@ avg.int.we <- aggregate(steps ~ interval,data=act.we,FUN=mean)
 
 And create the plots.
 
-```{r,echo=TRUE,results='hide'}
+
+```r
 plot(avg.int.wd$interval,
      avg.int.wd$steps,
      type="l",
      xlab="5-minute interval",
      ylab="Mean steps across days",
      main="Weekdays")
+```
 
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-171.png) 
+
+```r
 plot(avg.int.we$interval,
      avg.int.we$steps,
      type="l",
@@ -187,6 +230,8 @@ plot(avg.int.we$interval,
      ylab="Mean steps across days",
      main="Weekends")
 ```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-172.png) 
 
 Results:
 
