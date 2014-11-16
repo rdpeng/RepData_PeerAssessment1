@@ -1,0 +1,122 @@
+---
+title: "Reproducable_research_assignment_1"
+author: "Haipeng Hu"
+date: "Saturday, November 15, 2014"
+output: html_document
+---
+
+Loading and preprocessing the data
+
+```{r,message =FALSE,warning=FALSE}
+library(caret)
+# setwd("D:/temp/R/")
+actData <- read.csv(file="./data/activity.csv",header=TRUE)
+```
+
+Q1 What is mean total number of steps taken per day?
+
+1.  Make a histogram of the total number of steps taken each day
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+stepSum <- tapply(actData$steps,actData$date,sum,na.rm=TRUE)
+qplot(names(stepSum),stepSum,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="Total number of Steps taken by day")
+```
+
+2.  Calculate and report the mean and median total number of steps taken per day
+
+```{r, echo=FALSE, message = FALSE,warning=FALSE}
+stepavg <- tapply(actData$steps,actData$date,mean,na.rm=TRUE)
+qplot(names(stepavg),stepavg,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="Average number of Steps taken by day")
+```
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+stepmedian <- tapply(actData$steps,actData$date,median,na.rm=TRUE)
+qplot(names(stepmedian),stepmedian,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="Median number of Steps taken by day")
+```
+
+Q2. What is the average daily activity pattern?
+
+1. Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+intervalAvg <- tapply(actData$steps,actData$interval,mean,na.rm=TRUE)
+qplot(names(intervalAvg),intervalAvg,stat="identity",na.rm=TRUE,
+      xlab="Time interval",ylab="Number of step",main="Average number of Steps taken by time interval")
+```
+
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+the time interval wit hmax number of step is: 
+
+```{r, echo=FALSE, message = FALSE,warning=FALSE}
+names(intervalAvg[intervalAvg == max(intervalAvg)])
+```
+
+Q3  Imputing missing values
+
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+Number of the row in the data containing NA:
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+dataNA <- actData[!complete.cases(actData),]
+nrow(dataNA)
+```
+
+2. Devise a strategy for filling in all of the missing values in the dataset. 
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in which named 
+"dataMod"
+
+```{r, message = FALSE,warning=FALSE}
+    dataMod <- actData
+    n = nrow(actData)
+    for ( i in 1:n){
+        if (is.na(actData[i,]$step)) { dataMod[i,1] <- intervalAvg[toString(actData[i,3])]}
+        dataMod[i,]
+    }
+```
+
+4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+stepSummod <- tapply(dataMod$steps,dataMod$date,sum,na.rm=TRUE)
+qplot(names(stepSummod),stepSummod,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="Total number of Steps taken by day with modified data")
+stepavgmod <- tapply(dataMod$steps,dataMod$date,mean,na.rm=TRUE)
+qplot(names(stepavgmod),stepavgmod,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="Average number of Steps taken by day with modified data")
+stepmedianmod <- tapply(dataMod$steps,dataMod$date,median,na.rm=TRUE)
+qplot(names(stepmedian),stepmedian,geom="histogram",stat="identity",na.rm=TRUE,
+      xlab="Date",ylab="Number of step",main="MEdian number of Steps taken by day with modified data")
+
+```
+
+There is no significant different before and after adding the missing value. especially for median and mean value
+
+Q4 Are there differences in activity patterns between weekdays and weekends?
+
+1. For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+```{r, echo=FALSE, message = FALSE,warning=FALSE}
+dataVar <- weekdays(as.Date(actData$date))
+week <- c()
+for (i in 1:length(dataVar))
+    {if (dataVar[i] == "Sunday" || dataVar[i] == "Saturday") week <- cbind(week,"FALSE")
+     else {week <- cbind(week,"TRUE")}}
+week <- as.factor(week)
+dateData <- cbind(actData,week)
+weekdayData <- dateData[dateData$week == "TRUE",]
+weekendData <- dateData[dateData$week =="FALSE",]
+intwkdayAvg <- tapply(weekdayData$steps,weekdayData$interval,mean,na.rm=TRUE)
+df_intwkdayAvg <- data.frame(step = intwkdayAvg, interval = names(intwkdayAvg),wkday = as.factor("weekday"))
+intwkendAvg <- tapply(weekendData$steps,weekendData$interval,mean,na.rm=TRUE)
+df_intwkendAvg <- data.frame(step = intwkendAvg, interval = names(intwkdayAvg),wkday = as.factor("weekend"))
+FinalData<- rbind(df_intwkdayAvg, df_intwkendAvg)
+```
+
+2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
+```{r,echo=FALSE, message = FALSE,warning=FALSE}
+qplot(interval,step,data=FinalData,facets=wkday ~.,type="l",xlab="Interval",ylab="Steps")
+```
