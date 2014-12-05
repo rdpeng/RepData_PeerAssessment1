@@ -13,8 +13,8 @@ opts_chunk$set(echo = TRUE, results = "asis")
 ## Loading and preprocessing the data
 
 ```{r, echo = TRUE}
-library(data.table)  # need the fread() package
-library(lubridate)# useful for manipulating dates and times
+suppressPackageStartupMessages(library(data.table))	# need the fread() package
+suppressPackageStartupMessages(library(lubridate))	# useful for manipulating dates and times
 unzip("./activity.zip")
 dat <- fread("./activity.csv", sep = ",", na)  # read the acitivty.csv file
 dat <- as.data.frame(dat) # convert class of dat to data frame
@@ -50,7 +50,7 @@ The **mean total** and **median total** **steps taken per day** are, respectivel
 ## What is the average daily activity pattern?
 
 ```{r, echo = TRUE}
-library(plyr)  # we want to use "ddply" to calculate the mean of steps for a specific interval for all days 
+suppressPackageStartupMessages(library(plyr))  # we want to use "ddply" to calculate the mean of steps for a specific interval for all days 
 
 means_interval_5 <- ddply(dat, "interval", summarise, mean(steps, na.rm = T))
 names(means_interval_5)[2] <- "means"

@@ -11,21 +11,8 @@ output:
 
 
 ```r
-library(data.table)  # need the fread() package
-library(lubridate)# useful for manipulating dates and times
-```
-
-```
-## Loading required package: methods
-## 
-## Attaching package: 'lubridate'
-## 
-## The following objects are masked from 'package:data.table':
-## 
-##     hour, mday, month, quarter, wday, week, yday, year
-```
-
-```r
+suppressPackageStartupMessages(library(data.table))	# need the fread() package
+suppressPackageStartupMessages(library(lubridate))	# useful for manipulating dates and times
 unzip("./activity.zip")
 dat <- fread("./activity.csv", sep = ",", na)  # read the acitivty.csv file
 dat <- as.data.frame(dat) # convert class of dat to data frame
@@ -79,19 +66,8 @@ The **mean total** and **median total** **steps taken per day** are, respectivel
 
 
 ```r
-library(plyr)  # we want to use "ddply" to calculate the mean of steps for a specific interval for all days 
-```
+suppressPackageStartupMessages(library(plyr))  # we want to use "ddply" to calculate the mean of steps for a specific interval for all days 
 
-```
-## 
-## Attaching package: 'plyr'
-## 
-## The following object is masked from 'package:lubridate':
-## 
-##     here
-```
-
-```r
 means_interval_5 <- ddply(dat, "interval", summarise, mean(steps, na.rm = T))
 names(means_interval_5)[2] <- "means"
 
