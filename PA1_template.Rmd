@@ -13,8 +13,8 @@ opts_chunk$set(echo = TRUE, results = "asis")
 ## Loading and preprocessing the data
 
 ```{r, echo = TRUE}
-library(data.table)  # need the fread() package
-library(lubridate)  # useful for manipulating dates and times
+suppressWarnings(library(data.table))  # need the fread() package
+suppressWarnings(library(lubridate)) # useful for manipulating dates and times
 unzip("./activity.zip")
 dat <- fread("./activity.csv", sep = ",", na)  # read the acitivty.csv file
 dat <- as.data.frame(dat) # convert class of dat to data frame

@@ -11,8 +11,21 @@ output:
 
 
 ```r
-suppressPackageStartupMessages(library(data.table))  # need the fread() package
-suppressPackageStartupMessages(library(lubridate)) # useful for manipulating dates and times
+suppressWarnings(library(data.table))  # need the fread() package
+suppressWarnings(library(lubridate)) # useful for manipulating dates and times
+```
+
+```
+## Loading required package: methods
+## 
+## Attaching package: 'lubridate'
+## 
+## The following objects are masked from 'package:data.table':
+## 
+##     hour, mday, month, quarter, wday, week, yday, year
+```
+
+```r
 unzip("./activity.zip")
 dat <- fread("./activity.csv", sep = ",", na)  # read the acitivty.csv file
 dat <- as.data.frame(dat) # convert class of dat to data frame

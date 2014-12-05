@@ -189,9 +189,20 @@ hr {
 <body>
 <h2>Loading and preprocessing the data</h2>
 
-<pre><code class="r">suppressPackageStartupMessages(library(data.table))  # need the fread() package
-suppressPackageStartupMessages(library(lubridate)) # useful for manipulating dates and times
-unzip(&quot;./activity.zip&quot;)
+<pre><code class="r">suppressWarnings(library(data.table))  # need the fread() package
+suppressWarnings(library(lubridate)) # useful for manipulating dates and times
+</code></pre>
+
+<pre><code>## Loading required package: methods
+## 
+## Attaching package: &#39;lubridate&#39;
+## 
+## The following objects are masked from &#39;package:data.table&#39;:
+## 
+##     hour, mday, month, quarter, wday, week, yday, year
+</code></pre>
+
+<pre><code class="r">unzip(&quot;./activity.zip&quot;)
 dat &lt;- fread(&quot;./activity.csv&quot;, sep = &quot;,&quot;, na)  # read the acitivty.csv file
 dat &lt;- as.data.frame(dat) # convert class of dat to data frame
 dat$date &lt;- ymd(dat$date) # convert date to POSIXct format
