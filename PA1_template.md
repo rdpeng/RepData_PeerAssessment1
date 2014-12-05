@@ -11,13 +11,8 @@ output:
 
 
 ```r
-<<<<<<< HEAD
-suppressWarnings(library(data.table))  # need the fread() package
-suppressWarnings(library(lubridate)) # useful for manipulating dates and times
-=======
 library(data.table)  # need the fread() package
-library(lubridate) # useful for manipulating dates and times
->>>>>>> d36c76ccf0902fb25a206f73fcbe803f819e1c94
+library(lubridate)# useful for manipulating dates and times
 ```
 
 ```
@@ -123,7 +118,6 @@ count_na <- nrow(dat) - nrow(na.omit(dat))
 It turns out that there are **2304 rows containing NA's**.
 
 Another way to check this is using "is.na" and "nrow":
-<<<<<<< HEAD
 
 ```r
 na_bool <- is.na(dat$steps)
@@ -187,71 +181,6 @@ hist(daily_steps.i$steps, col = "red", xlab = "Steps",
 As for new mean and median (of the imputed data) they are:
 
 ```r
-=======
-
-```r
-na_bool <- is.na(dat$steps)
-count_na_2 <- nrow(dat[na_bool, ])
-```
-The answer also turns out to be **2304** rows so our previous result is valid.
-
-To account for the missing values I choose to replace all missing values with the mean of the 5-minute interval that each NA belongs to:
-
-```r
-# Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-# Create a new dataset that is equal to the original dataset but with the missing data filled in.
-
-# I'm going to calculate the mean of each interval
-# I'll then use these values to replace the missing values in the original data 
-# frame
-
-impute_mean <- function(x) {return(replace(x, is.na(x), mean(x, na.rm = TRUE)))}
-
-dat <- cbind(dat, id = 1:nrow(dat))
-
-interval_means <- ddply(dat, "interval", summarise, mean(steps, na.rm = T))
-names(interval_means)[2] <- c("mean")
-
-# imputed dataset
-dat.i <- ddply(dat, ~ interval, transform, steps  = impute_mean(steps))
-dat.i<- dat.i[order(dat.i$date), ] # re-ordering by date
-dat.i$steps <- round(dat.i$steps, 2) # round steps to the nearst 2 decimals
-
-# ### using impute() from the Hmisc library
-# library(Hmisc)
-# impute(dat[ndx, 1], dat[ndx, 3] == interval_means[1], )
-# impute(dat, replace(x, is.na(x)), interval_means[2], )
-```
-
-Next we re-calculate the total of the daily steps and replot the histogram:
-
-```r
-# Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-
-daily_steps.i <- ddply(dat.i, ~ date, summarise, steps = sum(steps))
-colnames(daily_steps.i) <- c("date", "steps")
-
-hist(daily_steps.i$steps, col = "red", xlab = "Steps", 
-     main = "Histogram of Daily Steps Taken", 
-     breaks = length(daily_steps.i$date), bg = "grey")
-```
-
-![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10.png) 
-
-```r
-# library(ggplot2)
-# ggplot(daily_steps.i, aes(date, steps, colour = date)) +  # random colors would make the plot catchy
-#         geom_point()
-# geom_histogram()
-# geom_histogram(data = daily_steps.i, aes(date, steps, colour = date))
-
-# plot(type = "h", x = dat.i$steps, col = "red")
-```
-
-As for new mean and median (of the imputed data) they are:
-
-```r
->>>>>>> d36c76ccf0902fb25a206f73fcbe803f819e1c94
 me.i <- mean(daily_steps.i$steps)
 md.i <- median(daily_steps.i$steps)
 
@@ -265,11 +194,8 @@ Now let's check if there are any differences in activity patterns between weekda
 To do this we need to split the data into steps taken on weekdays and others taken on weeends, assign them tags and recombine them into one dataset:
 
 ```r
-<<<<<<< HEAD
 # use suppressWarnings
 
-=======
->>>>>>> d36c76ccf0902fb25a206f73fcbe803f819e1c94
 dat.i$day <- weekdays(dat.i$date, abbreviate = T)
 
 wkends <- dat.i[dat.i$day == c("Sat", "Sun"), ] # subset weekends
