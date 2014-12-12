@@ -28,7 +28,7 @@ total <- tapply(x$steps, x$date, sum)
 hist(total, main = "Number of Steps Per Day", xlab = "Total", bg = NA)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/3-1.png) 
 
 2. Calculate and report the **mean** and **median** total number of steps taken per day.
 
@@ -77,7 +77,7 @@ with(averages,
      axis(2, at = seq(from = 25, to = 225, by = 50), las = 1, cex.axis = .75)     
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/6-1.png) 
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -133,7 +133,7 @@ total2 <- tapply(x2$steps, x2$date, sum)
 hist(total2, main = "Number of Steps Per Day", xlab = "Total", bg = NA)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
+![](PA1_template_files/figure-html/10-1.png) 
 
 ```r
 round(mean(total2, na.rm = TRUE))
@@ -207,4 +207,4 @@ with(averages3,
            outer = TRUE)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+![](PA1_template_files/figure-html/12-1.png) 
