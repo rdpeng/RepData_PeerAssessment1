@@ -25,7 +25,7 @@ x$interval <- factor(x$interval)
 
 ```r
 total <- tapply(x$steps, x$date, sum)
-hist(total, main = "Number of Steps Per Day", xlab = "Total", bg = NA)
+hist(total, ylim = c(0, 35), main = "Number of Steps Per Day", xlab = "Total", bg = NA)
 ```
 
 ![](PA1_template_files/figure-html/3-1.png) 
@@ -59,22 +59,19 @@ round(median(total, na.rm = TRUE))
 1. Make a time series plot (i.e. `type = "l"`) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 
 ```r
-interval <- as.numeric(levels(x$interval))
-mean <- as.numeric(tapply(x$steps, x$interval, mean, na.rm = TRUE))
-averages <- data.frame(interval, mean, row.names = NULL)
+means <- as.numeric(tapply(x$steps, x$interval, mean, na.rm = TRUE))
 
 start <- as.POSIXlt("00:55", format = "%H:%M")
 end <- as.POSIXlt("23:55", format = "%H:%M")
-time <- seq(from = start, to = end, by = "1 hours")
+time <- seq(from = start, to = end, by = "1 hour")
 time <- strftime(time, format = "%H:%M")
 
-with(averages,
-     plot(interval, mean, type = "l", xaxt = "n", yaxt = "n",
-          main = "Average Number of Steps Per Five Minute Interval",
-          xlab = "Start Time of Interval", ylab = "Mean", bg = NA))
-     axis(1, labels = time, at = seq(from = 55, to = 2355, by = 100), las = 2,
-          cex.axis = .75)
-     axis(2, at = seq(from = 25, to = 225, by = 50), las = 1, cex.axis = .75)     
+plot(means, type = "l", xaxt = "n", yaxt = "n",
+     main = "Average Number of Steps Per Five Minute Interval",
+     xlab = "Start Time of Interval", ylab = "Mean", bg = NA)
+axis(1, labels = time, at = seq(from = 12, to = 288, by = 12), las = 2,
+     cex.axis = .75)
+axis(2, at = seq(from = 25, to = 225, by = 25), las = 1, cex.axis = .75)     
 ```
 
 ![](PA1_template_files/figure-html/6-1.png) 
@@ -82,15 +79,14 @@ with(averages,
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
-averages[averages$mean == max(averages$mean), ]
+which(means == max(means))
 ```
 
 ```
-##     interval     mean
-## 104      835 206.1698
+## [1] 104
 ```
 
-*The interval starting at 08:35.*
+*The 104th interval, which is the interval starting at 08:35.*
 
 <br>
 
@@ -109,11 +105,15 @@ sum(!complete.cases(x))
 ```
 ## [1] 2304
 ```
+
+*There are 2304 rows that contain at least one missing value.*
+
 <br>
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-*For the sake of simplicity, I will just impute the mean number of steps of all intervals averaged across all days.*  
+*For the sake of simplicity, I will just impute the mean number of steps of all intervals averaged across all days.*
+
 <br>
 
 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
@@ -121,7 +121,7 @@ sum(!complete.cases(x))
 ```r
 x2 <- x
 x2$steps <- as.numeric(x2$steps)
-impute <- round(mean(averages$mean))
+impute <- round(mean(means))
 x2$steps[is.na(x2$steps)] <- impute
 ```
 <br>
@@ -176,14 +176,10 @@ levels(x2$date) <- c("weekday", "weekday", "weekday", "weekday", "weekday",
 
 ```r
 weekday <- x2[x2$date == "weekday", ]
-interval2 <- as.numeric(levels(weekday$interval))
-mean2 <- as.numeric(tapply(weekday$steps, weekday$interval, mean))
-averages2 <- data.frame(interval2, mean2, row.names = NULL)
+means2 <- as.numeric(tapply(weekday$steps, weekday$interval, mean))
 
 weekend <- x2[x2$date == "weekend", ]
-interval3 <- as.numeric(levels(weekend$interval))
-mean3 <- as.numeric(tapply(weekend$steps, weekend$interval, mean))
-averages3 <- data.frame(interval3, mean3, row.names = NULL)
+means3 <- as.numeric(tapply(weekend$steps, weekend$interval, mean))
 
 start <- as.POSIXlt("00:55", format = "%H:%M")
 end <- as.POSIXlt("23:55", format = "%H:%M")
@@ -191,20 +187,18 @@ time <- seq(from = start, to = end, by = "2 hours")
 time <- strftime(time, format = "%H:%M")
 
 par(mfrow = c(1, 2), mar = c(4, 4, 2, 1), oma = c(0, 0, 2, 0), bg = NA)
-with(averages2, 
-     plot(interval2, mean2, type = "l", xaxt="n", yaxt = "n", main = "Weekday",  
-          xlab = "Start Time of Interval", ylab = "Mean"))
-     axis(1, labels = time, at = seq(from = 55, to = 2355, by = 200), las = 2,
-          cex.axis = .75)
-     axis(2, at = seq(25, 225, by = 50), las = 1, cex.axis = .75) 
-with(averages3,
-     plot(interval, mean, type = "l", xaxt="n", yaxt = "n", main = "Weekend", 
-          xlab = "Start Time of Interval", ylab = "Mean"))
-     axis(1, labels = time, at = seq(from = 55, to = 2355, by = 200), las = 2,
-          cex.axis = .75)
-     axis(2, at = seq(25, 225, by = 50), las = 1, cex.axis = .75)
-     mtext("               Average Number of Steps Per Five Minute Interval",
-           outer = TRUE)
+plot(means2, type = "l", ylim = c(0, 200), xaxt="n", yaxt = "n",
+     main = "Weekday", xlab = "Start Time of Interval", ylab = "Mean")
+axis(1, labels = time, at = seq(from = 12, to = 288, by = 24), las = 2,
+     cex.axis = .75)
+axis(2, at = seq(25, 225, by = 25), las = 1, cex.axis = .75) 
+plot(means3, type = "l", ylim = c(0, 200), xaxt="n", yaxt = "n",
+     main = "Weekend", xlab = "Start Time of Interval", ylab = "Mean")
+axis(1, labels = time, at = seq(from = 12, to = 288, by = 24), las = 2,
+     cex.axis = .75)
+axis(2, at = seq(25, 225, by = 25), las = 1, cex.axis = .75)
+mtext("               Average Number of Steps Per Five Minute Interval",
+      outer = TRUE)
 ```
 
 ![](PA1_template_files/figure-html/12-1.png) 
