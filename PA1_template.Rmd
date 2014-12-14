@@ -18,7 +18,7 @@ output:
 
 
 
-## Inputing missing values
+## Inputting missing values
 
 
 
