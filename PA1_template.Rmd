@@ -1,18 +1,28 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-
-
 ## Loading and preprocessing the data
+```{r, echo=TRUE}
 
+if(!file.exists("activity.csv")){
+   unzip("activity.zip") 
+}
+
+stepsTakenActivity <- read.csv("activity.csv", header=TRUE)
+
+# steps as a dependant variable while date is an independane variable
+stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
+
+# Translate date from a  string variable to a date type
+stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
+```
 
 
 ## What is mean total number of steps taken per day?
 
+```{r, echo=TRUE}
+hist(stepsPerDay$steps, main = "Total Steps Per Day", col="blue", xlab="Number of Steps")
 
+mean(stepsPerDay$steps)
+
+```
 
 ## What is the average daily activity pattern?
 
@@ -23,3 +33,7 @@ output:
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
+# http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
+
