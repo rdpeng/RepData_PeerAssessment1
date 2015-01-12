@@ -14,7 +14,7 @@ dim(stepsTakenActivity)
 stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
 
 # Translate date variable from a  string type to a date type of a given format
-stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
+# stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
 
 # Process our Data Frame by finding the total rows 
 TotalRows <- nrow(stepsTakenActivity)
@@ -27,13 +27,12 @@ We first draw the histogram of the total number of steps taken each day and then
 calculate and report
 
 *  The Mean
-
 *  The Median
 
 of the total of steps taken per day.
 
 ```{r, echo=TRUE}
-hist(stepsPerDay$steps, main = "Total Steps Per Day", col="blue", xlab="Number of Steps")
+hist(stepsPerDay$steps, main = "Total Steps Per Day", col="green", xlab="Number of Steps")
 ```
 
 ####  Mean for the Total number of steps taken per day:
@@ -49,8 +48,22 @@ median(stepsPerDay$steps)
 ```
 
 ## What is the average daily activity pattern?
+Draw a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days
 
+``` {r, echo=TRUE}
+averageInterval <- aggregate(steps ~ interval, stepsTakenActivity, mean, na.rm=TRUE)
 
+# 1.  time series plot (i.e. type = "l")
+plot(averageInterval, type = "l", xlab="Intervals", ylab="Average Steps Taken", main="Average Daily Acitivity Pattern")
+```
+
+#### The maximum 5-minute interval on average across all the days in the dataset that contains the maximum number of steps
+
+```{r, echo=TRUE}
+# 2. The Maximum 5-minute ininterval
+averageInterval$interval[which.max(averageInterval$step)]
+
+```
 
 ## Imputing missing values
 
@@ -59,5 +72,6 @@ median(stepsPerDay$steps)
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-# http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
+#### http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
+#### http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
 
