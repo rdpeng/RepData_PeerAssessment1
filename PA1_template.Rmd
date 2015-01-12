@@ -169,10 +169,3 @@ stepsByDay <- aggregate(steps ~ interval + dateType, data = newStepsActivity, me
 xyplot(steps ~ interval | dateType, stepsByDay, type = "l", layout = c(1, 2), 
     xlab = "Interval", ylab = "Number of steps")
 ```
-
-#### http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
-#### http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
-##### http://rstudio-pubs-static.s3.amazonaws.com/19894_7194e7e62e4b4ad09856d0f1c25b0952.html
-##### https://rpubs.com/mgmarques/RR_PA1
-##### Meta Data: http://rmarkdown.rstudio.com/
-####             http://rmarkdown.rstudio.com/html_document_format.html
