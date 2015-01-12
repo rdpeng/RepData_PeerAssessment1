@@ -250,24 +250,24 @@ These values do not differ significantly from the values from the first part of 
 library(lattice)
 
 # Translate date variable from a  string type to a date type of a given format
-stepsTakenActivity$date<-as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
-stepsTakenActivity$dateType <- ifelse(weekdays(stepsTakenActivity$date) %in% c("Saturday", "Sunday"),'weekend','weekday')
+newStepsActivity$date<-as.Date(newStepsActivity$date, format = '%Y-%m-%d')
+newStepsActivity$dateType <- ifelse(weekdays(newStepsActivity$date) %in% c("Saturday", "Sunday"),'weekend','weekday')
 
-head(stepsTakenActivity)
+head(newStepsActivity)
 ```
 
 ```
-##   steps       date interval dateType
-## 1    NA 2012-10-01        0  weekday
-## 2    NA 2012-10-01        5  weekday
-## 3    NA 2012-10-01       10  weekday
-## 4    NA 2012-10-01       15  weekday
-## 5    NA 2012-10-01       20  weekday
-## 6    NA 2012-10-01       25  weekday
+##       steps       date interval dateType
+## 1 1.7169811 2012-10-01        0  weekday
+## 2 0.3396226 2012-10-01        5  weekday
+## 3 0.1320755 2012-10-01       10  weekday
+## 4 0.1509434 2012-10-01       15  weekday
+## 5 0.0754717 2012-10-01       20  weekday
+## 6 2.0943396 2012-10-01       25  weekday
 ```
 
 ```r
-stepsByDay <- aggregate(steps ~ interval + dateType, data = stepsTakenActivity, mean)
+stepsByDay <- aggregate(steps ~ interval + dateType, data = newStepsActivity, mean)
 
 xyplot(steps ~ interval | dateType, stepsByDay, type = "l", layout = c(1, 2), 
     xlab = "Interval", ylab = "Number of steps")
