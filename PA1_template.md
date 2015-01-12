@@ -1,13 +1,8 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
-```{r, echo=TRUE}
 
+```r
 if(!file.exists("activity.csv")){
     unzip("activity.zip") 
 }
@@ -16,7 +11,13 @@ stepsTakenActivity <- read.csv("activity.csv", header=TRUE)
 
 # Let's look at the dimensions at our data frame
 dim(stepsTakenActivity)
+```
 
+```
+## [1] 17568     3
+```
+
+```r
 # Take steps variable  as a dependant variable while date is an independane variable
 stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
 
@@ -26,7 +27,6 @@ stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
 # Process our Data Frame by finding the total rows 
 TotalRows <- nrow(stepsTakenActivity)
 omitNA    <-  na.omit(stepsTakenActivity)
-
 ```
 
 ## What is mean total number of steps taken per day?
@@ -38,38 +38,56 @@ calculate and report
 
 of the total of steps taken per day.
 
-```{r, echo=TRUE}
+
+```r
 hist(stepsPerDay$steps, main = "Total Steps Per Day", col="green", xlab="Number of Steps")
 ```
 
-####  Mean for the Total number of steps taken per day:
-```{r, echo=TRUE}
-mean(stepsPerDay$steps)
+![](./PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
+####  Mean for the Total number of steps taken per day:
+
+```r
+mean(stepsPerDay$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 ####  Median for the Total number of steps taken per day:
-```{r, echo=TRUE}
-median(stepsPerDay$steps)
 
+```r
+median(stepsPerDay$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 Draw a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days
 
-``` {r, echo=TRUE}
+
+```r
 averageInterval <- aggregate(steps ~ interval, stepsTakenActivity, mean, na.rm=TRUE)
 
 # 1.  time series plot (i.e. type = "l")
 plot(averageInterval, type = "l", xlab="Intervals", ylab="Average Steps Taken", main="Average Daily Acitivity Pattern")
 ```
 
+![](./PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
 #### The maximum 5-minute interval on average across all the days in the dataset that contains the maximum number of steps
 
-```{r, echo=TRUE}
+
+```r
 # 2. The Maximum 5-minute ininterval
 averageInterval$interval[which.max(averageInterval$step)]
+```
 
+```
+## [1] 835
 ```
 
 ## Imputing missing values
@@ -83,5 +101,3 @@ averageInterval$interval[which.max(averageInterval$step)]
 #### http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
 ##### http://rstudio-pubs-static.s3.amazonaws.com/19894_7194e7e62e4b4ad09856d0f1c25b0952.html
 ##### https://rpubs.com/mgmarques/RR_PA1
-##### Meta Data: http://rmarkdown.rstudio.com/
-####             http://rmarkdown.rstudio.com/html_document_format.html
