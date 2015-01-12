@@ -166,6 +166,5 @@ head(newStepsActivity)
 
 stepsByDay <- aggregate(steps ~ interval + dateType, data = newStepsActivity, mean)
 
-xyplot(steps ~ interval | dateType, stepsByDay, type = "l", layout = c(1, 2), 
-    xlab = "Interval", ylab = "Number of steps")
+xyplot(steps ~ interval | dateType, stepsByDay, type = c("l","g"),layout = c(1, 2), xlab = "Interval", ylab = "Number of steps")
 ```
