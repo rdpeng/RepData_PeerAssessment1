@@ -273,3 +273,6 @@ xyplot(steps ~ interval | dateType, stepsByDay, type = c("l","g"),layout = c(1, 
 ```
 
 ![](./PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+
+From the plots above, We can conclude that the weekdays had the greatest peak between the 500 and 1000 intervals from all the steps intervals. But, genrally the weekends activities had more peaks over a hundred than weekday.
+In conclusion there is a more evenly or better steps activity distribution of effort along the time over the weekend than over the weekdays.
