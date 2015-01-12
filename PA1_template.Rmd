@@ -166,7 +166,7 @@ head(newStepsActivity)
 
 stepsByDay <- aggregate(steps ~ interval + dateType, data = newStepsActivity, mean)
 
-xyplot(steps ~ interval | dateType, stepsByDay, type = c("l","g"),layout = c(1, 2), xlab = "Interval", ylab = "Number of steps")
+xyplot(steps ~ interval | dateType, stepsByDay, type = c("l","g"),layout = c(1, 2), xlab = "Interval", ylab = "Number of steps", main = "Weekend Vs Weekday Activity")
 ```
 
 From the plots above, We can conclude that the weekdays had the greatest peak between the 500 and 1000 intervals from all the steps intervals. But, genrally the weekends activities had more peaks over a hundred than weekday.
