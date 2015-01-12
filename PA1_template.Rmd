@@ -11,22 +11,28 @@ output:
 if(!file.exists("activity.csv")){
     unzip("activity.zip") 
 }
-
 stepsTakenActivity <- read.csv("activity.csv", header=TRUE)
+
+# Let's take a Peek at our data frame.
+head(stepsTakenActivity)
 
 # Let's look at the dimensions at our data frame
 dim(stepsTakenActivity)
 
-# Take steps variable  as a dependant variable while date is an independane variable
-stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
+str(stepsTakenActivity)
+
+# Variable names
+names(stepsTakenActivity)
 
 # Translate date variable from a  string type to a date type of a given format
-# stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
+#stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
 
-# Process our Data Frame by finding the total rows 
-TotalRows <- nrow(stepsTakenActivity)
-omitNA    <-  na.omit(stepsTakenActivity)
+# Process our Data Frame by finding the total/complete rows 
+totalRows <- nrow(stepsTakenActivity)
+totalCompleteRows    <-  nrow(na.omit(stepsTakenActivity))
 
+totalRows
+totalCompleteRows
 ```
 
 ## What is mean total number of steps taken per day?
@@ -39,16 +45,20 @@ calculate and report
 of the total of steps taken per day.
 
 ```{r, echo=TRUE}
+
+# Take steps variable  as a dependant variable while date is an independane variable
+stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
+
 hist(stepsPerDay$steps, main = "Total Steps Per Day", col="green", xlab="Number of Steps")
 ```
 
-####  Mean for the Total number of steps taken per day:
+Mean for the Total number of steps taken per day:
 ```{r, echo=TRUE}
 mean(stepsPerDay$steps)
 
 ```
 
-####  Median for the Total number of steps taken per day:
+Median for the Total number of steps taken per day:
 ```{r, echo=TRUE}
 median(stepsPerDay$steps)
 
@@ -64,7 +74,7 @@ averageInterval <- aggregate(steps ~ interval, stepsTakenActivity, mean, na.rm=T
 plot(averageInterval, type = "l", xlab="Intervals", ylab="Average Steps Taken", main="Average Daily Acitivity Pattern")
 ```
 
-#### The maximum 5-minute interval on average across all the days in the dataset that contains the maximum number of steps
+The maximum 5-minute interval on average across all the days in the dataset that contains the maximum number of steps
 
 ```{r, echo=TRUE}
 # 2. The Maximum 5-minute ininterval
@@ -73,6 +83,24 @@ averageInterval$interval[which.max(averageInterval$step)]
 ```
 
 ## Imputing missing values
+
+#### 1.  Total number of missing values:
+
+By using the variables calculated above **totalRows** and **totalCompleteRows** we 
+can get the rows that are missing values by subtracting *totalCompleteRows* from *totalRows*.
+(*totalRows* - *totalCompleteRows*) 
+
+* Total rows:  `r totalRows`  
+* Complete rows:  `r totalCompleteRows` 
+* Total Number of missing values: `r totalRows - totalCompleteRows`
+
+###### Alternatively using R in-built is.na functionality.
+
+```{r, echo=TRUE}
+activityNA <- sum(is.na(stepsTakenActivity))
+activityNA
+```
+
 
 
 
