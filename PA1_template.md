@@ -52,9 +52,6 @@ names(stepsTakenActivity)
 ```
 
 ```r
-# Translate date variable from a  string type to a date type of a given format
-#stepsTakenActivity <- as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
-
 # Process our Data Frame by finding the total/complete rows 
 totalRows <- nrow(stepsTakenActivity)
 totalCompleteRows    <-  nrow(na.omit(stepsTakenActivity))
@@ -162,11 +159,121 @@ activityNA
 ## [1] 2304
 ```
 
+#### 2.  Filling in all of the missing values in the dataset
+Devising a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, we could use the mean/median whichever we think that might work or meet our needs better.
+
+From our results above the median and the mean do not differ or deviate a lot, therefore for the purposes of this report we shall use the mean(**mean imputation**). NA is replaced by mean in the corresponding 5 min interval
+
+```r
+fillNA <- numeric()
+
+for (i in 1:nrow(stepsTakenActivity)) {
+    obs <- stepsTakenActivity[i, ]
+    
+    if (is.na(obs$steps)) {
+                steps <- subset(averageInterval, interval == obs$interval)$steps
+    } 
+    else {
+                steps <- obs$steps
+    }
+        fillNA <- c(fillNA, steps)
+}
+```
+
+#### 3. Creating a new dataset that is equal to the original dataset and with the missing data filled in.
 
 
+```r
+# equate newStepsActivity to our old  stepsTakenActivity data frame still with NA
+newStepsActivity <- stepsTakenActivity
+
+# Replace the Steps column with our newly contructed filled with the corresponding 5 interval mean 
+newStepsActivity$steps <- fillNA
+
+head(newStepsActivity)
+```
+
+```
+##       steps       date interval
+## 1 1.7169811 2012-10-01        0
+## 2 0.3396226 2012-10-01        5
+## 3 0.1320755 2012-10-01       10
+## 4 0.1509434 2012-10-01       15
+## 5 0.0754717 2012-10-01       20
+## 6 2.0943396 2012-10-01       25
+```
+
+```r
+nrow(newStepsActivity)
+```
+
+```
+## [1] 17568
+```
+
+#### 4. Create histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day
+
+
+```r
+newStepsPerDay <- aggregate(steps ~ date, data = newStepsActivity, sum, na.rm = TRUE)
+
+hist(newStepsPerDay$steps, main = "Total steps by day", xlab = "day", col = "red")
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
+
+And the mean and median is:
+
+
+```r
+mean(newStepsPerDay$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+
+```r
+median(newStepsPerDay$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+These values do not differ significantly from the values from the first part of the assignment. This in fact tells us that imputing missing data on the estimates of the daily number of steps does not statistically skew our data
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+```r
+library(lattice)
+
+# Translate date variable from a  string type to a date type of a given format
+stepsTakenActivity$date<-as.Date(stepsTakenActivity$date, format = '%Y-%m-%d')
+stepsTakenActivity$dateType <- ifelse(weekdays(stepsTakenActivity$date) %in% c("Saturday", "Sunday"),'weekend','weekday')
+
+head(stepsTakenActivity)
+```
+
+```
+##   steps       date interval dateType
+## 1    NA 2012-10-01        0  weekday
+## 2    NA 2012-10-01        5  weekday
+## 3    NA 2012-10-01       10  weekday
+## 4    NA 2012-10-01       15  weekday
+## 5    NA 2012-10-01       20  weekday
+## 6    NA 2012-10-01       25  weekday
+```
+
+```r
+stepsByDay <- aggregate(steps ~ interval + dateType, data = stepsTakenActivity, mean)
+
+xyplot(steps ~ interval | dateType, stepsByDay, type = "l", layout = c(1, 2), 
+    xlab = "Interval", ylab = "Number of steps")
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
 
 #### http://www.cookbook-r.com/Manipulating_data/Summarizing_data/
 #### http://www.r-tutor.com/r-introduction/data-frame/data-frame-row-slice
