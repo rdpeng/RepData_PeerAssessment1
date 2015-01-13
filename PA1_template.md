@@ -269,7 +269,7 @@ head(newStepsActivity)
 ```r
 stepsByDay <- aggregate(steps ~ interval + dateType, data = newStepsActivity, mean)
 
-xyplot(steps ~ interval | dateType, stepsByDay, type = c("l","g"),layout = c(1, 2), xlab = "Interval", ylab = "Number of steps", main = "Weekend Vs Weekday Activity")
+xyplot(steps ~ interval | dateType, stepsByDay, type = "l",layout = c(1, 2), xlab = "Interval", ylab = "Number of steps", main = "Weekend Vs Weekday Activity")
 ```
 
 ![](./PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
