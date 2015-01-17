@@ -23,7 +23,8 @@ head(stepsTakenActivity)
 ```
 
 ```r
-# Let's look at the dimensions at our data frame
+# Let's look at the dimensions of our data frame
+
 dim(stepsTakenActivity)
 ```
 
@@ -52,23 +53,23 @@ names(stepsTakenActivity)
 ```
 
 ```r
-# Process our Data Frame by finding the total/complete rows 
+# Process our Data Frame by finding both total and complete rows 
 totalRows <- nrow(stepsTakenActivity)
 totalCompleteRows    <-  nrow(na.omit(stepsTakenActivity))
 
-totalRows
+sprintf("Total Rows in the Dataframe: %s",totalRows)
 ```
 
 ```
-## [1] 17568
+## [1] "Total Rows in the Dataframe: 17568"
 ```
 
 ```r
-totalCompleteRows
+sprintf("Total Complete Rows in the Dataframe: %s", totalCompleteRows)
 ```
 
 ```
-## [1] 15264
+## [1] "Total Complete Rows in the Dataframe: 15264"
 ```
 
 ## What is mean total number of steps taken per day?
@@ -85,6 +86,7 @@ of the total of steps taken per day.
 # Take steps variable  as a dependant variable while date is an independane variable
 stepsPerDay <- aggregate(steps ~ date, stepsTakenActivity, sum)
 
+# 1. Make a Histogram
 hist(stepsPerDay$steps, main = "Total Steps Per Day", col="green", xlab="Number of Steps")
 ```
 
@@ -92,7 +94,9 @@ hist(stepsPerDay$steps, main = "Total Steps Per Day", col="green", xlab="Number 
 
 Mean for the Total number of steps taken per day:
 
+
 ```r
+# 2. Calculate the mean and the median
 mean(stepsPerDay$steps)
 ```
 
@@ -101,6 +105,7 @@ mean(stepsPerDay$steps)
 ```
 
 Median for the Total number of steps taken per day:
+
 
 ```r
 median(stepsPerDay$steps)
