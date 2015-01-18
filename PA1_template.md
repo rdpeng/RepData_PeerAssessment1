@@ -8,7 +8,8 @@ The first step in this assignment is to load the activity monitoring data. The c
 
 do this is below. 
 
-```{r,echo=TRUE}
+
+```r
 x<-read.csv("activity.csv")
 ```
 
@@ -18,21 +19,36 @@ We now want to generate a histogram for the total number of steps taken each day
 
 code to do this is shown below, followed by the histogram itself. 
 
-```{r,echo=TRUE}
+
+```r
 y<-na.omit(aggregate(x[1],x[2],sum))
 s<-y[,2]
 hist(s,main="Histogram of total number of steps taken each day",xlab="Total number of steps taken each day")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 We now want to calculate and report the mean and median total number of steps taken per 
 
 day. The code is shown below followed by the output. 
 
-```{r,echo=TRUE}
+
+```r
 #mean  
 mean(s)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 #median 
 median(s)
+```
+
+```
+## [1] 10765
 ```
 
 The mean number of steps taken per day is 10766.19 steps and the median number of steps 
@@ -47,7 +63,8 @@ Next, we will generate a time series plot (i.e. type = "l") of the 5-minute inte
 
 code is shown below, followed by the time series plot. 
 
-```{r,echo=TRUE}
+
+```r
 aa<-na.omit(x)
 aaa<-aggregate(aa[1],aa[3],mean)
 ss<-aaa[,2]
@@ -55,14 +72,22 @@ sss<-aaa[,1]
 plot(sss,ss,type="l",main = "Time Series Plot of Average Daily Activity",xlab="5 minute interval",ylab="Average number of steps taken, averaged across all days")
 ```
 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
 We now will determine which 5-minute interval, on average across all the days in the 
 
 dataset, contains the maximum number of steps. The code to determine this is shown below 
 
 followed by the output. 
 
-```{r,echo=TRUE}
+
+```r
 aaa[aaa[2]==max(aaa[2]),]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 The 5-minute interval 835 contains the maximum number of steps, on average across all the 
@@ -81,8 +106,13 @@ We will now calculate and report the total number of missing values in the datas
 
 the total number of rows with NAs). The code is below, followed by the output. 
 
-```{r,echo=TRUE}
+
+```r
 nrow(x)-nrow(na.omit(x))
+```
+
+```
+## [1] 2304
 ```
 
 The total number of missing values in the dataset or total number of rows with NAs is 
@@ -97,7 +127,8 @@ interval.This strategy will be used to create a new dataset that is equal to the
 
 original dataset but with the missing data filled.The code for this is below. 
 
-```{r,echo=TRUE}
+
+```r
 x2<-x
 for(i in 1:nrow(x2)){
   if(is.na(x2[i,1])){
@@ -116,11 +147,14 @@ similar to our previous histogram, except now we are including the rows with mis
 
 data filled.The code for this is below, followed by the histogram. 
 
-```{r,echo=TRUE}
+
+```r
 yy<-aggregate(x2[1],x2[2],sum)
 s<-yy[,2]
 hist(s,main="Histogram of total number of steps taken each day",xlab="Total number of steps taken each day")
 ```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
 We now want to calculate and report the mean and median total number of steps taken per 
 
@@ -128,11 +162,23 @@ day once the missing NA values are filled in. The code is shown below followed b
 
 output. 
 
-```{r,echo=TRUE}
+
+```r
 #mean  
 mean(s)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 #median 
 median(s)
+```
+
+```
+## [1] 10766.19
 ```
 
 The mean total number of steps taken per day is the same as when we omitted rows with NA 
@@ -155,7 +201,8 @@ We will now create a new factor variable in the dataset with two levels – “w
 
 is shown below.
 
-```{r,echo=TRUE}
+
+```r
 sss<-x2[,2,]
 x2[["Day of Week"]]<-weekdays(as.Date(sss))
 for (i in 1:nrow(x2)){
@@ -174,7 +221,8 @@ all weekday days and all weekend days (y-axis). The code to do this is shown bel
 
 followed by the panel plot. 
 
-```{r,echo=TRUE}
+
+```r
 weekendavg<-numeric()
 weekendinterval<-numeric()
 weekdayavg<-numeric()
@@ -203,6 +251,8 @@ weekend<-ee
 Interval<-dd
 xyplot(weekday + weekend ~ Interval, layout = c(1,2), type = "l", outer = TRUE,ylab="Average number of steps taken, averaged across all days")
 ```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
 
 =======
 ---
