@@ -17,7 +17,7 @@ ignore the missing values in the dataset.
 
 1.Make a histogram of the total number of steps taken each day
 
-```{r echo=TRUE}
+```{r echo=TRUE,fig.path="instructions_fig/unnamed-chunk-2-1.png"}
 day<-levels(data$date);num<-rep(0,times=61)
 total<-data.frame(day,num)
 for(i in 1:61){
@@ -41,7 +41,7 @@ median(total$num)
 
 1.Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r echo=TRUE}
+```{r echo=TRUE,fig.path="instructions_fig/unnamed-chunk-4-1.png"}
 int<-levels(as.factor(data$interval));average<-rep(0,times=288)
 ave<-data.frame(int,average)
 for(i in 1:288){
@@ -89,7 +89,7 @@ newdata<-data.frame(data[,4],data[,2],data[,3])
 
 4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r echo=TRUE}
+```{r echo=TRUE,fig.path="instructions_fig/unnamed-chunk-9-1.png"}
 newtotal<-data.frame(day,num)
 for(i in 1:61){
     newtotal$num[i]<-sum(newdata[newdata[,2]==day[i],1])
@@ -117,7 +117,7 @@ newdata$wd[newdata$wd %in% c("星期一","星期二","星期三","星期四","星期五")]<-"we
 
 2.Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 
-```{r echo=TRUE}
+```{r echo=TRUE,fig.path="instructions_fig/unnamed-chunk-11-1.png"}
 oldpar<-par(mfrow=c(2,1))
 weekdaydata<-newdata[newdata$wd=="weekday",]
 WeekdayNewAve<-data.frame(int,average)

@@ -33,7 +33,7 @@ qplot(num,data=total,fill=day)
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+![plot of chunk unnamed-chunk-2](instructions_fig/unnamed-chunk-2-1.pngunnamed-chunk-2-1.png) 
 
 
 2.Calculate and report the mean and median total number of steps taken per day
@@ -71,7 +71,7 @@ for(i in 1:288){
 plot(ave$average~ave$int,type="b")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](instructions_fig/unnamed-chunk-4-1.pngunnamed-chunk-4-1.png) 
 
 
 2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -139,7 +139,7 @@ qplot(num,data=newtotal,fill=day)
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-9](instructions_fig/unnamed-chunk-9-1.pngunnamed-chunk-9-1.png) 
 
 ```r
 mean(newtotal$num)
@@ -192,7 +192,7 @@ for(i in 1:288){
 plot(WeekendNewAve$average~WeekendNewAve$int)
 ```
 
-![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
+![plot of chunk unnamed-chunk-11](instructions_fig/unnamed-chunk-11-1.pngunnamed-chunk-11-1.png) 
 
 ```r
 par(oldpar)
