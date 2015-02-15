@@ -53,17 +53,17 @@ head(activity3)
 # A histogram of the total number of steps taken per day using the 'Lattice' package
 histogram(activity3$steps, xlab = 'Total number of steps', main ="Histogram of total number of steps taken each day", col = 'grey')
 # The mean of the total number of steps taken per day
-mean <- activity3 %>%
-        summarise(mean = mean(steps)) 
+activity3 %>%
+  summarise(mean = mean(steps)) %>%
+  print()
+        
 # The median of the total number of steps taken per day        
-median <- activity3 %>%
-        summarise(median = median(steps))
+activity3 %>%
+  summarise(median = median(steps)) %>%
+  print()
         
 ```
 
-The mean of the total number of steps taken per day is `r mean`
-
-The median of the total number of steps taken per day is `r median`
 
 ## What is the average daily activity pattern?
 
@@ -111,13 +111,13 @@ activity7 <- activity6 %>%
 head(activity7)
 # Plot a histogram
 histogram(activity7$steps, xlab = "Number of steps", main ="Histogram of total number of steps taken each day", col = 'gray')
-mean2 <- activity7 %>%
-        summarise(mean = mean(steps))
-median2 <- activity7 %>%
-        summarise(median = median(steps))
+activity7 %>%
+  summarise(mean = mean(steps)) %>%
+  print()
+activity7 %>%
+  summarise(median = median(steps)) %>%
+  print()
 ```
-The mean of the total number of steps taken per day is `r mean2`
-The median of the total number of steps taken per day is `r median2`
 
 These values differ from the estimates from the first part of the assignment, the median changed from 10765 to 10766.19 which is the mean. The mean did not change, this is because I used the mean values of the 5-minute interval accross all days for the missing values in the daily 5-minute intervals.
 
