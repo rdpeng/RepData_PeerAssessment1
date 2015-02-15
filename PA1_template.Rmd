@@ -8,18 +8,133 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r,echo=TRUE}
+# Loading the required libraries
+library(dplyr,quietly = T) 
+library(tidyr,quietly = T)
+library(lubridate,quietly = T)
+library(ggplot2,quietly = T)
+library(lattice,quietly = T)
+# Unziping the 'activity.zip' file
+unzip("activity.zip")
+# Reading the unziped file in a file variable 'activity'
+activity <- read.csv("activity.csv")
+# A quick look at the structure of the data file 'activity'
+str(activity)
+# Summary of the data file 'activity'
+summary(activity)
+# Looking at the first few rows of the data file 'activity'
+head(activity)
+# Transforming the data file by removing all the 'NAs', and converting the 'date' 
+# variable into a date format
+activity2 <- activity %>%
+        filter(steps != is.na(steps)) %>%
+        mutate(date = ymd(date))
+# Look at the summary of the transformed dataframe 'activity2'
+summary(activity2)
+# Look at the first few rows in the transformed dataframe 'activity2'
+head(activity2)
+# Look at the structure of the transformed dataframe 'activity2'
+str(activity2)
+```
 
 
 ## What is mean total number of steps taken per day?
 
+```{r,echo=TRUE}
+# Transforming dataframe 'activity2' by selecting only the 'date', and 'steps' variables
+# then group by 'date' to get the total number of steps taken per day
+activity3 <- activity2 %>%
+        select(steps,date) %>%
+        group_by(date) %>%  
+        summarise(steps = sum(steps))
+# Look at the first few rows in the transformed dataframe 'activity3'
+head(activity3)
+# A histogram of the total number of steps taken per day using the 'Lattice' package
+histogram(activity3$steps, xlab = 'Total number of steps', main ="Histogram of total number of steps taken each day", col = 'grey')
+# The mean of the total number of steps taken per day
+mean <- activity3 %>%
+        summarise(mean = mean(steps)) 
+# The median of the total number of steps taken per day        
+median <- activity3 %>%
+        summarise(median = median(steps))
+        
+```
 
+The mean of the total number of steps taken per day is `r mean`
+
+The median of the total number of steps taken per day is `r median`
 
 ## What is the average daily activity pattern?
 
-
+```{r,echo=TRUE}
+# Transforming the dataframe 'activity' by converting the 'interval' variable to a factor
+# then grouping by the dataframe by the 'interval' variable, and getting taking the mean
+activity4 <- activity %>%
+        mutate(interval = as.factor(interval)) %>%
+        group_by(interval) %>%
+        summarise(Avesteps = mean(steps,na.rm=T))
+# Look at the first few rows of the transformed dataframe 'activity4'
+head(activity4)
+# Use the xyplot() function from the lattice package to graph
+xyplot(activity4$Avesteps ~ activity4$interval,type = "l",xlab = "5-minute interval",ylab = "average number of steps taken",main="Average daily activity pattern",scales=list(x=list(tick.number = 6, at = seq(1, 288, 48), labels = levels(activity4$interval)[seq(1,288,48)])))
+# 5-minute interval, on average across all the days in the dataset, that contains
+# the maximum number of steps
+Interval <- activity4$interval[which(activity4$Avesteps == max(activity4$Avesteps))]
+```
+The 5-minute interval, on average across all the days in the dataset, that contains the 
+maximum number of steps is `r Interval`
 
 ## Imputing missing values
 
+The total number of rows with ```NA```s 
+```{r,echo=TRUE}
+sum(!complete.cases(activity))
+```
 
+I will use the mean for the 5-minute interval, for filling in all the missing values in the dataset.
+
+```{r,echo=TRUE}
+activity5 <- activity %>%
+        group_by(interval) %>%
+        summarise(mean = mean(steps,na.rm = T))
+dim(activity5)
+activity5
+NAindx <- which(is.na(activity$steps) == T)
+activity6 <- activity         
+activity6$steps[NAindx] <- activity5$mean
+summary(activity6)
+activity7 <- activity6 %>%
+        select(steps,date) %>%
+        group_by(date) %>%
+        summarise(steps = sum(steps))
+head(activity7)
+# Plot a histogram
+histogram(activity7$steps, xlab = "Number of steps", main ="Histogram of total number of steps taken each day", col = 'gray')
+mean2 <- activity7 %>%
+        summarise(mean = mean(steps))
+median2 <- activity7 %>%
+        summarise(median = median(steps))
+```
+The mean of the total number of steps taken per day is `r mean2`
+The median of the total number of steps taken per day is `r median2`
+
+These values differ from the estimates from the first part of the assignment, the median changed from 10765 to 10766.19 which is the mean. The mean did not change, this is because I used the mean values of the 5-minute interval accross all days for the missing values in the daily 5-minute intervals.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r,echo=TRUE}
+activity8 <- mutate(activity6,day = weekdays(ymd(date)))
+
+activity8$day[activity8$day == "Saturday" | activity8$day == "Sunday"] <- "weekend"
+activity8$day[activity8$day != "weekend"] <- "weekday"
+activity8 <- mutate(activity8, day = factor(day,levels = c("weekday","weekend")))
+summary(activity8)
+head(activity8)
+activity9 <- activity8 %>%
+        group_by(interval,day) %>%
+        summarise(mean = mean(steps))
+summary(activity9)
+activity9
+xyplot(activity9$mean ~ activity9$interval | activity9$day,type = "l",layout = c(1,2),xlab = "interval",ylab = 'steps')
+
+```
