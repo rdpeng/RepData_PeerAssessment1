@@ -5,21 +5,153 @@ output:
     keep_md: true
 ---
 
+Step count data from a monitoring device collected at 5 minute intervals 
+throughout the day are examined. The data are from one individual 
+during the months of October and November 2012.
 
 ## Loading and preprocessing the data
 
+First some setup is necessary. The ggplot2 library is loaded. The working
+directory is set and the workspace is cleared.
 
+```{r setoptions,echo=TRUE}
+opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(ggplot2)
+sessionInfo()
+setwd("~/studyJH-DataSci/5-repData/RepData_PeerAssessment1")
+rm(list = ls())
+```
+
+Next the data file is loaded and some date-time vectors are created 
+for graphing proposes. Also a factor vector is created to identify 
+entries as following on weekdays or weekends.
+
+```{r}
+stp <- read.csv("activity.csv", header = TRUE, na.strings = "NA" )
+t9HM <- as.character(90000 + as.numeric(stp$interval))
+datetime <- strptime(paste(stp$date, t9HM), "%Y-%m-%d 9%H%M")
+steptime <- strptime(t9HM[1:288], "9%H%M")
+wd <- weekdays(datetime)
+wd <- ifelse((wd == "Saturday" | wd == "Sunday"), "weekend", "weekday")
+stp <- cbind(stp, datetime, wd)
+
+```
 
 ## What is mean total number of steps taken per day?
 
+Executing the following code.
 
+```{r}
+dsum <- aggregate(stp$steps, by=list(stp$date), FUN=sum, na.rm=TRUE)
+names(dsum) <- c("Day", "cntStep")
+summary(dsum$cntStep)
+```
+
+We see the step count mean is `r mean(dsum$cntStep)` and 
+the median is `r median(dsum$cntStep)`. 
+The histogram of the step count by days is here.
+
+
+```{r plot1, fig.width=7, fig.height=6}
+hist(dsum$cntStep, breaks = seq(0,22000,1000), col = "red", 
+     main = "Number of Steps Taken Each Day", 
+     xlab = "Steps per Day")
+```
 
 ## What is the average daily activity pattern?
 
+```{r}
+dstep <- aggregate(stp$steps, by=list(factor(stp$interval)), 
+                   FUN=mean, na.rm=TRUE)
+names(dstep) <- c("int5min", "meanStep")
+summary(dstep)
+```
 
+Here is a time series plot of the 5-minute interval (x-axis) and the average 
+number of steps taken, averaged across all days (y-axis).
+
+```{r plot2, fig.width=7, fig.height=6}
+plot(steptime, dstep$meanStep, type = "l",
+     main = "Average Number of Steps Taken by 5-minute interval", 
+     xlab = "5-minute intervals", 
+     ylab = "Step Count")
+```
+
+The maximum step count averaged over time of day intervals is 
+`r max(dstep$meanStep)` and occures in the 
+`r dstep$int5min[dstep$meanStep == max(dstep$meanStep)]` interval.
 
 ## Imputing missing values
 
+The total number of missing values in the dataset (i.e. the total number of 
+rows with NAs) is `r sum(is.na(stp$steps))`. This correspones to to eight day 
+on which the recording device was probabily not on and recording.
 
+```{r}
+sum(is.na(stp$steps))
+```
+
+A new dataset that is equal to the original dataset but with the missing 
+data filled in by using the mean for that 5-minute interval is created.
+
+```{r}
+steps2 <- stp$steps
+steps_mean <- rep(dstep$meanStep, 61)
+steps2[is.na(steps2)] <- steps_mean[is.na(steps2)]
+```
+
+The summary statistics for this imputed data set are as follows:
+
+```{r}
+dsum2 <- aggregate(steps2, by=list(stp$date), FUN=sum)
+dstep2 <- aggregate(steps2, by=list(factor(stp$interval)), FUN=mean)
+names(dsum2) <- c("Day", "cntStep")
+summary(dsum2$cntStep)
+```
+
+We see the step count mean is `r mean(dsum2$cntStep)` and 
+the median is `r median(dsum2$cntStep)`. 
+The histogram of the step count by days for the imputed data is here. 
+
+```{r plot3, fig.width=7, fig.height=6}
+hist(dsum2$cntStep, breaks = seq(0,22000,1000), col = "blue", 
+     main = "Number of Steps Taken Each Day (imputed data)", 
+     xlab = "Steps per Day")
+```
+
+The time series plot for the imputed data of the 5-minute interval (x-axis)
+and the average number of steps taken, averaged across all days (y-axis) 
+is here. 
+
+```{r plot4, fig.width=7, fig.height=6}
+plot(steptime, dstep2$x, type = "l",
+     main = "Average Number of Steps Taken (imputed data)", 
+     xlab = "5-minute intervals", 
+     ylab = "Step Count")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+The imputed data is used to look at activity patterns between weekdays and 
+weekends.
+
+```{r}
+dstep3 <- aggregate(steps2, by=list(factor(stp$interval), stp$wd), FUN=mean)
+names(dstep3) <- c("Interval", "wd", "Number_of_steps")
+```
+
+```{r plot5, fig.width=7, fig.height=6}
+p <- ggplot(dstep3, aes(x=Interval, y=Number_of_steps, group=wd, main="Title")) + geom_line() 
+p <- p + ggtitle("Comparision of weekday and weekend Activity")
+p <- p + facet_grid(wd ~ .)
+p <- p + scale_x_discrete(breaks = dstep3$Interval[seq(1,288, by = 36)])
+print(p)
+
+```
+
+While the peak activity is not as high on weekends as weekdays, activity 
+is more substained thoughout the day on weekends.
+
