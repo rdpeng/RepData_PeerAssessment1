@@ -27,7 +27,7 @@ site:
 
 The variables included in this dataset are:
 
-* **steps**: Number of steps taking in a 5-minute interval (missing
+* **steps**: Number of steps taken in a 5-minute interval (missing
     values are coded as `NA`)
 
 * **date**: The date on which the measurement was taken in YYYY-MM-DD
@@ -83,7 +83,7 @@ Show any code that is needed to
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 
 
-### What is mean total number of steps taken per day?
+### What is the mean and median total number of steps taken per day?
 
 For this part of the assignment, you can ignore the missing values in
 the dataset.
@@ -100,7 +100,7 @@ the dataset.
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
-### Imputing missing values
+### Inputing missing values
 
 Note that there are a number of days/intervals where there are missing
 values (coded as `NA`). The presence of missing days may introduce
