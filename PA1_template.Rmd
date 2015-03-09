@@ -1,6 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
+output:
   html_document:
     keep_md: true
 ---
@@ -10,7 +10,7 @@ output:
 
 
 
-## What is mean total number of steps taken per day?
+## What is the mean and median total number of steps taken per day?
 
 
 
@@ -18,7 +18,7 @@ output:
 
 
 
-## Imputing missing values
+## Inputing missing values
 
 
 
