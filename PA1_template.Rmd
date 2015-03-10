@@ -31,8 +31,9 @@ abline(v=Daystepsmean,col="red")
 abline(v=Daystepsmedian,col="yellow")
 ```
 ## What is the average daily activity pattern?
-
-
+```{r}
+Interstepmean <- aggregate(activity$steps, list(Interval = activity$interval), mean, na.rm=T)
+```
 
 ## Imputing missing values
 
