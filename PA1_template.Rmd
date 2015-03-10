@@ -32,7 +32,11 @@ abline(v=Daystepsmedian,col="yellow")
 ```
 ## What is the average daily activity pattern?
 ```{r}
+#Calculate average count of steps for each interval
 Interstepmean <- aggregate(activity$steps, list(Interval = activity$interval), mean, na.rm=T)
+names(Interstepmean) <- c("interval","stpavg")
+
+#Realise plot for relation between Interval and average number of steps 
 ```
 
 ## Imputing missing values
