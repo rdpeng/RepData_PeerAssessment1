@@ -17,14 +17,16 @@ activity <- read.csv("activity.csv")
 # I sum up all steps taken per day
 Stepsperday <- aggregate(activity$steps, list(date = activity$date), sum, na.rm=T)
 
+names(Stepsperday) <- c("date", "steps")
+
 # I prepare a histogram of the total steps taken each day 
 
-hist(Stepsperday$Steps, col="blue",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
+hist(Stepsperday$steps, col="blue",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
 main="Histogram of the total steps taken each day")
 
 #Calculation of the mean and median values
-Daystepsmean <- mean(Stepsperday$Steps)
-Daystepsmedian <- median(Stepsperday$Steps)
+Daystepsmean <- mean(Stepsperday$steps)
+Daystepsmedian <- median(Stepsperday$steps)
 
 #Add mean and median values to histogram
 abline(v=Daystepsmean,col="red")
@@ -59,13 +61,14 @@ for (i in 1:nrow(MergedActivity)) {
 }
 #Preparing new histogram  of the total steps taken each day to compare with the first one
 Stepsperday2 <- aggregate(MergedActivity$steps, list(date = MergedActivity$date), sum)
+names(Stepsperday2) <- c("date", "steps")
 
-hist(Stepsperday2$Steps, col="green",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
-main="Histogram of the total steps taken each day")
+hist(Stepsperday2$steps, col="green",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
+     main="Histogram of the total steps taken each day")
 
 #Calculation of the mean and median values
-Daystepsmean2 <- mean(Stepsperday2$Steps)
-Daystepsmedian2 <- median(Stepsperday2$Steps)
+Daystepsmean2 <- mean(Stepsperday2$steps)
+Daystepsmedian2 <- median(Stepsperday2$steps)
 
 #Add mean and median values to histogram
 abline(v=Daystepsmean2,col="blue")
