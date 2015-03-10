@@ -24,7 +24,7 @@ main="Histogram of the total steps taken each day")
 
 #Calculation of the mean and median values
 Daystepsmean <- mean(Stepsperday$Steps)
-Daystepsmedian <- median(activ2$Steps)
+Daystepsmedian <- median(Stepsperday$Steps)
 
 #Add mean and median values to histogram
 abline(v=Daystepsmean,col="red")
@@ -57,7 +57,19 @@ for (i in 1:nrow(MergedActivity)) {
         MergedActivity$steps[i] <- MergedActivity$meansteps[i]
     }
 }
+#Preparing new histogram  of the total steps taken each day to compare with the first one
+Stepsperday2 <- aggregate(MergedActivity$steps, list(date = MergedActivity$date), sum)
 
+hist(Stepsperday2$Steps, col="green",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
+main="Histogram of the total steps taken each day")
+
+#Calculation of the mean and median values
+Daystepsmean2 <- mean(Stepsperday2$Steps)
+Daystepsmedian2 <- median(Stepsperday2$Steps)
+
+#Add mean and median values to histogram
+abline(v=Daystepsmean2,col="blue")
+abline(v=Daystepsmedian2,col="black")
 ```
 
 
