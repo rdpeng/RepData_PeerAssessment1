@@ -8,7 +8,9 @@ output:
 
 ## Loading and preprocessing the data
 
-
+```{r}
+summary(cars)
+```
 
 ## What is mean total number of steps taken per day?
 
