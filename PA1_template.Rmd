@@ -43,7 +43,22 @@ main = "Average steps per 5-min interval", col = "red")
 ```
 
 ## Imputing missing values
+```{r}
+#The purpose is to substitute each NAs values with mean value for each interval
 
+#Merge tables with original data of activity and data with mean values
+MergedActivity <- merge(activity,Interstepmean,by="interval")
+
+names(MergedActivity) <- c("interval","steps", "date", "meansteps" )
+
+#Substitute NA value by mean value for each register
+for (i in 1:nrow(MergedActivity)) {
+    if (is.na(MergedActivity$steps[i])==TRUE) {
+        MergedActivity$steps[i] <- MergedActivity$meansteps[i]
+    }
+}
+
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
