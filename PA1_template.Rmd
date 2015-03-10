@@ -37,6 +37,9 @@ Interstepmean <- aggregate(activity$steps, list(Interval = activity$interval), m
 names(Interstepmean) <- c("interval","stpavg")
 
 #Realise plot for relation between Interval and average number of steps 
+plot(Interstepmean$interval, Interstepmean$stpavg, type = "l",
+xlab = "Intervals", ylab = "Avg number of steps", 
+main = "Average steps per 5-min interval")
 ```
 
 ## Imputing missing values
