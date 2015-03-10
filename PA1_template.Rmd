@@ -19,9 +19,16 @@ Stepsperday <- aggregate(activity$steps, list(date = activity$date), sum, na.rm=
 
 # I prepare a histogram of the total steps taken each day 
 
-hist(activ2$Steps, col="blue",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
+hist(Stepsperday$Steps, col="blue",breaks = c(0,2000,4000,6000, 8000,10000,12000,14000,16000,18000,20000,22000,24000,26000),xlab="Numer of steps per day", 
 main="Histogram of the total steps taken each day")
 
+#Calculation of the mean and median values
+Daystepsmean <- mean(Stepsperday$Steps)
+Daystepsmedian <- median(activ2$Steps)
+
+#Add mean and median values to histogram
+abline(v=Daystepsmean,col="red")
+abline(v=Daystepsmedian,col="yellow")
 ```
 ## What is the average daily activity pattern?
 
