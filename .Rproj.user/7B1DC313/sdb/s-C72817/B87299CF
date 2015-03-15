@@ -1,0 +1,18 @@
+{
+    "contents" : "#####\n# Loading and preprocessing the data\n\n#library(reshape2)\nactivity <- read.csv(\"activity.csv\", stringsAsFactors=FALSE)\nactivity <- activity[,c(2,3,1)]\nactivity <- activity[order(activity$date,activity$interval),]\nactivity$date <- as.Date(activity$date,\"%Y-%m-%d\")\n\n#####\n# What is mean total number of steps taken per day?\nattach(activity)\nstepsByDay <- aggregate(steps,by=list(date),sum,na.rm=T)\ndetach(activity)\nnames(stepsByDay) <- c(\"date\",\"steps\")\n\nhist(stepsByDay$steps,breaks=20)\n\nsteps_mean <- mean(stepsByDay$steps,na.rm=T)\nsteps_median <- median(stepsByDay$steps,na.rm=T)\n\n#####\n# What is the average daily activity pattern?\nattach(activity)\nstepsByInterval <- aggregate(steps,by=list(interval),mean,na.rm=T)\ndetach(activity)\nnames(stepsByInterval) <- c(\"interval\",\"steps\")\nplot(stepsByInterval$interval,stepsByInterval$steps,type = \"l\")\nmax_steps <- max(stepsByInterval$steps)\nmax_interval <- stepsByInterval[stepsByInterval$steps==max_steps,]$interval\n\n#####\n# Imputing missing values\nna_total <- sum(is.na(activity$steps))\nnewActivity <- activity\nnewActivity$stepsNewMedian <- newActivity$steps\n\nfor(i in 1:dim(newActivity)[1]){\n  if(is.na(newActivity[i,]$steps)){\n    current_date <-newActivity[i,]$date\n    current_interval <-newActivity[i,]$interval\n    similars <- newActivity[newActivity$date==current_date | newActivity$interval==current_interval,]\n    newValueMedian <- median(similars$steps,na.rm = T)\n    newActivity[i,]$stepsNewMedian <- newValueMedian\n  }\n}\nnewActivity$steps <- newActivity$stepsNewMedian\nnewActivity$stepsNewMedian <- NULL\n\nattach(newActivity)\nbyMedian <- aggregate(steps,by=list(date),sum,na.rm=T)\ndetach(newActivity)\nnames(byMedian) <- c(\"date\",\"steps\")\n\nhist(byMedian$steps,breaks=20)\n\nsteps_mean2 <- mean(byMedian$steps,na.rm=T)\nsteps_median2 <- median(byMedian$steps,na.rm=T)\n\ndif_mean <- 100*((steps_mean2 / steps_mean)-1)\ndif_median <- 100*((steps_median2 / steps_median)-1)\n\n#####\n# Are there differences in activity patterns between weekdays and weekends?\nnewActivity$weekDay <- weekdays((newActivity$date),T)\nnewActivity$typeDay <- ifelse(newActivity$weekDay==\"Sat\" | newActivity$weekDay==\"Sun\",\"weekend\",\"weekday\")\n\nattach(newActivity)\nByInterval <- aggregate(stepsNewMedian,by=list(interval,typeDay),mean,na.rm=T)\ndetach(newActivity)\nnames(ByInterval) <- c(\"interval\",\"typeDay\",\"steps\")\n\npar( mfrow=c(2,1) )\ntmp <- ByInterval[ByInterval$typeDay==\"weekend\",]\nplot(tmp$interval,tmp$steps,type = \"l\",main=\"Average of steps by interval \\n-weekend-\")\ntmp <- ByInterval[ByInterval$typeDay==\"weekday\",]\nplot(tmp$interval,tmp$steps,type = \"l\",main=\"Average of steps by interval \\n-weekday-\")\npar(mfrow=c(1,1) )\n\nsave.image(\"RepData_PeerAssessment1.RData\")\n\n",
+    "created" : 1426437772091.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4221624412",
+    "id" : "B87299CF",
+    "lastKnownWriteTime" : 1426459186,
+    "path" : "~/0 MHQ/1_Proyectos/Coursera/Data Scientist Specialization/5 Reproducible Research/Course Projects/RepData_PeerAssessment1/pre_reproducible1.R",
+    "project_path" : "pre_reproducible1.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "type" : "r_source"
+}
