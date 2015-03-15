@@ -1,0 +1,315 @@
+---
+title: "PA1_template"
+output: html_document
+---
+
+Load Required Libraries
+
+```r
+#Allow HTML to be knit.
+library(knitr)
+#Echo code.
+opts_chunk$set(echo = TRUE)
+#Library to help with cleaning the data.
+library(dplyr,quietly=TRUE)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+#Library to plot the data.
+library(ggplot2)
+#Library to deal with dates in the data.
+library(lubridate)
+#Turn off Scientific Notation for printing numbers and limit decimal places to hundreths.
+options(scipen = 999, digits = 2)
+```
+
+###Loading and preprocessing the data
+
+    Show any code that is needed to
+
+    1. Load the data (i.e. read.csv())
+
+    2. Process/transform the data (if necessary) into a format suitable for your analysis
+
+
+```r
+activity<-tbl_df(read.csv("activity.csv")) %>%
+            mutate(date=ymd(date), datetime=date+minutes(interval)) %>%
+            select(steps, date, interval, datetime)
+```
+
+###What is mean total number of steps taken per day?
+
+    For this part of the assignment, you can ignore the missing values in the dataset.
+
+    1. Calculate the total number of steps taken per day
+
+    2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
+
+
+
+
+```r
+daily<-activity%>%
+        na.omit()%>%
+        group_by(date)%>%
+        summarize(dailysteps=sum(steps),na.rm=TRUE)
+hist<-hist(daily$dailysteps,breaks=16, col="blue", main="Total Number of Steps Taken Each Day", xlab="Steps per Day")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+    3. Calculate and report the mean and median of the total number of steps taken per day
+
+```r
+daily%>% 
+summarize( mean = mean(dailysteps, na.rm=TRUE), median = median(dailysteps, na.rm=TRUE))%>%
+print
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##    mean median
+## 1 10766  10765
+```
+The mean is 10766.19 and the median is 10765.
+
+###What is the average daily activity pattern?
+
+    1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+    
+
+```r
+#Create new theme for this plot.  Thanks to Noam Ross for this.
+science_theme=
+        #increase size of gridlines
+        theme(panel.grid.major = element_line(size = .5, color = "grey"),
+     #increase size of axis lines
+     axis.line = element_line(size=.7, color = "black"),
+      #Adjust legend position to maximize space, use a vector of proportion
+      #across the plot and up the plot where you want the legend. 
+      #You can also use "left", "right", "top", "bottom", for legends on t
+      #he side of the plot
+      legend.position = c(.85,.7),
+      #increase the font size
+      text = element_text(size=8))
+#Data to be plotted showing the steps taken each day in 5 minute intervals.
+timeseries <- activity  %>% na.omit() %>%
+        group_by(interval) %>%   
+        summarize(stepinterval = mean(steps, na.rm=TRUE))
+
+
+#Plot the data from above.
+timeseriesplot<-ggplot(timeseries,aes(x=interval, y=stepinterval))
+
+#Decorate the plot.
+printtimeseries<-timeseriesplot  +
+#Title of the Plot.
+        labs(title = "Average Daily Activity Pattern (Maximum at the intersection of the red lines)") + 
+#x and y axis labels
+        labs(x = "Interval", y = "Number of Steps") + 
+#Rename X Axis tick marks.
+        #scale_x_continuous(breaks = c(uniqueyearlabel)) + 
+#Reformat Y Axis.
+        #scale_y_continuous(labels=function(x){return(paste(x,"%"))}) + 
+#Change theme to basic so we can adorn it as we wish.
+        theme_bw(base_family = "Times") +
+#Utilize theme we built earlier.
+        science_theme +
+#Decorate x and y axes.        
+        theme(axis.title.x = element_text(color="blue", vjust=-0.35), axis.title.y = element_text(color="blue" , hjust=0.35), axis.text.y=element_text(color="blue"), axis.text.x=element_text(color="blue")) + 
+#Plot lines and color them based upon Cities.
+        geom_line(aes(color = stepinterval)) +
+        geom_point(aes(x=maxstepinterval$interval,y=maxstepinterval$stepinterval),color="red", label="MAX") +
+        geom_vline(xintercept=maxstepinterval$interval,color="red") +
+        geom_hline(yintercept=maxstepinterval$stepinterval,color="red")
+print(printtimeseries)
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+
+```r
+#select the row with the max steps taken in any 5 minute interval for the whole series.
+maxstepinterval= timeseries[timeseries[,2]==max(timeseries[,2]),]
+print(maxstepinterval)
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval stepinterval
+## 1      835          206
+```
+
+
+Interval 835 contains the maximum number of steps with 206.17 steps and is plotted above at the intersection of the two read lines.
+
+
+
+
+###Imputing missing values
+
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+    1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+    
+The total number of rows with NA is 2304
+
+    2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+    3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+    
+
+```r
+imputedactivity<-tbl_df(read.csv("activity.csv")) %>%
+            mutate(date=ymd(date), datetime=date+minutes(interval)) %>%
+            select(steps, date, interval, datetime)
+    imputedactivity[is.na(imputedactivity$steps) == "TRUE", 1] <- mean(imputedactivity$steps, na.rm = TRUE)
+    head(imputedactivity)
+```
+
+```
+## Source: local data frame [6 x 4]
+## 
+##   steps       date interval            datetime
+## 1    37 2012-10-01        0 2012-10-01 00:00:00
+## 2    37 2012-10-01        5 2012-10-01 00:05:00
+## 3    37 2012-10-01       10 2012-10-01 00:10:00
+## 4    37 2012-10-01       15 2012-10-01 00:15:00
+## 5    37 2012-10-01       20 2012-10-01 00:20:00
+## 6    37 2012-10-01       25 2012-10-01 00:25:00
+```
+Each NA is replaced with the mean of the steps column which is 37.38
+
+    4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
+
+    
+
+```r
+imputeddaily<-imputedactivity%>%
+        na.omit()%>%
+        group_by(date)%>%
+        summarize(dailysteps=sum(steps),na.rm=TRUE)
+hist<-hist(imputeddaily$dailysteps,breaks=16, col="blue", main="Total Number of Steps Taken Each Day", xlab="Steps per Day")
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+```r
+imputeddaily%>% 
+summarize( mean = mean(dailysteps, na.rm=TRUE), median = median(dailysteps, na.rm=TRUE))%>%
+print
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##    mean median
+## 1 10766  10766
+```
+The mean is 10766.19 and the median is 10766.19.
+
+    4a. Do these values differ from the estimates from the first part of the assignment? 
+
+Mean with NA's: 10766.19
+
+Mean with imputed data 10766.19
+
+Median with NA's 10765
+
+Median with imputed data: 10766.19
+
+    4b. What is the impact of imputing missing data on the estimates of the total daily number of steps?
+    
+The total number of steps increased over the entire time period by 86129.51 steps, which is the number of NA's replaced multiplied by the average number of steps taken prior to imputing the data.
+
+###Are there differences in activity patterns between weekdays and weekends?
+
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+    1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+    
+
+```r
+weekdayweekend <- imputedactivity %>% 
+                mutate(dayofweek = as.factor(ifelse(wday(date) %in% c(0,7), "weekend", "weekday")) )
+                
+head(weekdayweekend)
+```
+
+```
+## Source: local data frame [6 x 5]
+## 
+##   steps       date interval            datetime dayofweek
+## 1    37 2012-10-01        0 2012-10-01 00:00:00   weekday
+## 2    37 2012-10-01        5 2012-10-01 00:05:00   weekday
+## 3    37 2012-10-01       10 2012-10-01 00:10:00   weekday
+## 4    37 2012-10-01       15 2012-10-01 00:15:00   weekday
+## 5    37 2012-10-01       20 2012-10-01 00:20:00   weekday
+## 6    37 2012-10-01       25 2012-10-01 00:25:00   weekday
+```
+
+
+    2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+    
+
+```r
+#Create new theme for this plot.  Thanks to Noam Ross for this.
+science_theme=
+        #increase size of gridlines
+        theme(panel.grid.major = element_line(size = .5, color = "grey"),
+     #increase size of axis lines
+     axis.line = element_line(size=.7, color = "black"),
+      #Adjust legend position to maximize space, use a vector of proportion
+      #across the plot and up the plot where you want the legend. 
+      #You can also use "left", "right", "top", "bottom", for legends on t
+      #he side of the plot
+      legend.position = c(.95,.8),
+      #increase the font size
+      text = element_text(size=8))
+#Data to be plotted showing the steps taken each day in 5 minute intervals.
+timeseries <- weekdayweekend  %>%
+        group_by(dayofweek,interval) %>%   
+        summarize(stepinterval = mean(steps, na.rm=TRUE))
+
+
+#Plot the data from above.
+timeseriesplot<-ggplot(timeseries,aes(x=interval, y=stepinterval))
+
+#Decorate the plot.
+printtimeseries<-timeseriesplot  +
+#Two plots separated by Weekday or Weekend totals
+facet_wrap(~ dayofweek, nrow=1,ncol=2) +
+#Title of the Plot.
+        labs(title = "Average Daily Activity Pattern") + 
+#x and y axis labels
+        labs(x = "Interval", y = "Number of Steps") + 
+#Change theme to basic so we can adorn it as we wish.
+        theme_bw(base_family = "Times") +
+#Utilize theme we built earlier.
+        science_theme +
+#Decorate x and y axes.        
+        theme(axis.title.x = element_text(color="blue", vjust=-0.35), axis.title.y = element_text(color="blue" , hjust=0.35), axis.text.y=element_text(color="blue"), axis.text.x=element_text(color="blue")) + 
+#Plot lines and color them based upon Cities.
+        geom_line(aes(color = stepinterval)) 
+print(printtimeseries)
+```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
