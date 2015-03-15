@@ -1,0 +1,17 @@
+{
+    "contents" : "---\ntitle: \"Reproducible Research: Peer Assessment 1\"\noutput: \n  html_document:\n    keep_md: true\n---\n\n\n## Loading and preprocessing the data\n\n\n\n## What is mean total number of steps taken per day?\n\n\n\n## What is the average daily activity pattern?\n\n\n\n## Imputing missing values\n\n\n\n## Are there differences in activity patterns between weekdays and weekends?\n",
+    "created" : 1426458031850.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2438641252",
+    "id" : "2CE26852",
+    "lastKnownWriteTime" : 1426461171,
+    "path" : "~/0 MHQ/1_Proyectos/Coursera/Data Scientist Specialization/5 Reproducible Research/Course Projects/RepData_PeerAssessment1/PA1_template.Rmd",
+    "project_path" : "PA1_template.Rmd",
+    "properties" : {
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "type" : "r_markdown"
+}
