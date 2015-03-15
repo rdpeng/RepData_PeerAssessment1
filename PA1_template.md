@@ -12,13 +12,15 @@ This assignment makes use of data from a personal activity monitoring device. Th
 
 ## Loading and preprocessing the data
 
-```{r , echo=TRUE}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r , echo=TRUE}
+
+```r
 # I sum up all steps taken per day
 Stepsperday <- aggregate(activity$steps, list(date = activity$date), sum, na.rm=T)
 
@@ -34,22 +36,37 @@ main="Histogram of the total steps taken each day")
 Daystepsmean <- mean(Stepsperday$steps)
 
 Daystepsmean
+```
 
+```
+## [1] 9354.23
+```
+
+```r
 ##Median value for total steps taken each day with NA values
 Daystepsmedian <- median(Stepsperday$steps)
 
 Daystepsmedian
+```
 
+```
+## [1] 10395
+```
+
+```r
 #Add mean and median values to histogram
 abline(v=Daystepsmean,col="red")
 abline(v=Daystepsmedian,col="yellow")
 ```
 
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
 
 ## What is the average daily activity pattern?
 
 
-```{r, echo=TRUE}
+
+```r
 #Calculate average count of steps for each interval
 Interstepmean <- aggregate(activity$steps, list(Interval = activity$interval), mean, na.rm=T)
 names(Interstepmean) <- c("interval","stpavg")
@@ -58,12 +75,19 @@ names(Interstepmean) <- c("interval","stpavg")
 plot(Interstepmean$interval, Interstepmean$stpavg, type = "l",
 xlab = "Intervals", ylab = "Avg number of steps", 
 main = "Average steps per 5-min interval", col = "red")
+```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+```r
 #Calculating max interval
 max_interval <- Interstepmean[which.max(Interstepmean$stpavg),]
 
 max_interval$interval
+```
 
+```
+## [1] 835
 ```
 
 **The interval for the maximum number of steps is 835**
@@ -71,7 +95,8 @@ max_interval$interval
 
 ## Imputing missing values
 
-```{r, echo=TRUE}
+
+```r
 #The purpose is to substitute each NAs values with mean value for each interval
 
 #Merge tables with original data of activity and data with mean values
@@ -98,25 +123,40 @@ hist(Stepsperday2$steps, col="green",breaks = c(0,2000,4000,6000, 8000,10000,120
 Daystepsmean2 <- mean(Stepsperday2$steps)
 
 Daystepsmean2
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 ## [1] 9510.033
 
 ##Median value for total steps taken each day withot NA values
 Daystepsmedian2 <- median(Stepsperday2$steps)
 
 Daystepsmedian2
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 #Add mean and median values to histogram
 abline(v=Daystepsmean2,col="blue")
 abline(v=Daystepsmedian2,col="black")
 ```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 **The mean value for total number of steps taken daily without NA's is clearly situated more to the right of the plot. Meanwhile medians remain the same value**
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 
-```{r,echo=TRUE}
+
+```r
 library(lubridate)
 # Format date and divide data between weekdays and weekend
 activity$date <- as.Date(activity$date)
@@ -140,8 +180,9 @@ plot(Stepmeanweekday$interval, Stepmeanweekday$steps, type = "l",
 
 plot(Stepmeanweekend$interval, Stepmeanweekend$steps, type = "l", 
     col = "darkgreen", ylab = "Average steps", xlab = "5 min intervals", main = "Average steps 5-minute interval during weekend")
-
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 **Comparing the average number of steps in 5-min intervals during a labour days and weekend, I notice than much more sport activity during a weekend.** 
 
