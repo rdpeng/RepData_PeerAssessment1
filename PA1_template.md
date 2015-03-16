@@ -4,13 +4,30 @@ output: html_document
 ---
 
 Load Required Libraries
-```{r}
+
+```r
 #Allow HTML to be knit.
 library(knitr)
 #Echo code.
 opts_chunk$set(echo = TRUE)
 #Library to help with cleaning the data.
 library(dplyr,quietly=TRUE)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 #Library to plot the data.
 library(ggplot2)
 #Library to deal with dates in the data.
@@ -27,7 +44,8 @@ options(scipen = 999, digits = 2)
 
     2. Process/transform the data (if necessary) into a format suitable for your analysis
 
-```{r}
+
+```r
 activity<-tbl_df(read.csv("activity.csv")) %>%
             mutate(date=ymd(date), datetime=date+minutes(interval)) %>%
             select(steps, date, interval, datetime)
@@ -43,8 +61,8 @@ activity<-tbl_df(read.csv("activity.csv")) %>%
 
 
 
-```{r}
 
+```r
 daily<-activity%>%
         na.omit()%>%
         group_by(date)%>%
@@ -52,19 +70,30 @@ daily<-activity%>%
 hist<-hist(daily$dailysteps,breaks=16, col="blue", main="Total Number of Steps Taken Each Day", xlab="Steps per Day")
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
     3. Calculate and report the mean and median of the total number of steps taken per day
-```{r}    
+
+```r
 daily%>% 
 summarize( mean = mean(dailysteps, na.rm=TRUE), median = median(dailysteps, na.rm=TRUE))%>%
 print
 ```
-The mean is `r mean(daily$dailysteps, na.rm=TRUE)` and the median is `r median(daily$dailysteps, na.rm=TRUE)`.
+
+```
+## Source: local data frame [1 x 2]
+## 
+##    mean median
+## 1 10766  10765
+```
+The mean is 10766.19 and the median is 10765.
 
 ###What is the average daily activity pattern?
 
     1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
     
-```{r}
+
+```r
 #Create new theme for this plot.  Thanks to Noam Ross for this.
 science_theme=
         #increase size of gridlines
@@ -111,16 +140,26 @@ printtimeseries<-timeseriesplot  +
 print(printtimeseries)
 ```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 #select the row with the max steps taken in any 5 minute interval for the whole series.
 maxstepinterval= timeseries[timeseries[,2]==max(timeseries[,2]),]
 print(maxstepinterval)
 ```
 
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval stepinterval
+## 1      835          206
+```
 
-Interval `r maxstepinterval[1]` contains the maximum number of steps with `r maxstepinterval[2]` steps and is plotted above at the intersection of the two read lines.
+
+Interval 835 contains the maximum number of steps with 206.17 steps and is plotted above at the intersection of the two read lines.
 
 
 
@@ -131,52 +170,75 @@ Note that there are a number of days/intervals where there are missing values (c
 
     1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
     
-The total number of rows with NA is `r sum(is.na(activity$steps))`
+The total number of rows with NA is 2304
 
     2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
     3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
     
-```{r}
+
+```r
 imputedactivity<-tbl_df(read.csv("activity.csv")) %>%
             mutate(date=ymd(date), datetime=date+minutes(interval)) %>%
             select(steps, date, interval, datetime)
     imputedactivity[is.na(imputedactivity$steps) == "TRUE", 1] <- mean(imputedactivity$steps, na.rm = TRUE)
     head(imputedactivity)
 ```
-Each NA is replaced with the mean of the steps column which is `r mean(activity$steps, na.rm=TRUE)`
+
+```
+## Source: local data frame [6 x 4]
+## 
+##   steps       date interval            datetime
+## 1    37 2012-10-01        0 2012-10-01 00:00:00
+## 2    37 2012-10-01        5 2012-10-01 00:05:00
+## 3    37 2012-10-01       10 2012-10-01 00:10:00
+## 4    37 2012-10-01       15 2012-10-01 00:15:00
+## 5    37 2012-10-01       20 2012-10-01 00:20:00
+## 6    37 2012-10-01       25 2012-10-01 00:25:00
+```
+Each NA is replaced with the mean of the steps column which is 37.38
 
     4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. 
 
     
-```{r}
 
+```r
 imputeddaily<-imputedactivity%>%
         na.omit()%>%
         group_by(date)%>%
         summarize(dailysteps=sum(steps),na.rm=TRUE)
 hist<-hist(imputeddaily$dailysteps,breaks=16, col="blue", main="Total Number of Steps Taken Each Day", xlab="Steps per Day")
 ```
-```{r}    
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+
+```r
 imputeddaily%>% 
 summarize( mean = mean(dailysteps, na.rm=TRUE), median = median(dailysteps, na.rm=TRUE))%>%
 print
 ```
-The mean is `r mean(imputeddaily$dailysteps, na.rm=TRUE)` and the median is `r median(imputeddaily$dailysteps, na.rm=TRUE)`.
+
+```
+## Source: local data frame [1 x 2]
+## 
+##    mean median
+## 1 10766  10766
+```
+The mean is 10766.19 and the median is 10766.19.
 
     4a. Do these values differ from the estimates from the first part of the assignment? 
 
-Mean with NA's: `r mean(daily$dailysteps,na.rm=TRUE)`
+Mean with NA's: 10766.19
 
-Mean with imputed data `r mean(imputeddaily$dailysteps)`
+Mean with imputed data 10766.19
 
-Median with NA's `r median(daily$dailysteps,na.rm=TRUE)`
+Median with NA's 10765
 
-Median with imputed data: `r median(imputeddaily$dailysteps)`
+Median with imputed data: 10766.19
 
     4b. What is the impact of imputing missing data on the estimates of the total daily number of steps?
     
-The total number of steps increased over the entire time period by `r sum(is.na(activity$steps)) * mean(activity$steps,na.rm=TRUE)` steps, which is the number of NA's replaced multiplied by the average number of steps taken prior to imputing the data.
+The total number of steps increased over the entire time period by 86129.51 steps, which is the number of NA's replaced multiplied by the average number of steps taken prior to imputing the data.
 
 ###Are there differences in activity patterns between weekdays and weekends?
 
@@ -184,18 +246,31 @@ For this part the weekdays() function may be of some help here. Use the dataset 
 
     1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
     
-```{r}
+
+```r
 weekdayweekend <- imputedactivity %>% 
                 mutate(dayofweek = as.factor(ifelse(wday(date) %in% c(0,7), "weekend", "weekday")) )
                 
 head(weekdayweekend)
+```
 
+```
+## Source: local data frame [6 x 5]
+## 
+##   steps       date interval            datetime dayofweek
+## 1    37 2012-10-01        0 2012-10-01 00:00:00   weekday
+## 2    37 2012-10-01        5 2012-10-01 00:05:00   weekday
+## 3    37 2012-10-01       10 2012-10-01 00:10:00   weekday
+## 4    37 2012-10-01       15 2012-10-01 00:15:00   weekday
+## 5    37 2012-10-01       20 2012-10-01 00:20:00   weekday
+## 6    37 2012-10-01       25 2012-10-01 00:25:00   weekday
 ```
 
 
     2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
     
-```{r}
+
+```r
 #Create new theme for this plot.  Thanks to Noam Ross for this.
 science_theme=
         #increase size of gridlines
@@ -236,3 +311,5 @@ facet_wrap(~ dayofweek, nrow=1,ncol=2) +
         geom_line(aes(color = stepinterval)) 
 print(printtimeseries)
 ```
+
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
