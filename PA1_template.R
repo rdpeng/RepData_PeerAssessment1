@@ -8,17 +8,17 @@ library(sqldf)
 if (!file.exists("actmoni_data")) {
   dir.create("actmoni_data")
 }
-  if (!file.exists("actmoni_data/activity.csv")){
-    fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-    download.file(fileUrl, destfile = "actmoni_data/activity.zip")
-    unzip("actmoni_data/repdata-data-activity.zip")
-  }
+if (!file.exists("actmoni_data/activity.csv")){
+  fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+  download.file(fileUrl, destfile = "actmoni_data/activity.zip")
+  unzip("actmoni_data/repdata-data-activity.zip")
+}
 
 
 
 
 actmoni_data <- read.csv('activity.csv', header = TRUE, sep = ",",
-                  colClasses=c("numeric", "character", "numeric"))
+                         colClasses=c("numeric", "character", "numeric"))
 actmoni_data$date <- as.Date(actmoni_data$date, format = "%Y-%m-%d")
 actmoni_data$interval <- as.factor(actmoni_data$interval)
 
@@ -64,8 +64,8 @@ interval.mean.steps[which.max(interval.mean.steps$mean), ]
 missing_vals <- sum(is.na(actmoni_data$steps))
 
 tNA <- sqldf(' 
-    SELECT d.*            
-    FROM "actmoni_data" as d
+             SELECT d.*            
+             FROM "actmoni_data" as d
              WHERE d.steps IS NULL 
              ORDER BY d.date, d.interval ')
 
@@ -144,5 +144,4 @@ ggplot(actmoni_data_weekdays, aes(x=interval, y=steps)) +
   geom_line(color="blue") + 
   facet_wrap(~ dayofweek, nrow=2, ncol=1) +
   labs(x="Interval", y="Number of steps")+theme_bw()
-
 
