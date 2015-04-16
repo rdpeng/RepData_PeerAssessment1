@@ -1,25 +1,23 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 Unzip the file
-```{r echo = TRUE}
+
+```r
 unzip(zipfile="activity.zip")
 actmoni_data <- read.csv("activity.csv")
 ```
 Load the data using read.csv()
-```{r echo = TRUE}
+
+```r
 actmoni_data <- read.csv('activity.csv', header = TRUE, sep = ",",
                          colClasses=c("numeric", "character", "numeric"))
 ```
 Convert the interval and date field to factor and Date class respectively.
-```{r echo = TRUE}
+
+```r
 actmoni_data$date <- as.Date(actmoni_data$date, format = "%Y-%m-%d")
 actmoni_data$interval <- as.factor(actmoni_data$interval)
 ```
@@ -27,17 +25,20 @@ actmoni_data$interval <- as.factor(actmoni_data$interval)
 ## What is mean total number of steps taken per day?
 
 Ignore the missing data NA
-```{r echo = TRUE}
+
+```r
 actmoni_data.ignore.na <- na.omit(actmoni_data) 
 ```
 Calculate the sum of steps by date
-```{r echo = TRUE}
+
+```r
 daily.steps <- rowsum(actmoni_data.ignore.na$steps, format(actmoni_data.ignore.na$date, '%Y-%m-%d')) 
 daily.steps <- data.frame(daily.steps) 
 names(daily.steps) <- ("steps")
 ```
 Plot the histogram of total number of steps
-```{r echo = TRUE}
+
+```r
 hist(daily.steps$steps, 
      main="Histogram of steps taken / day",
      breaks=15, col="red",
@@ -45,51 +46,73 @@ hist(daily.steps$steps,
      ylab="Number of times / day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
 Calculate the mean and median of the number of steps/day
-```{r echo = TRUE}
+
+```r
 mean(daily.steps$steps); 
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(daily.steps$steps) 
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r include = FALSE}
-library(ggplot2)
-```
+
 Calculate the aggregation of steps
-```{r echo = TRUE}
+
+```r
 steps_per_interval <- aggregate(actmoni_data$steps, 
                                 by = list(interval = actmoni_data$interval),
                                 FUN=mean, na.rm=TRUE)
 ```
 Convert the intervals to integers for plotting
-```{r echo = TRUE}
+
+```r
 steps_per_interval$interval <- 
   as.integer(levels(steps_per_interval$interval)[steps_per_interval$interval])
 colnames(steps_per_interval) <- c("interval", "steps")
 ```
 Plot with number of steps Vs 5-minute intervals
-```{r echo = TRUE}
+
+```r
 ggplot(steps_per_interval, aes(x=interval, y=steps)) +   
   geom_line(color="green", size=1) +  
   labs(title="Average Daily Activity Pattern", x="5-minute Interval", y="Number of steps") +  
   theme_bw()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
 Find the maximum number of steps in 5-minute interval
-```{r echo = TRUE}
+
+```r
 interval.mean.steps[which.max(interval.mean.steps$mean), ]
+```
+
+```
+##     interval     mean
+## 104      835 206.1698
 ```
 
 ## Imputing missing values
 
 Calculate and report the total number of misssing values
-```{r include = FALSE}
-library(sqldf)
-```
+
 Calculate the total number of missing values.
 
-```{r echo = TRUE}
+
+```r
 tNA <- sqldf(' 
              SELECT d.*            
              FROM "actmoni_data" as d
@@ -97,11 +120,21 @@ tNA <- sqldf('
              ORDER BY d.date, d.interval ')
 ```
 
-```{r echo = TRUE}
+```
+## Loading required package: tcltk
+```
+
+
+```r
 NROW(tNA) 
 ```
+
+```
+## [1] 2304
+```
 Fill all the missing values in dataset
-```{r echo = TRUE}
+
+```r
 na_fill <- function(actmoni_data, pervalue) {
   na_index <- which(is.na(actmoni_data$steps))
   na_replace <- unlist(lapply(na_index, FUN=function(idx){
@@ -119,12 +152,25 @@ actmoni_data_fill <- data.frame(
   interval = actmoni_data$interval)
 str(actmoni_data_fill)
 ```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : num  1.717 0.3396 0.1321 0.1509 0.0755 ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: Factor w/ 288 levels "0","5","10","15",..: 1 2 3 4 5 6 7 8 9 10 ...
+```
 Check whether there is any missing values or not
-```{r echo = TRUE}
+
+```r
 sum(is.na(actmoni_data_fill$steps))
 ```
+
+```
+## [1] 0
+```
 Plot histogram of total number of steps
-```{r echo = TRUE}
+
+```r
 fill_steps_per_day <- aggregate(steps ~ date, actmoni_data_fill, sum)
 colnames(fill_steps_per_day) <- c("date","steps")
 
@@ -134,12 +180,26 @@ ggplot(fill_steps_per_day, aes(x = steps)) +
        x = "Number of steps / Day", y = "Number of times / day") + theme_bw()
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png) 
+
 Calculate the mean and median of total number of steps taken per day
-```{r echo = TRUE}
+
+```r
 t1.mean.steps.per.day <- as.integer(t1.total.steps / NROW(t1.total.steps.by.date) )
 t1.mean.steps.per.day
+```
+
+```
+## [1] 10766
+```
+
+```r
 t1.median.steps.per.day <- median(t1.total.steps.by.date$t1.total.steps.by.date)
 t1.median.steps.per.day
+```
+
+```
+## [1] 10766.19
 ```
 Do these values differ from the estimates from the first part of the assignment?
 
@@ -152,7 +212,8 @@ What is the impact of imputing missing data on the estimates of the total daily 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Create a factor variable weektime with two levels-weekend and weekday
-```{r echo = TRUE}
+
+```r
 weekdays_steps <- function(actmoni_data) {
   weekdays_steps <- aggregate(actmoni_data$steps, by=list(interval = actmoni_data$interval),
                               FUN=mean, na.rm=T)
@@ -182,9 +243,12 @@ actmoni_data_by_weekdays <- function(actmoni_data) {
 actmoni_data_weekdays <- actmoni_data_by_weekdays(actmoni_data_fill)
 ```
 Plot with average number of steps taken and 5-minute interval
-```{r echo = TRUE}
+
+```r
 ggplot(actmoni_data_weekdays, aes(x=interval, y=steps)) + geom_line(color="blue") + 
   facet_wrap(~ dayofweek, nrow=2, ncol=1) +
   labs(x="5-minute Interval", y="Number of steps") + theme_bw()
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-21-1.png) 
 

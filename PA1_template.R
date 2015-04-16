@@ -1,20 +1,9 @@
 library(ggplot2)
 library(data.table)
-library(plyr)
 library(sqldf)
 
-
-
-if (!file.exists("actmoni_data")) {
-  dir.create("actmoni_data")
-}
-if (!file.exists("actmoni_data/activity.csv")){
-  fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-  download.file(fileUrl, destfile = "actmoni_data/activity.zip")
-  unzip("actmoni_data/repdata-data-activity.zip")
-}
-
-
+unzip(zipfile="activity.zip")
+actmoni_data <- read.csv("activity.csv")
 
 
 actmoni_data <- read.csv('activity.csv', header = TRUE, sep = ",",
@@ -23,24 +12,19 @@ actmoni_data$date <- as.Date(actmoni_data$date, format = "%Y-%m-%d")
 actmoni_data$interval <- as.factor(actmoni_data$interval)
 
 
-
-
 actmoni_data.ignore.na <- na.omit(actmoni_data) 
 daily.steps <- rowsum(actmoni_data.ignore.na$steps, format(actmoni_data.ignore.na$date, '%Y-%m-%d')) 
 daily.steps <- data.frame(daily.steps) 
 names(daily.steps) <- ("steps")
 hist(daily.steps$steps, 
      main="Histogram of steps taken / day",
-     breaks=10, col="red",
+     breaks=15, col="red",
      xlab="Total number of steps taken daily",
      ylab="Number of times / day")
 
 
 mean(daily.steps$steps); 
 median(daily.steps$steps) 
-
-
-
 
 
 steps_per_interval <- aggregate(actmoni_data$steps, 
@@ -51,17 +35,11 @@ steps_per_interval$interval <-
 colnames(steps_per_interval) <- c("interval", "steps")
 ggplot(steps_per_interval, aes(x=interval, y=steps)) +   
   geom_line(color="green", size=1) +  
-  labs(title="Average Daily Activity Pattern", x="Interval", y="Number of steps") +  
+  labs(title="Average Daily Activity Pattern", x="5-minute Interval", y="Number of steps") +  
   theme_bw()
-
 
 interval.mean.steps[which.max(interval.mean.steps$mean), ]
 
-
-
-
-
-missing_vals <- sum(is.na(actmoni_data$steps))
 
 tNA <- sqldf(' 
              SELECT d.*            
@@ -70,7 +48,6 @@ tNA <- sqldf('
              ORDER BY d.date, d.interval ')
 
 NROW(tNA) 
-
 
 na_fill <- function(actmoni_data, pervalue) {
   na_index <- which(is.na(actmoni_data$steps))
@@ -97,19 +74,14 @@ colnames(fill_steps_per_day) <- c("date","steps")
 ggplot(fill_steps_per_day, aes(x = steps)) + 
   geom_histogram(fill = "purple", binwidth = 1000) + 
   labs(title="Histogram of steps taken / day", 
-       x = "Number of steps / Day", y = "Number of times / day")+theme_bw()
-steps_mean_fill   <- mean(fill_steps_per_day$steps, na.rm=TRUE)
-steps_median_fill <- median(fill_steps_per_day$steps, na.rm=TRUE)
+       x = "Number of steps / Day", y = "Number of times / day") + theme_bw()
+
 
 
 t1.mean.steps.per.day <- as.integer(t1.total.steps / NROW(t1.total.steps.by.date) )
 t1.mean.steps.per.day
 t1.median.steps.per.day <- median(t1.total.steps.by.date$t1.total.steps.by.date)
 t1.median.steps.per.day
-
-
-
-
 
 
 weekdays_steps <- function(actmoni_data) {
@@ -143,5 +115,5 @@ actmoni_data_weekdays <- actmoni_data_by_weekdays(actmoni_data_fill)
 ggplot(actmoni_data_weekdays, aes(x=interval, y=steps)) + 
   geom_line(color="blue") + 
   facet_wrap(~ dayofweek, nrow=2, ncol=1) +
-  labs(x="Interval", y="Number of steps")+theme_bw()
+  labs(x="5-minute Interval", y="Number of steps") + theme_bw()
 
