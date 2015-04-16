@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
@@ -7,6 +8,10 @@ output:
     fig_caption: true
     keep_md: true
 ---
+=======
+Reproducible Research: Peer Assessment 1
+
+>>>>>>> 1c2a1f48f8969fb7b75b34337f5e56164e160959
 
 
 ## Loading and preprocessing the data
