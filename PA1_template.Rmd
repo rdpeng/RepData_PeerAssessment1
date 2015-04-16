@@ -2,6 +2,9 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
     keep_md: true
 ---
 
@@ -44,6 +47,7 @@ hist(daily.steps$steps,
      xlab="Total number of steps taken daily",
      ylab="Number of times / day")
 ```
+
 
 Calculate the mean and median of the number of steps/day
 ```{r echo = TRUE}

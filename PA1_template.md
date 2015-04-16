@@ -48,6 +48,7 @@ hist(daily.steps$steps,
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
+
 Calculate the mean and median of the number of steps/day
 
 ```r
