@@ -1,14 +1,4 @@
 
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    fig_width: 7
-    fig_height: 6
-    fig_caption: true
-    keep_md: true
----
-
 
 ## Loading and preprocessing the data
 
