@@ -140,3 +140,10 @@ plot(  x=data_weekday_r$interval
 We note that the average steps taken is lower during the typical morning rush hour during the weekends. Presumably, one spends more time walking to work during the weekdays.
 
 However, average taken is higher after the morning rush hour on the weekends presumably one spends more time outdoors as opposed to sitting in the office during working hours on a typical weekday. The data also showed steps taken is higher for the rest of the day during the weekend as compared to a weekday.
+
+
+```{r, include=FALSE}
+   # add this chunk to end of mycode.rmd
+   file.rename(from="PA1_template.RMD", 
+               to="PA1_template.md")
+```
