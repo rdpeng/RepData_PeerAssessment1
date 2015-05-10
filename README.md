@@ -62,7 +62,7 @@ to review the code for your analysis**.
 For the plotting aspects of this assignment, feel free to use any
 plotting system in R (i.e., base, lattice, ggplot2)
 
-Fork and than clone the [GitHub repository created for this
+Fork and then clone the [GitHub repository created for this
 assignment](http://github.com/rdpeng/RepData_PeerAssessment1). You
 will submit this assignment by pushing your completed files into your
 forked repository on GitHub. The assignment submission will consist of
