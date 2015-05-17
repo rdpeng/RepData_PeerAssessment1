@@ -1,25 +1,50 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible research assignment 1"
+author: "Raja"
+date: "Saturday, May 16, 2015"
+output: html_document
 ---
 
+```{r, echo=FALSE}
+data <- read.csv("C:\\activity.csv")
+```
 
-## Loading and preprocessing the data
+The total number of steps taken each day
+```{r, echo=FALSE}
+dataNAZero <- data
+dataNAZero$steps[is.na(dataNAZero$steps)] <- 0
+dataNAZeroByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=sum)
+dataNAZeroByDay
+```
+Histogram of steps per day
+```{r, echo=FALSE}
+hist(dataNAZeroByDay, breaks=61, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
+```
 
 
 
-## What is mean total number of steps taken per day?
 
+The MEAN of number of steps per day
+```{r, echo=FALSE}
+meanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
+write.table(meanByDay, sep="\t")
+```
+MEDIAN number of steps per day
+```{r, echo=FALSE}
+```
+AVERAGE number of steps per interval
 
+```{r, echo=FALSE}
+meanByInt<- tapply(dataNAZero$steps, dataNAZero$interval, FUN=mean)
+plot(meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
+```
 
-## What is the average daily activity pattern?
+TIME interval for max number of mean steps
+```{r, echo=FALSE}
+meanByInt[meanByInt==max(meanByInt)]
+```
+Total number of missing values
 
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r, echo=FALSE}
+sum(is.na(data$steps))
+```
