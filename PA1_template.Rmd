@@ -1,25 +1,96 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
 
+#Reproducible Research: Peer Assessment 1
+
+
+This analysis is part of the Assessment for Coursera course [Reproducible Research](https://class.coursera.org/repdata-014).
+
+It makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Loading and preprocessing the data
 
+Data here is available to download from [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
 
+Data is contained in file activity.csv within the downloadable zip file,
+
+Data contains 3 columns
+
+- steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+- date:The date on which the measurement was taken in YYYY-MM-DD format
+- interval: Identifier for the 5-minute interval in which measurement was taken
+
+```{r}
+activity <- read.table(unz("activity.zip","activity.csv"),sep = ",",header = TRUE,colClasses = c("integer","Date","integer"))
+```
 
 ## What is mean total number of steps taken per day?
 
+This part of the analysis is to analyse the distribution of the total numbers taken per day.
 
+missing values are ignored in the analysis
+
+
+```{r}
+# Aggrregate data by day
+sum<-aggregate(activity[!is.na(activity$steps),]$steps, list(as.factor(activity[!is.na(activity$steps),]$date)),sum)
+#display result
+summary(sum)
+#Draw plot
+hist(sum$x,breaks = seq(0,25000,by = 500),xlab = "Total Number of Steps per day(500 interval)",ylab = "Frequency",main="Total Number of steps per day histogram")
+
+```
 
 ## What is the average daily activity pattern?
 
+This part of the analysis is to analyse the distribution of the total numbers taken by different intervals during the day.
+
+missing values are ignored in the analysis.
+
+As displayed in the time seris line, there are nearly no move during the night and there is a pick on arround 9am
+
+```{r}
+#get average per day from non-missing values
+mean<-aggregate(activity[!is.na(activity$steps),]$steps, list(as.factor(activity[!is.na(activity$steps),]$interval)),mean)
+#draw plot and line
+plot(mean,type = "n",xlab = "Interval in day (5 min)",ylab = "Average step taken",main = "Average step distribution by day")
+lines(mean)
+```
 
 
 ## Imputing missing values
 
+In order to perform better analysis, here we are trying to add back to missing value based on the average steps by interval from previous analysis.
+
+as shown in the histogram, the distribution has boosted for the place where the mean value lies.
+
+```{r}
+#get interval from factor
+mean$interval<-as.integer(as.character(mean$Group.1))
+#load required library
+suppressWarnings(suppressPackageStartupMessages(library(sqldf)))
+#add missing values with Average step for interval
+suppressPackageStartupMessages(merge<- sqldf("SELECT steps,date,interval,x FROM activity LEFT JOIN mean USING (interval)"))
+merge[is.na(merge$steps),]$steps <-merge[is.na(merge$steps),]$x
+hist(aggregate(merge$steps,list(as.factor(merge$date)),sum)$x,breaks = seq(0,25000,by = 500),xlab = "Total Number of Steps per day(500 interval) with Missing value added",ylab = "Frequency",main="Total Number of steps per day histogram with Missing value added")
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+This part of the analysis is to understand the different patterns between weekdays and weekends
+
+The analys is using the data with missing value added from previous step.
+
+As displayed in the plot, weekends has fewer amount of step taken at peek hour (9am) and a higher volumn arround 9pm.
+
+```{r}
+#get weekday data
+weekday<-aggregate(merge[weekdays(merge$date)%in%c("Monday","Tuesday","Wednesday","Thursday","Friday"),]$steps, list(as.factor(merge[weekdays(merge$date)%in%c("Monday","Tuesday","Wednesday","Thursday","Friday"),]$interval)),mean)
+#get weekend data
+weekend<-aggregate(merge[weekdays(merge$date)%in%c("Saturday","Sunday"),]$steps, list(as.factor(merge[weekdays(merge$date)%in%c("Saturday","Sunday"),]$interval)),mean)
+#make plot
+par(mfrow = c(2,1))
+plot(weekday,type = "n",xlab = "Interval in day (5 min)",ylab = "Average step taken",main = "Average step distribution by day for Weekday")
+lines(weekday)
+plot(weekend,type = "n",xlab = "Interval in day (5 min)",ylab = "Average step taken",main = "Average step distribution by day for weekend")
+lines(weekend)
+```
