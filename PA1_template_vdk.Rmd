@@ -6,7 +6,7 @@ output: html_document
 ---
 
 
-
+#Loading Packages
 ```{r}
 library(ggplot2)
 library(lubridate)
@@ -14,7 +14,7 @@ library(plyr)
 library(dplyr)
 ```
 
-Downloading file, creating and setting a working directory
+#Downloading file, creating and setting a working directory
 
 ```{r}
 if (!file.exists("peerAsgn1")) {
@@ -27,7 +27,7 @@ if (!file.exists("peerAsgn1")) {
 ```
 
 
-Processing Data
+#Processing Data
 
 ```{r}
 activM = read.csv("./peerAsgn1/activity.csv", sep = ",")
@@ -37,7 +37,7 @@ summary(activM)
 str(activM)
 ```
 
-Mean and median of total number of steps taken per day
+#Mean and median of total number of steps taken per day
 
 ```{r}
 totalSteps = tapply(activM$steps, activM$date, FUN = sum, na.rm = T)
@@ -46,7 +46,7 @@ mean(totalSteps)
 median(totalSteps)
 ```
 
-Calculate the number of steps taken per day
+#Calculate the number of steps taken per day
 
 ```{r}
 steper = activM %>%
@@ -56,13 +56,13 @@ steper = activM %>%
         print
 ```
 
-Histogram of number of steps taken each day
+#Histogram of number of steps taken each day
 
 ```{r}
 ggplot(steper, aes(x = date, y = steps)) + geom_histogram(stat = "identity") + xlab("Dates") + ylab("Steps") + labs(title = "Total Number of Steps per Day")
 ```
 
-Average daily activity pattern
+#Average daily activity pattern
 
 ```{r}
 activP = activM %>%
@@ -74,20 +74,20 @@ activP = activM %>%
 plot(activP$interval, activP$steps, type = "l", xlab = "Interval", ylab = "Steps", main = "Average Number of Steps Taken Across All Days", col = "magenta")
 ```
 
-Maximum number of steps
+#Maximum number of steps
 
 ```{r}
 activP[which.max(activP$steps), ]$interval
 ```
 
-Calculate the total missing values in the dataset
+#Calculate the total missing values in the dataset
 
 ```{r}
 totalNAs = sum(is.na(activM))
 totalNAs
 ```
 
-New "cloned" dataset with missing data filled in
+#New "cloned" dataset with missing data filled in
 
 ```{r}
 activM2 = activM %>%
@@ -96,7 +96,7 @@ activM2 = activM %>%
 summary(activM2)
 ```
 
-Histogram of total number of steps per day
+#Histogram of total number of steps per day
 
 ```{r}
 activM2Group = activM2 %>%
@@ -107,7 +107,7 @@ activM2Group = activM2 %>%
 ggplot(activM2Group, aes(x = date, y = steps)) + geom_histogram(stat = "identity") + xlab("Dates") + ylab("Steps") + labs(title = "Total Number of Steps per Day")
 ```
 
-Mean and median of total number of steps taken per day.
+#Mean and median of total number of steps taken per day.
 
 ```{r}
 sumSteps = tapply(activM2$steps, activM2$date, FUN = sum, na.rm = T)
@@ -115,7 +115,7 @@ mean(sumSteps)
 median(sumSteps)
 ```
 
-Do values differ?
+#Do values differ?
 
 ```{r}
 mean(totalSteps) == mean(sumSteps)
@@ -128,8 +128,8 @@ summary(sumSteps)
 ```
 
 
-Impact of missing data on the estimates of the total daily number of steps. 
-Estimates are increased by 41, 3041, 370, 1416, 0, 0.
+#Impact of missing data on the estimates of the total daily number of steps. 
+#Estimates are increased by 41, 3041, 370, 1416, 0, 0.
 
 ```{r}
 summary(sumSteps) - summary(totalSteps)
@@ -140,7 +140,7 @@ hist(sumSteps, col = "magenta")
 hist(totalSteps, col = "green")
 ```
 
-Differences in activity patterns between weekdays and weekends
+#Differences in activity patterns between weekdays and weekends
 
 ```{r}
 dayWeek = function(date) {
@@ -155,7 +155,7 @@ dayWeek = function(date) {
 activM2$dayType = as.factor(sapply(activM2$date, dayWeek))
 ```
 
-Panel plot containing time series
+#Panel plot containing time series
 
 ```{r}
 par(mfrow = c(2, 1))
@@ -165,44 +165,9 @@ for (type in c("weekend", "weekday")) {
 }
 ```
 
-Session information:
+#Session information:
 
 ```{r}
 sessionInfo()
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
