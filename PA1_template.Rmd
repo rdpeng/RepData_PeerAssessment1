@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r, echo=FALSE}
-data <- read.csv("C:\\activity.csv")
+data <- read.csv("activity.csv")
 ```
 
 The total number of steps taken each day
