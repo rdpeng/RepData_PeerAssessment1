@@ -6,7 +6,10 @@ output: html_document
 ---
 
 ```{r, echo=FALSE}
-data <- read.csv("activity.csv")
+temp <- tempfile()
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", temp)
+data <- read.csv(unz(temp, "activity.csv"))
+unlink(temp)
 ```
 
 The total number of steps taken each day
@@ -16,24 +19,23 @@ dataNAZero$steps[is.na(dataNAZero$steps)] <- 0
 dataNAZeroByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=sum)
 dataNAZeroByDay
 ```
+
 Histogram of steps per day
 ```{r, echo=FALSE}
-hist(dataNAZeroByDay, breaks=61, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
+hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
 ```
 
 
-
-
-The MEAN of number of steps per day
+The MEAN and MEDIAN of number of steps per day
 ```{r, echo=FALSE}
-meanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
-write.table(meanByDay, sep="\t")
+library(dplyr)
+dataNAZero%>%
+group_by(date)%>% 
+summarise_each(funs(mean, median), steps)
 ```
-MEDIAN number of steps per day
-```{r, echo=FALSE}
-```
+
+
 AVERAGE number of steps per interval
-
 ```{r, echo=FALSE}
 meanByInt<- tapply(dataNAZero$steps, dataNAZero$interval, FUN=mean)
 plot(meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
@@ -48,3 +50,5 @@ Total number of missing values
 ```{r, echo=FALSE}
 sum(is.na(data$steps))
 ```
+
+
