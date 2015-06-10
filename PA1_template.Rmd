@@ -4,6 +4,9 @@ author: "Raja"
 date: "Saturday, May 16, 2015"
 output: html_document
 ---
+```{r, echo=FALSE, results='hide'}
+library(dplyr)
+```
 
 ```{r, echo=FALSE}
 temp <- tempfile()
@@ -28,7 +31,6 @@ hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of s
 
 The MEAN and MEDIAN of number of steps per day
 ```{r, echo=FALSE}
-library(dplyr)
 dataNAZero%>%
 group_by(date)%>% 
 summarise_each(funs(mean, median), steps)
@@ -56,4 +58,7 @@ Adding Weekend/Weekday to the dataset
 isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
 dataNAZero$wend <- "Weekday"
 dataNAZero$wend[isWeekEnd] <- "Weekend"
+dataNAZero %>%
+group_by(interval,wend) %>%
+summarise_each(funs(mean), steps)
 ```
