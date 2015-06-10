@@ -49,5 +49,11 @@ Total number of missing values
 
 ```{r, echo=FALSE}
 sum(is.na(data$steps))
-``` 
+```
 
+Adding Weekend/Weekday to the dataset
+```{r, echo=FALSE}
+isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
+dataNAZero$wend <- "Weekday"
+dataNAZero$wend[isWeekEnd] <- "Weekend"
+```
