@@ -58,7 +58,5 @@ Adding Weekend/Weekday to the dataset
 isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
 dataNAZero$wend <- "Weekday"
 dataNAZero$wend[isWeekEnd] <- "Weekend"
-dataNAZero %>%
-group_by(interval,wend) %>%
-summarise_each(funs(mean), steps)
+with(dataNAZero, tapply(steps, list(interval,wend), mean))
 ```
