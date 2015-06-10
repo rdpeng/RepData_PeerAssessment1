@@ -38,7 +38,7 @@ summarise_each(funs(mean, median), steps)
 AVERAGE number of steps per interval
 ```{r, echo=FALSE}
 meanByInt<- tapply(dataNAZero$steps, dataNAZero$interval, FUN=mean)
-plot(meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
+plot(x=dataNAZero$interval[0:288],y=meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
 ```
 
 TIME interval for max number of mean steps
@@ -50,5 +50,4 @@ Total number of missing values
 ```{r, echo=FALSE}
 sum(is.na(data$steps))
 ```
-
 
