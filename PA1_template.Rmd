@@ -58,5 +58,9 @@ Adding Weekend/Weekday to the dataset
 isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
 dataNAZero$wend <- "Weekday"
 dataNAZero$wend[isWeekEnd] <- "Weekend"
-with(dataNAZero, tapply(steps, list(interval,wend), mean))
+weekMean <- with(dataNAZero, tapply(steps, list(interval,wend), mean))
+isweekEndMean <- weekMean$wend == "Weekend"
+weekMean[isweekEndMean]
+par(mfrow=c(2,1))
+plot(x=dataNAZero$interval[0:288],y=meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
 ```
