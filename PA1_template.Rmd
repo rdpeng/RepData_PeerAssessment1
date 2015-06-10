@@ -49,5 +49,5 @@ Total number of missing values
 
 ```{r, echo=FALSE}
 sum(is.na(data$steps))
-```
+``` 
 
