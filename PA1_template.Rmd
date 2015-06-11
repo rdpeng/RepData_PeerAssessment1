@@ -31,9 +31,10 @@ hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of s
 
 The MEAN and MEDIAN of number of steps per day
 ```{r, echo=FALSE}
-dataNAZero%>%
-group_by(date)%>% 
-summarise_each(funs(mean, median), steps)
+meanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
+plot(x=c(0:60),y=meanByDay, type="l", xlab="Day", ylab="Average no of steps")
+medianByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=median)
+plot(x=c(0:60),y=medianByDay, type="l", xlab="Day", ylab="median no of steps")
 ```
 
 
@@ -50,7 +51,16 @@ meanByInt[meanByInt==max(meanByInt)]
 Total number of missing values
 
 ```{r, echo=FALSE}
-sum(is.na(data$steps))
+dataInit <- data
+dataMeanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
+filledinData <- data.frame(steps=character(0), interval=character(0), date=character(0))
+for(i in 1:61){
+  d <- names(dataMeanByDay)[i]
+  dataMeanByDate <- dataMeanByDay[i]
+  dataByDate <- dataInit[dataInit$date == d,]
+  dataByDate$steps[is.na(dataByDate$steps)] <- dataMeanByDate
+  filledinData <- rbind(filledinData, dataByDate)
+}
 ```
 
 Adding Weekend/Weekday to the dataset
@@ -58,9 +68,5 @@ Adding Weekend/Weekday to the dataset
 isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
 dataNAZero$wend <- "Weekday"
 dataNAZero$wend[isWeekEnd] <- "Weekend"
-weekMean <- with(dataNAZero, tapply(steps, list(interval,wend), mean))
-isweekEndMean <- weekMean$wend == "Weekend"
-weekMean[isweekEndMean]
-par(mfrow=c(2,1))
-plot(x=dataNAZero$interval[0:288],y=meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
+with(dataNAZero, tapply(steps, list(interval,wend), mean))
 ```
