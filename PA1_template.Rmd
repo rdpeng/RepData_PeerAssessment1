@@ -52,6 +52,7 @@ Total number of missing values
 
 ```{r, echo=FALSE}
 dataInit <- data
+sum(is.na(dataInit$steps))
 dataMeanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
 filledinData <- data.frame(steps=character(0), interval=character(0), date=character(0))
 for(i in 1:61){
@@ -68,5 +69,9 @@ Adding Weekend/Weekday to the dataset
 isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
 dataNAZero$wend <- "Weekday"
 dataNAZero$wend[isWeekEnd] <- "Weekend"
-with(dataNAZero, tapply(steps, list(interval,wend), mean))
+d <- with(dataNAZero, tapply(steps, list(interval,wend), mean))
+dim(d)
+dim(data)
+plot(x=dataNAZero$interval[0:288],y=d[,1], type="l", xlab="Weekday Interval", ylab="Average no of steps")
+plot(x=dataNAZero$interval[0:288],y=d[,2], type="l", xlab="Weekend Interval", ylab="Average no of steps")
 ```
