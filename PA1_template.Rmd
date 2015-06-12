@@ -48,7 +48,7 @@ TIME interval for max number of mean steps
 ```{r, echo=FALSE}
 meanByInt[meanByInt==max(meanByInt)]
 ```
-Total number of missing values
+Total number of missing values and I have replaced NA values with mean value for that date
 
 ```{r, echo=FALSE}
 dataInit <- data
