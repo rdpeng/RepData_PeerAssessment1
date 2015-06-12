@@ -57,7 +57,7 @@ Histogram of steps per day
 hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](instructions_fig/unnamed-chunk-4-1.png) 
 
 
 The MEAN and MEDIAN of number of steps per day
@@ -67,14 +67,14 @@ meanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
 plot(x=c(0:60),y=meanByDay, type="l", xlab="Day", ylab="Average no of steps")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](instructions_fig/unnamed-chunk-5-1.png) 
 
 ```r
 medianByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=median)
 plot(x=c(0:60),y=medianByDay, type="l", xlab="Day", ylab="median no of steps")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png) 
+![plot of chunk unnamed-chunk-5](instructions_fig/unnamed-chunk-5-2.png) 
 
 
 AVERAGE number of steps per interval
@@ -84,7 +84,7 @@ meanByInt<- tapply(dataNAZero$steps, dataNAZero$interval, FUN=mean)
 plot(x=dataNAZero$interval[0:288],y=meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![plot of chunk unnamed-chunk-6](instructions_fig/unnamed-chunk-6-1.png) 
 
 TIME interval for max number of mean steps
 
@@ -146,10 +146,10 @@ dim(data)
 plot(x=dataNAZero$interval[0:288],y=d[,1], type="l", xlab="Weekday Interval", ylab="Average no of steps")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-9](instructions_fig/unnamed-chunk-9-1.png) 
 
 ```r
 plot(x=dataNAZero$interval[0:288],y=d[,2], type="l", xlab="Weekend Interval", ylab="Average no of steps")
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-2.png) 
+![plot of chunk unnamed-chunk-9](instructions_fig/unnamed-chunk-9-2.png) 
