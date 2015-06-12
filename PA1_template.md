@@ -57,7 +57,7 @@ Histogram of steps per day
 hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
 ```
 
-![plot of chunk unnamed-chunk-4](instructions_fig/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](instructions_fig/sample_panelplot.png) 
 
 
 The MEAN and MEDIAN of number of steps per day
