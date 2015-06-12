@@ -96,7 +96,7 @@ meanByInt[meanByInt==max(meanByInt)]
 ##      835 
 ## 179.1311
 ```
-Total number of missing values
+Total number of missing values and I have replaced NA values with mean value for that date
 
 
 ```r
