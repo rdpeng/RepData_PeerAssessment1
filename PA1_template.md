@@ -5,10 +5,26 @@ date: "Saturday, May 16, 2015"
 output: html_document
 ---
 
+```r
+library(dplyr)
+```
 
 
+```r
+temp <- tempfile()
+download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", temp)
+data <- read.csv(unz(temp, "activity.csv"))
+unlink(temp)
+```
 
 The total number of steps taken each day
+
+```r
+dataNAZero <- data
+dataNAZero$steps[is.na(dataNAZero$steps)] <- 0
+dataNAZeroByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=sum)
+dataNAZeroByDay
+```
 
 ```
 ## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
@@ -36,17 +52,45 @@ The total number of steps taken each day
 ```
 
 Histogram of steps per day
+
+```r
+hist(dataNAZeroByDay, main="Histogram of number of steps per day", xlab="No of steps", ylab="Frequency")
+```
+
 ![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 
 The MEAN and MEDIAN of number of steps per day
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png) 
+
+```r
+meanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
+plot(x=c(0:60),y=meanByDay, type="l", xlab="Day", ylab="Average no of steps")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+
+```r
+medianByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=median)
+plot(x=c(0:60),y=medianByDay, type="l", xlab="Day", ylab="median no of steps")
+```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png) 
 
 
 AVERAGE number of steps per interval
+
+```r
+meanByInt<- tapply(dataNAZero$steps, dataNAZero$interval, FUN=mean)
+plot(x=dataNAZero$interval[0:288],y=meanByInt, type="l", xlab="Interval", ylab="Average no of steps")
+```
+
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
 
 TIME interval for max number of mean steps
+
+```r
+meanByInt[meanByInt==max(meanByInt)]
+```
 
 ```
 ##      835 
@@ -55,18 +99,57 @@ TIME interval for max number of mean steps
 Total number of missing values
 
 
+```r
+dataInit <- data
+sum(is.na(dataInit$steps))
+```
+
 ```
 ## [1] 2304
 ```
 
+```r
+dataMeanByDay <- tapply(dataNAZero$steps, dataNAZero$date, FUN=mean)
+filledinData <- data.frame(steps=character(0), interval=character(0), date=character(0))
+for(i in 1:61){
+  d <- names(dataMeanByDay)[i]
+  dataMeanByDate <- dataMeanByDay[i]
+  dataByDate <- dataInit[dataInit$date == d,]
+  dataByDate$steps[is.na(dataByDate$steps)] <- dataMeanByDate
+  filledinData <- rbind(filledinData, dataByDate)
+}
+```
+
 Adding Weekend/Weekday to the dataset
+
+```r
+isWeekEnd <-  weekdays(as.Date(dataNAZero$date)) %in% c("Saturday","Sunday") 
+dataNAZero$wend <- "Weekday"
+dataNAZero$wend[isWeekEnd] <- "Weekend"
+d <- with(dataNAZero, tapply(steps, list(interval,wend), mean))
+dim(d)
+```
 
 ```
 ## [1] 288   2
+```
+
+```r
+dim(data)
 ```
 
 ```
 ## [1] 17568     3
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) ![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-2.png) 
+```r
+plot(x=dataNAZero$interval[0:288],y=d[,1], type="l", xlab="Weekday Interval", ylab="Average no of steps")
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+
+```r
+plot(x=dataNAZero$interval[0:288],y=d[,2], type="l", xlab="Weekend Interval", ylab="Average no of steps")
+```
+
+![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-2.png) 
