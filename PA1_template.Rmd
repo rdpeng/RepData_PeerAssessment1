@@ -7,7 +7,6 @@ output:
 ### Installing from library
 ```{r}
 library(ggplot2)
-setwd("C:/Users/Tdashi/Documents/GitHub/RepData_PeerAssessment1")
 ```
 
 ### Loading and preprocessing the data
