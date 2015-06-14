@@ -87,7 +87,7 @@ for (i in 1:nrow(completeData)) {
   }
 }
 
-# Calculate the average for each day
+## Calculate the average for each day
 completestepsDay <- aggregate(steps ~ date, data = completeData, sum , na.rm=TRUE )  
 hist(completestepsDay$steps, 
     main="Histogram of Total Steps taken per day (Imputed data)",
@@ -129,6 +129,7 @@ weekdayInterval$day <- "weekday"
 weekendInterval <- aggregate(steps ~ interval, data = subset(completeData, day=="weekend"), mean, na.rm = TRUE)  
 weekendInterval$day <- "weekend"  
 
+## Combine data for weekend and weekday for plotting
 finalData <- rbind(weekdayInterval, weekendInterval)
 
 ## Plot the data using ggplot2
@@ -140,4 +141,4 @@ g + geom_line() + facet_grid (day~.) + theme(axis.text = element_text(size = 12)
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
-#### Analyis: Weekday has a spike in steps taken early in the day and then the number of steps taken reduces where as weekend has relatively consistent number of steps taken throughout the middle part of the day.  
+#### Analyis: Average steps taken on weekdays has a spike in steps taken early in the day and then the number of steps taken reduces where as weekend has relatively consistent number of average steps taken throughout the middle part of the day. Overall, the avearge steps taken on weekend is  higher than the avergae steps taken on weekday which is expected as people tend to do more activities on weekends.
