@@ -1,0 +1,256 @@
+plot(x = cars$speed, y = cars$dist, xlab="Speed",ylab="Stopping Distance")
+plot(x = cars$speed, y = cars$dist, main = "My Plot")
+plot(x = cars$speed,  main = "My Plot")
+plot(cars, main = "My Plot")
+plot(cars, main = "My Plot", sum = "My Plot Subtitle")
+plot(cars,  sub = "My Plot Subtitle")
+plot(cars,  col= 2)
+plot(cars,  xlim = c(10,15))
+plot(cars,  pch=2 )
+data(mtcars)
+play()
+str(mtcars)
+colnames(mtcars)
+nxt
+nxt()
+?boxplot
+boxplot(mtcars)
+boxplot(formula = mpg ~ cyl, data = mtcars)
+hist(mtcars$mpg)
+d1 <- Sys.Date()
+class(d1)
+unclass(d1)
+d1
+d2 <- Date("1969-01-01")
+d2 <- as.Date("1969-01-01")
+unclass(d2)
+t1 <- Sys.time()
+t1
+class(t1)
+unclass(t1)
+t2 <- as.POSIXlt(Sys.time())
+class(t2)
+t2
+unlcass(t2)
+unclass(t2)
+str(unclass(t2))
+t2$min
+weekdays(t1)
+weekdays(d1)
+month(t1)
+months(t1)
+quarters(t2)
+t3 <- as.Time("October 17, 1986 08:24")
+t3 <- "October 17, 1986 08:24"
+strptime(t3, "%B %d, %Y %H:%M")
+t4 <- strptime(t3, "%B %d, %Y %H:%M")
+t4
+class(t4)
+Sys.time() > t1
+Sys.time() - t1
+difftime(Sys.time(), t1, units = 'days')
+x <- rep(0:1, each = 5)
+x
+e <- rnorm(10, 0, 20)
+e
+y <- 0.5 + 2 * x + e
+y
+?rnorm
+system.time()
+?system.time
+wd()
+getwd()
+setwd("/Users/mchitnis/My docs/Data Analytics/RDirectory/ProgrammingAssignment2")
+quir
+exit
+swirl
+swirl()
+swril()
+library(swirl)
+swril()
+swirl()
+my_vector <- c(1:20)
+my_vector <- 1:20
+my_vector
+dim(my_vector)
+lebgth(my_vector)
+length(my_vector)
+dim(my_vector) <- c(4, 5)
+dim(my_vector)
+attributes(my_vector)
+my_vector
+class(my_vector)
+my_matrix <- my_vector()
+my_matrix <- my_vector
+?matrix()
+?matrix
+my_matrix2 <- matrix(1:20, nrow=4, ncol=5)
+identical(my_matrix,my_matrix2)
+patients <- c("Bil","Gina","Kelly","Sean")
+patients <- c("Bill","Gina","Kelly","Sean")
+cbind(patients,my_matrix)
+my_data <-#
+| data.frame(patients, my_matrix)
+my_data <- data.frame(patients, my_matrix)
+my_data
+class(my_data)
+cnames <- c("patient", "age", "weight", "bp", "rating", "test")
+colnames(cnames,my_data)
+colnames()
+colnames(my_matrix)[colnames(cnames)]
+colnames(my_data) <- cnames
+my_data
+TRUE == FALSE
+TRUE == TRUE
+(FALSE == TRUE) == FALSE
+6 == 7
+6 <7
+10 <= 10
+5 != 7
+! (5 ==7)
+FALSE & FALSE
+TRUE & c(TRUE, FALSE, FALSE)
+TRUE && c(TRUE, FALSE, FALSE)
+RUE | c(TRUE, FALSE, FALSE)
+TRUE | c(TRUE, FALSE, FALSE)
+TRUE || c(TRUE, FALSE, FALSE)
+5 > 8 || 6 != 8 && 4 > 3.9
+isTRUE(6 > 4)
+identical('twins', 'twins')
+xor(5 == 6, !FALSE)
+ints <- sampl1(10)
+ints <- sample(10)
+ints
+ints > 5
+which(intz)
+which(ints)
+which(ints > 7)
+any(ints < 0)
+all(ints > 0)
+Sys.Date()
+mean(c(2,4,5))
+submit()
+boring_function('My first function!')
+boring_function
+submit()
+my_mean(c(4,5,10))
+submit()
+remainder(5)
+remainder(11,5)
+remainder(divisor = 11, num = 5)
+remainder(4, div = 2)
+args(remainder)
+submit()
+evaluate(c(1.4, 3.6, 7.9, 8.8))
+c(1.4, 3.6, 7.9, 8.8)
+evaluate(sd(), c(1.4, 3.6, 7.9, 8.8))
+evaluate(sd, c(1.4, 3.6, 7.9, 8.8))
+evaluate(function(x){x+1}, 6)
+evaluate(function(x)x[1],c(8,4,0))
+evaluate(function(x)x[len(x)],c(8,4,0))
+evaluate(function(x)x[length(x)],c(8,4,0))
+?paste
+paste("Programming", "is", "fun!")
+submit()
+telegram(hi)
+telegram("hi")
+submit()
+mad_libs(place="nn", noun ="sds", adjective = "kk")
+submit()
+'I' %p% 'love'
+library(swirl)
+swirl(0)
+library(swirl)
+swirl
+swirl(0)
+c(1:20)
+my_vector <- c(1:20)
+ss
+sudo apt-get install openjdk-7-*
+sudo apt
+> plot
+?plot
+?points
+con = url("http://biostat.jhsph.edu/~jleek/contact.html")
+htmlCode = readLines (con)
+close(con)
+length(htmlCode)
+head(htmlCpde)
+head(htmlCode)
+legth(htmlCode[1])
+length(htmlCode[1])
+length(htmlCode[10])
+length(htmlCode[,10])
+htmlCode[10]
+htmlCode[10].len()
+htmlCode[10].len
+len(htmlCode[10])
+nchar(htmlCode[10])
+nchar(htmlCode[20])
+nchar(htmlCode[30])
+nchar(htmlCode[100])
+library(httr)
+oauth_endpoints("github")
+myapp <- oauth_app("github", key= "04691b9c194613ed1d6d", secret = "de7126e8510c791305887f5901e82e9c018e5873")
+github_token <- oauth2.0_token(oauth_endpoints("github"), myapp)
+cbind(patients,my_matrix)
+con ="https://d396qusza40orc.cloudfront.net/getdata%2Fwksst8110.for"
+htmlCode = readLines (con)#
+> close(con)
+getwd()
+data <- read.table("household_power_consumption.txt", #
+                   nrows = 173000,#
+                   sep = ";",#
+                   header = TRUE)
+s <- split(data, data$Date)
+data <- rbind(s[[2]], s[[46]])
+rm(s)
+getnrows(data)
+data.nRows(0)
+nrow(data)
+head nrow
+head(data)
+tail(data)
+xyplot()
+library(nlme)
+library(lattice)
+xyplot(weight ~ Time | Diet, BodyWeight)
+library(lattice)
+library(datasets)
+data(airquality)
+p <- xyplot(Ozone ~ Wind | factor(Month), data = airquality)
+print(p)
+library(datasets)
+data(airquality)
+qplot(Wind, Ozone, data = airquality)
+library(ggplot2)
+load ggplot2
+library(ggplot2)0
+library(ggplot2)
+library(ggplot)
+install.packages(ggplot2)
+install.packages(ggplot)
+install.packages("ggplot2")
+library(ggplot2)
+qplot(Wind, Ozone, data = airquality)
+qplot(Wind, Ozone, data = airquality, geom = "smooth")
+qplot(Wind, Ozone, data = airquality, facets = . ~ factor(Month))
+ty = transform(airquality, Month = factor(Month))
+airquality = transform(airquality, Month = factor(Month))
+airquality = transform(airquality, Month = factor(Month))#
+qplot(Wind, Ozone, data = airquality, facets = . ~ Month)
+qplot(Wind, Ozone, data = airquality)
+g <- ggplot(movies, aes(votes, rating))
+print(g)
+qplot(votes, rating, data = movies, panel = panel.loess)
+qplot(votes, rating, data = movies) + geom_smooth()
+qplot(votes, rating, data = movies, smooth = "loess")
+qplot(votes, rating, data = movies) + stats_smooth("loess")
+getwd()
+setwd('/Users/milindchitnis/Documents/My Docs/Data Analytics')
+setwd('/Users/milindchitnis/Documents/My Docs/Data Analytics/RDir/RepData_PeerAssessment1')
+help sum
+?sum
+?summarize
+? summarize
+?summarize
