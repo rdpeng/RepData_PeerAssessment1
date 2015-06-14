@@ -1,25 +1,101 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "RRAssignment1"
+author: "Kai Wakerman Powell"
+date: "14 June 2015"
+output: html_document
 ---
 
+This is project seeks to do a preliminary exploration of the movement tracking data relating to a personal activity monitoring device. The data was provided by Roger D. Peng from his [github repository](https://github.com/rdpeng).
 
-## Loading and preprocessing the data
+The following code makes use of the [lubridate](http://cran.r-project.org/web/packages/lubridate/index.html) package for R to help with dates.
 
+##Loading and processing the data
 
+```{r, echo=TRUE}
+library(lubridate)
+data<-read.csv("activity.csv")
+data$date<-ymd(data$date)
+```
 
-## What is mean total number of steps taken per day?
+This loads the lubridate package. It then reads in the data, finally converting the *date* variable into the POSIX class.
 
+##What is mean total number of steps taken per day?
 
+```{r, echo=TRUE}
+data2<-data[complete.cases(data),]
+stepsday<-tapply(data2$steps,data2$date,sum)
+hist(stepsday,breaks=10,main="Frequency of Steps per Day",xlab="Steps per Day")
+```
 
-## What is the average daily activity pattern?
+This section reads the complete cases out of the original data. It then uses a *tapply* loop to sum the steps on particular days. It then creates a histogram of the results.
 
+This shows that the days follow close to a normal distribution with several higher outlying days on the top end.
 
+```{r, echo=TRUE}
+stepssummary<-mean(stepsday)
+stepssummary<-c(stepssummary,median(stepsday))
+stepssummary
+```
 
-## Imputing missing values
+This section creates the mean (`r stepssummary[1]`), then the median (`r stepssummary[2]`)of the results and compiles them into a single object for storage.
 
+This shows that the mean is slightly higher than the median by 1.19.
 
+##What is the average daily pattern?
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r, echo=TRUE}
+avepat<-tapply(data$steps,data$interval,function(x){mean(x,na.rm=TRUE)})
+ap<-as.data.frame(as.numeric(rownames(avepat)))
+ap[,2]<-avepat
+plot(ap,type="l",xlab="Interval",ylab="Average Steps per Interval")
+```
+
+The above code creates a line chart of the average steps at particular intervals over the day. It shows almost no steps in the first 500 intervals on average which could be related to sleeping, with a quite large spike just before the 1000th interval.
+
+##Imputing missing values
+
+```{r, echo=TRUE}
+NAcount<-nrow(data)-sum(complete.cases(data))
+data3<-data
+for (i in 1:nrow(data3)){
+  if (is.na(data3[i,1])==TRUE){
+    data3[i,1]<-ap[ap[,1]==data3[i,3],2]
+  }
+}
+stepsday3<-tapply(data3$steps,data3$date,sum)
+hist(stepsday3,breaks=10,main="Frequency of Steps per Day",xlab="Steps per Day")
+stepssummary3<-mean(stepsday3)
+stepssummary3<-c(stepssummary3,median(stepsday3))
+ss<-stepssummary-stepssummary3
+```
+
+The above code first finds the number of incomplete cases (`r NAcount`). Secondly it uses a simple loop with a lookup function to fill missing values in the *steps* variable with the average for that interval, saving as *data3*. Thirdly it prints off a histogram of sum of steps per day with the inputed intervals. Finally it produce similar statistics as the previous section: mean (`r stepssummary3[1]`) and median (`r stepssummary3[2]`), and the differences between these and the originals (`r ss`).
+
+##Are there differences in activity patterns between weekdays and weekends?
+
+```{r,echo=TRUE}
+for (i in 1:nrow(data3)){
+  if (weekdays(data3[i,2])=="Sunday"){
+    data3[i,4]<-"weekend"
+  }
+  else if (weekdays(data3[i,2])=="Saturday"){
+    data3[i,4]<-"weekend"
+  }
+  else{
+    data3[i,4]<-"weekday"
+  }
+}
+edata<-subset(data3,data3[,4]=="weekend")
+eavepat<-tapply(edata$steps,edata$interval,mean)
+eap<-as.data.frame(as.numeric(rownames(eavepat)))
+eap[,2]<-eavepat
+ddata<-subset(data3,data3[,4]=="weekday")
+davepat<-tapply(ddata$steps,ddata$interval,mean)
+dap<-as.data.frame(as.numeric(rownames(davepat)))
+dap[,2]<-davepat
+plot(dap,type="l",xlab="Interval",ylab="Average Steps per Interval",main="Average Steps per Interval")
+lines(eap,col="red")
+legend("topright",legend=c("Weekday","Weekend"),lty=c(1,1),col=c("black","red"))
+```
+
+This final section uses a loop to assign a *weekday* or a *weekend* factor to each interval. Second, it produces two seperate dataframes based on those factors. Third, it again uses *tapply* to find the mean for each interval over those two dataframes. Finally it plots the line graphs of those averages of the two dataframes over eachother to compare the differences.
