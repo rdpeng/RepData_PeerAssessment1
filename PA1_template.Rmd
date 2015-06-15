@@ -1,6 +1,9 @@
 ---
 title: "Reproducible Research - Peer Assessment 1"
-output: html_document
+output:
+  html_document:
+    keep_md: true
+
 ---
 
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. There are three variables: steps, date and interval (5 minutes). 
