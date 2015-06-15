@@ -49,7 +49,7 @@ qplot(data_sum$steps,geom="histogram",main ="Histogram of total number of steps 
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![](peer_assessment1_files/figure-html/hisogram_steps-1.png) 
+![](figure-html/hisogram_steps-1.png) 
 
 Calculate and report the mean and median of the total number of steps taken per day
 
@@ -83,7 +83,7 @@ data_mean_interval <- aggregate(steps~interval, data=activity, FUN=mean)
 qplot(interval, steps, data = data_mean_interval, geom=c("line"), type = 'l',main ="Plot of time series", xlab = "Interval", ylab = "Number of steps")
 ```
 
-![](peer_assessment1_files/figure-html/histogram1-1.png) 
+![](figure-html/html/histogram1-1.png) 
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -138,7 +138,7 @@ qplot(data_sum_no_nas$steps,geom="histogram",main ="Histogram of total number of
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![](peer_assessment1_files/figure-html/data_no_nas_histogram-1.png) 
+![](figure-html/data_no_nas_histogram-1.png) 
 
 
 ```r
@@ -189,4 +189,4 @@ qplot(interval, steps, data = data_sum_no_nas_mean, geom=c("line"), type = 'l',m
 facet_wrap(~weekdaylabel, ncol = 1)
 ```
 
-![](peer_assessment1_files/figure-html/weekday_weekend3-1.png) 
+![](figure-html//weekday_weekend3-1.png) 
