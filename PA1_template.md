@@ -83,7 +83,7 @@ data_mean_interval <- aggregate(steps~interval, data=activity, FUN=mean)
 qplot(interval, steps, data = data_mean_interval, geom=c("line"), type = 'l',main ="Plot of time series", xlab = "Interval", ylab = "Number of steps")
 ```
 
-![](figure-html/html/histogram1-1.png) 
+![](figure-html/histogram1-1.png) 
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -189,4 +189,4 @@ qplot(interval, steps, data = data_sum_no_nas_mean, geom=c("line"), type = 'l',m
 facet_wrap(~weekdaylabel, ncol = 1)
 ```
 
-![](figure-html//weekday_weekend3-1.png) 
+![](figure-html/weekday_weekend3-1.png) 
