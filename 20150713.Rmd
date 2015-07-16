@@ -1,0 +1,104 @@
+Peer Assessment 1
+=============
+# section 1: What is mean total number of steps taken per day?
+```{r echo=TRUE ,cache=TRUE}
+data<-read.table("d://download/repdata-data-activity/activity.csv",sep = ",",header = T,na.strings = "NA")
+data$date<-strptime(data$date,"%Y-%m-%d")
+summary(data)
+str(data)
+```
+
+
+##the total number steps per day are as follows:
+
+```{r echo=TRUE, cache=TRUE}
+library(sqldf)
+
+data$date<-as.Date(data$date)
+bad<-is.na(data$steps)
+data1<-data[!bad,]
+data1$date<-as.Date(data1$date)
+real<-sqldf("select date,sum(steps) from data1 group by date")
+real
+hist(real$'sum(steps)',main = "total number of steps taken each day",xlab = "total steps",ylab = "frequency",col = "red")
+```
+
+##the mean is:
+```{r echo=TRUE,cache=TRUE}
+mean(real$'sum(steps)')
+```
+##the median is:
+```{r echo=TRUE,cache=TRUE}
+median(real$'sum(steps)')
+
+```
+
+#section 2: What is the average daily activity pattern?
+```{r echo=TRUE,cache=TRUE}
+library(ggplot2)
+summary(data1)
+tb2<-sqldf("select interval,sum(steps)/count(distinct(date)) as stps from data group by interval")
+g<-ggplot(tb2,aes(interval,stps))
+g1<-g+geom_line()
+g1
+```
+
+##the maximum of the average steps of the time interval is:
+```{r echo=TRUE,cache=TRUE}
+tb3<-tb2[order(tb2$stps,decreasing = T),]
+tb3[1,1]
+```
+
+#section3: Imputing missing values
+
+##total number of missing values is:
+```{r echo=TRUE,cache=TRUE}
+
+length(which(is.na(data$steps)==T))
+```
+
+##fill in the missing values and create a new dataset called "new":
+```{r echo=TRUE,cache=TRUE}
+
+val<-sqldf("select data.*,tb2.stps from data, tb2 where data.interval=tb2.interval")
+  for(i in 1:length(val$steps)){
+  if(is.na(val[i,1]))
+    
+    val[i,1]<-val[i,4]
+    
+  }
+new<-val[,1:3]
+```
+
+##make a histogram of the total number of steps taken each day:
+```{r echo=TRUE,cache=TRUE}
+new1<-sqldf("select date,sum(steps) from new group by date")
+hist(new1$'sum(steps)',main = "total number of steps taken each day",xlab = "total steps",ylab = "frequency",col = "red")
+```
+
+
+
+##compare new data and orginal data:
+```{r echo=TRUE,cache=TRUE}
+newdata<-c(mean(new1$'sum(steps)'),median(new1$'sum(steps)'))
+originaldata<-c(mean(real$'sum(steps)'),median(real$'sum(steps)'))
+data.frame(new=c(mean(new1$'sum(steps)'),median(new1$'sum(steps)')),original=c(mean(real$'sum(steps)'),median(real$'sum(steps)')),row.names = c("mean","median"))
+```
+
+#section 4: Are there differences in activity patterns between weekdays and weekends?
+
+```{r echo=TRUE,cache=TRUE}
+new$week<-weekdays(new$date)
+
+for(i in 1:length(new$date)){
+  if(new[i,4]=="ÐÇÆÚÁù"||new$week=="ÐÇÆÚÈÕ"){
+    new[i,4]="weekend"}
+  else {
+    new[i,4]="weekday"}
+}
+tb4<-sqldf("select interval,week,sum(steps)/count(distinct(date)) as stps from new group by interval,week")
+```
+```{r echo=TRUE,cache=TRUE}
+ggplot(tb4,aes(interval,stps))+geom_line(col="blue")+facet_grid(week ~ .)
+```
+
