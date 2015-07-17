@@ -50,7 +50,7 @@ hist(summary_date$daily_total,
 )
 ```
 
-![](PA1_template_files/figure-html/meanDailyStep-1.png) 
+![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
@@ -83,7 +83,7 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![](PA1_template_files/figure-html/meanIntervalStep-1.png) 
+![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
 
 ```r
 with(summary_interval, {
@@ -142,7 +142,7 @@ hist(summary_date$daily_total,
 )
 ```
 
-![](PA1_template_files/figure-html/imputMissingStep-1.png) 
+![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
@@ -178,4 +178,4 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![](PA1_template_files/figure-html/weekends-1.png) 
+![](PA1_template_files/figure-html/compareWeekendsToWeekdays-1.png) 

@@ -16,7 +16,7 @@ opts_chunk$set(echo = TRUE)
 
 ## Loading and preprocessing the data
 
-```{r loadAndProcessData,echo=TRUE, message=FALSE}
+```{r loadActivityData,echo=TRUE, message=FALSE}
 
 dt <- read.csv2("~/Desktop/Coursera/ReproducibleResearch/RepData_PeerAssessment1/activity.csv", sep = ",", stringsAsFactors = FALSE, header = TRUE)  
 
@@ -34,7 +34,7 @@ hour(dt$date)   <- dt$interval %/% 100
 
 ## What is mean total number of steps taken per day?
 
-```{r meanDailyStep,echo=TRUE}
+```{r calculateMeanSteps_by_day,echo=TRUE}
 # Group the data by day of year, and then calculate daily stats.
 by_date <- group_by(dt, doy = yday(date))
 summary_date <- summarise(by_date, daily_total = sum(steps, na.rm = T))
@@ -52,7 +52,7 @@ median(summary_date$daily_total, na.rm = T)
 
 ## What is the average daily activity pattern?
 
-```{r meanIntervalStep,echo=TRUE}
+```{r calculateMeanSteps_by_interval,echo=TRUE}
 # Group the data by day of year, and then calculate daily stats.
 by_interval <- group_by(dt, interval)
 summary_interval <- summarise(by_interval, interval_mean = mean(steps, na.rm = TRUE))
@@ -72,7 +72,7 @@ with(summary_interval, {
 
 ## Imputing missing values
 
-```{r imputMissingStep,echo=TRUE}
+```{r imputMissingSteps,echo=TRUE}
 sum(is.na(dt$steps))
 
 # replace missing values of steps with the mean value for that interval
@@ -102,7 +102,7 @@ median(summary_date$daily_total, na.rm = T)
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekends,echo=TRUE}
+```{r compareWeekendsToWeekdays,echo=TRUE}
 imputed_dt = mutate(imputed_dt, weekend = ifelse(grepl('^S', weekdays(imputed_dt$date)), "weekend", "weekday"))
 
 by_interval <- group_by(imputed_dt, interval, weekend)
