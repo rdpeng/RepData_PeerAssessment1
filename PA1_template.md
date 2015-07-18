@@ -1,8 +1,8 @@
 # Reproducible Research: Peer Assessment 1
-`r Sys.time()`  
-In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). This report summarizes activity data from a two month period in the Fall of 2012. As descibed in the homework instructions:
+Data Retrieved at '`r Sys.time()`'  
+In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). As descibed in the homework instructions:
 
-> This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+> This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Loading and preprocessing the data
 
@@ -49,7 +49,7 @@ hist(summary_date$daily_total,
 
 ![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
 
-The mean number of steps over the 61 day period is 9354.23 and the median number of steps is 10395.
+The **mean** number of steps over the 61 day period is **9354.23** and the **median** number of steps is **10395**.
 
 ## What is the average daily activity pattern?
 
@@ -69,12 +69,12 @@ qplot(interval, interval_mean, data=summary_interval,
 
 ![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
 
-The interval with the max average number of steps is 835, which makes since as people are often busy around 8AM.
+The interval with the **max** steps is 835, which makes sense as people are often busy around 8AM.
 
 
 ## Imputing missing values
 
-The data above is misleading because I have not corrected for the 2304 missing values of *steps*. This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.3826). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the clas shared a useful hack for this. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
+The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.3826). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the clas shared a useful hack for this. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
 
 
 ```r
@@ -96,11 +96,13 @@ hist(summary_date$daily_total,
 
 ![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
 
-Using the imputed values, the mean number of steps over the 61 day period is 10766.19 and the median number of steps is 10766.19. Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases as steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker to work with them. In which case I could impute zero **measured** steps using mean values, but using **expected** steps calculated as the mean is more plasible. At least to me. 
+Using the imputed values, the **mean = 10766.19** and the **median = 10766.19**. 
+
+Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases as steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker to work with them, but one work day will likely be similar to the average.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-To further check the validity of the date, I made a plot highlighting the difference in activity between weekend and weekdays. Not that activity begins more gradually on the weekends is more uniform, and extends farther into the night.
+To further check the validity of the date, I made a plot highlighting the difference in activity between weekend and weekdays. Note that activity begins more gradually on the weekends is more uniform, and extends farther into the night.
 
 ```r
 imputed_dt = mutate(imputed_dt, weekend = ifelse(grepl('^S', weekdays(imputed_dt$date)), "weekend", "weekday"))
