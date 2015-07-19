@@ -209,7 +209,7 @@ hr {
 
 <h2>Loading and preprocessing the data</h2>
 
-<p>The data was downloaded from a <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">link</a> provided in the instructions for the <a href="https://www.coursera.org/course/repdata">&ldquo;Reproducible Research&rdquo;</a> <em>Peer Assignment 1</em> at Coursera at the time given in the title of this report. Before the data can read from the current working directory, a few librarys need to be loaded.</p>
+<p>The data was downloaded along with template code from the repo provided in the instructions for the <a href="https://www.coursera.org/course/repdata">&ldquo;Reproducible Research&rdquo;</a> <em>Peer Assignment 1</em> at Coursera at the time given in the title of this report. Before the data is read from the current working directory, a few librarys need to be loaded.</p>
 
 <pre><code class="r">require(knitr)
 require(lubridate)
@@ -282,7 +282,7 @@ qplot(interval, interval_mean, data=summary_interval,
 <pre><code>## [1] 835
 </code></pre>
 
-<p>The interval with the <strong>max</strong> steps is 835, which makes sense as people are often busy around 8AM.</p>
+<p>The 5-minute interval that, on average, contains the maximum number of steps is 835, which makes sense as people are often busy around 8:30 AM.</p>
 
 <h2>Imputing missing values</h2>
 

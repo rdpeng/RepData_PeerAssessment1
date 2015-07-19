@@ -3,7 +3,7 @@ title: "Reproducible Research: Peer Assessment 1"
 output:  
   html_document:  
     keep_md: true  
-date: Data Retrieved at '2015-07-19 12:25:56'
+date: Data Retrieved at '2015-07-19 12:38:38'
 ---
 In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). The homework assignment requires simple analysis of activity monitor data which is descibed in the homework instructions as:
 
@@ -11,7 +11,7 @@ In the last 10 years a number of personal activity monitors such as ["Fitbit"](h
 
 ## Loading and preprocessing the data
 
-The data was downloaded from a [link](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip) provided in the instructions for the ["Reproducible Research"](https://www.coursera.org/course/repdata) *Peer Assignment 1* at Coursera at the time given in the title of this report. Before the data can read from the current working directory, a few librarys need to be loaded.
+The data was downloaded along with template code from the repo provided in the instructions for the ["Reproducible Research"](https://www.coursera.org/course/repdata) *Peer Assignment 1* at Coursera at the time given in the title of this report. Before the data is read from the current working directory, a few librarys need to be loaded.
 
 
 ```r
@@ -94,7 +94,7 @@ with(summary_interval, interval[which(interval_mean == max(interval_mean))])
 ## [1] 835
 ```
 
-The interval with the **max** steps is 835, which makes sense as people are often busy around 8AM.
+The 5-minute interval that, on average, contains the maximum number of steps is 835, which makes sense as people are often busy around 8:30 AM.
 
 
 ## Imputing missing values
