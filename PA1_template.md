@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 Data Retrieved at '`r Sys.time()`'  
-In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). As descibed in the homework instructions:
+In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). The homework assignment requires simple analysis of activity monitor data which is descibed in the homework instructions as:
 
 > This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
@@ -16,7 +16,7 @@ require(ggplot2)
 require(dplyr)
 # opts_chunk$set(echo = TRUE, results = "hide")
 ```
-The activity data is down loaded from website and read into a data table using *csv2()*. The date in the table needs to be converted from character to Date. The interval data is converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date-time. The time zone is considered to be unimportant for this report.
+The activity data was down loaded from website and read into a data table using *csv2()*. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.
 
 
 ```r
@@ -49,6 +49,22 @@ hist(summary_date$daily_total,
 
 ![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
 
+```r
+mean(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
+median(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10395
+```
+
 The **mean** number of steps over the 61 day period is **9354.23** and the **median** number of steps is **10395**.
 
 ## What is the average daily activity pattern?
@@ -69,13 +85,37 @@ qplot(interval, interval_mean, data=summary_interval,
 
 ![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
 
+```r
+with(summary_interval, interval[which(interval_mean == max(interval_mean))])
+```
+
+```
+## [1] 835
+```
+
 The interval with the **max** steps is 835, which makes sense as people are often busy around 8AM.
 
 
 ## Imputing missing values
 
-The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.3826). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the clas shared a useful hack for this. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
+The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.3826). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the class shared a useful hack for this on the (class forum)[https://class.coursera.org/repdata-036/forum/thread?thread_id=73]. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
 
+
+```r
+sum(is.na(dt$steps))
+```
+
+```
+## [1] 2304
+```
+
+```r
+mean(dt$steps, na.rm = T)
+```
+
+```
+## [1] 37.3826
+```
 
 ```r
 imputed_dt <- dt
@@ -96,13 +136,29 @@ hist(summary_date$daily_total,
 
 ![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
 
+```r
+mean(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10766.19
+```
+
 Using the imputed values, the **mean = 10766.19** and the **median = 10766.19**. 
 
-Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases as steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker to work with them, but one work day will likely be similar to the average.
+Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases because steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker with them. Any given day will likely be similar to the average, even if the details differ. In this case the missing data covers an entire day, rather than missing random intervals which should make using the average values even more reasonable.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-To further check the validity of the date, I made a plot highlighting the difference in activity between weekend and weekdays. Note that activity begins more gradually on the weekends is more uniform, and extends farther into the night.
+To further check the validity of the date, I made a plot highlighting the difference in activity between weekend and weekdays. Note that activity begins more gradually on the weekends is more uniform, and extends farther into the night. Weekdays have higher peak values of steps, perhaps because most people are rushing in morning before work. 
 
 ```r
 imputed_dt = mutate(imputed_dt, weekend = ifelse(grepl('^S', weekdays(imputed_dt$date)), "weekend", "weekday"))
