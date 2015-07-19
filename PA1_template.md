@@ -1,5 +1,10 @@
-# Reproducible Research: Peer Assessment 1
-Data Retrieved at '`r Sys.time()`'  
+---
+title: "Reproducible Research: Peer Assessment 1"  
+output:  
+  html_document:  
+    keep_md: true  
+date: Data Retrieved at '2015-07-19 12:25:56'
+---
 In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). The homework assignment requires simple analysis of activity monitor data which is descibed in the homework instructions as:
 
 > This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
@@ -43,7 +48,7 @@ hist(summary_date$daily_total,
 )
 ```
 
-![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
+![plot of chunk calculateMeanSteps_by_day](figure/calculateMeanSteps_by_day-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
@@ -79,7 +84,7 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
+![plot of chunk calculateMeanSteps_by_interval](figure/calculateMeanSteps_by_interval-1.png) 
 
 ```r
 with(summary_interval, interval[which(interval_mean == max(interval_mean))])
@@ -133,7 +138,7 @@ hist(summary_date$daily_total,
 )
 ```
 
-![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
+![plot of chunk imputMissingSteps](figure/imputMissingSteps-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
@@ -176,4 +181,4 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![](PA1_template_files/figure-html/compareWeekendsToWeekdays-1.png) 
+![plot of chunk compareWeekendsToWeekdays](figure/compareWeekendsToWeekdays-1.png) 
