@@ -74,7 +74,40 @@ nas <- sum(is.na(activity))
 The total number of missing values was 2304.
 
 2. fill in the missing values in the data set.
+The total number of missing values was `r nas`.
 
+```{r echo=TRUE}
 
+nsteps <- data.frame(date=activity$date[is.na(activity$steps)], interval = activity$interval[is.na(activity$steps)], steps=steps_interval[match(steps_interval$interval, activity$interval[is.na(activity$steps)]),3])
+
+activity <- subset(activity, !is.na(steps))
+activity <- rbind(activity, nsteps)
+dailysteps2 <- aggregate(activity$steps, by = list(activity$date), sum, na.rm=TRUE)
+names(dailysteps2) <- c("Date", "steps")
+
+barplot(dailysteps2$steps, names.arg=dailysteps2$Date, xlab="Date",las=2, ylab="Steps", main="Number of Steps per Day", col="light blue")
+
+new_mean <- mean(dailysteps2$steps)  
+new_median <- median(dailysteps2$steps)
+```
+
+The mean steps `r new_mean` and median steps `r new_median` were very close when na's were replaced with average median at corresponding intervals.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+## Are there differences in activity patterns between weekdays and weekends?
+Create weekdays/weekends identifiers
+
+```{r weeklypattern, echo=TRUE}
+activity$week <- as.factor(ifelse(weekdays(activity$date) %in% c("Saturday","Sunday"), "Weekend", "Weekday"))
+
+meansteps2 <- aggregate(activity$steps, by = list(activity$week, activity$interval), mean, na.rm=TRUE)
+mediansteps2 <- aggregate(activity$steps, by = list(activity$week, activity$interval), median, na.rm=TRUE)
+
+intsteps2 <- cbind(meansteps2[], mediansteps2$x)
+names(intsteps2) = c("weekday", "interval","mean.steps", "median.steps")
+
+library(ggplot2)
+
+ggplot(intsteps2, aes(x = interval, y = mean.steps)) + ylab("Number of Steps") + geom_line() + facet_grid(weekday~.)
+```
+The patterns show that weekend activities delayed for certain amount of time compared to the weekday pattern.
