@@ -61,7 +61,7 @@ img {
 
 <div id="header">
 <h1 class="title">Reproducible Research: Peer Assessment 1</h1>
-<h4 class="date"><em>Data Retrieved at ‘2015-07-19 11:55:38’</em></h4>
+<h4 class="date"><em>Data Retrieved at ‘2015-07-19 12:23:02’</em></h4>
 </div>
 
 
@@ -76,13 +76,9 @@ img {
 require(lubridate)
 require(ggplot2)
 require(dplyr)
-# opts_chunk$set(echo = TRUE, results = &quot;hide&quot;)</code></pre>
-<p>The activity data was down loaded from website and read into a data table using <em>csv2()</em>. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.</p>
-<pre class="r"><code>url &lt;- &quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;
-download.file(url, destfile = &quot;./activity.zip&quot;, method = &quot;curl&quot;)
-unzip (&quot;activity.zip&quot;, exdir = &quot;./&quot;)
-
-dt &lt;- read.csv2(&quot;./activity.csv&quot;, sep = &quot;,&quot;, stringsAsFactors = F, header = T)  
+opts_chunk$set(echo = TRUE, results = &quot;markup&quot;)</code></pre>
+<p>The activity data was read into a data table using <em>csv2()</em>. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.</p>
+<pre class="r"><code>dt &lt;- read.csv2(&quot;./activity.csv&quot;, sep = &quot;,&quot;, stringsAsFactors = F, header = T)  
 
 dt &lt;- mutate(dt, date = ymd(date))
 minute(dt$date) &lt;- dt$interval %% 100   # minutes are the 2 rightmost digits
@@ -133,9 +129,12 @@ qplot(interval, interval_mean, data=summary_interval,
 <pre class="r"><code>mean(dt$steps, na.rm = T)</code></pre>
 <pre><code>## [1] 37.3826</code></pre>
 <pre class="r"><code>imputed_dt &lt;- dt
+
 # Following is cleaver hack by Shiping Zhang to replace NA with interval mean.
+
 imputed_dt[is.na(imputed_dt$steps), &quot;steps&quot;] = summary_interval$interval_mean
 
+# basically repeat the above calculation of mean and median...
 by_date &lt;- group_by(imputed_dt, doy = yday(date))
 
 summary_date &lt;- summarise(by_date, daily_total = sum(steps, na.rm = T))
@@ -151,8 +150,9 @@ hist(summary_date$daily_total,
 <pre><code>## [1] 10766.19</code></pre>
 <pre class="r"><code>median(summary_date$daily_total, na.rm = T)</code></pre>
 <pre><code>## [1] 10766.19</code></pre>
-<p>Using the imputed values, the <strong>mean = 10766.19</strong> and the <strong>median = 10766.19</strong>.</p>
-<p>Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases because steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker with them. Any given day will likely be similar to the average, even if the details differ. In this case the missing data covers an entire day, rather than missing random intervals which should make using the average values even more reasonable.</p>
+<p>Using the imputed values, the <strong>mean = 10766.19</strong> and the <strong>median = 10766.19</strong>. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days.</p>
+<p>Using the imputed data, both the mean and median number of steps increases because additional steps are being added to the data set.</p>
+<p>Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker with them. Any given day will likely be similar to the average, even if the details differ. In this case the missing data covers an entire day, rather than missing random intervals which should make using the average values even more reasonable.</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>

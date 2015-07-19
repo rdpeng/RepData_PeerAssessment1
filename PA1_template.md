@@ -14,16 +14,12 @@ require(knitr)
 require(lubridate)
 require(ggplot2)
 require(dplyr)
-# opts_chunk$set(echo = TRUE, results = "hide")
+opts_chunk$set(echo = TRUE, results = "markup")
 ```
-The activity data was down loaded from website and read into a data table using *csv2()*. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.
+The activity data was read into a data table using *csv2()*. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.
 
 
 ```r
-url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
-download.file(url, destfile = "./activity.zip", method = "curl")
-unzip ("activity.zip", exdir = "./")
-
 dt <- read.csv2("./activity.csv", sep = ",", stringsAsFactors = F, header = T)  
 
 dt <- mutate(dt, date = ymd(date))
@@ -119,9 +115,12 @@ mean(dt$steps, na.rm = T)
 
 ```r
 imputed_dt <- dt
+
 # Following is cleaver hack by Shiping Zhang to replace NA with interval mean.
+
 imputed_dt[is.na(imputed_dt$steps), "steps"] = summary_interval$interval_mean
 
+# basically repeat the above calculation of mean and median...
 by_date <- group_by(imputed_dt, doy = yday(date))
 
 summary_date <- summarise(by_date, daily_total = sum(steps, na.rm = T))
@@ -152,9 +151,11 @@ median(summary_date$daily_total, na.rm = T)
 ## [1] 10766.19
 ```
 
-Using the imputed values, the **mean = 10766.19** and the **median = 10766.19**. 
+Using the imputed values, the **mean = 10766.19** and the **median = 10766.19**. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days. 
 
-Note that by coincidence the mean and the median are the same. Using the imputed data, both the mean and median number of steps increases because steps are being added to the data set. Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker with them. Any given day will likely be similar to the average, even if the details differ. In this case the missing data covers an entire day, rather than missing random intervals which should make using the average values even more reasonable.
+Using the imputed data, both the mean and median number of steps increases because additional steps are being added to the data set. 
+
+Examining the histogram I see a much more evenly distributed number of steps, which is plausible because the missing data might simply reflect the case that the subject forgot to take the tracker with them. Any given day will likely be similar to the average, even if the details differ. In this case the missing data covers an entire day, rather than missing random intervals which should make using the average values even more reasonable.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
