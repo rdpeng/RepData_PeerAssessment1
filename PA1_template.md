@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"  
-output:  
-  html_document:  
-    keep_md: true  
-date: Data Retrieved at '2015-07-19 12:38:38'
----
+# Reproducible Research: Peer Assessment 1
+Data Retrieved at '`r Sys.time()`'  
 In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). The homework assignment requires simple analysis of activity monitor data which is descibed in the homework instructions as:
 
 > This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
@@ -15,6 +10,8 @@ The data was downloaded along with template code from the repo provided in the i
 
 
 ```r
+## we set global options to show only 2 decimals
+options(scipen = 1, digits = 2)
 require(knitr)
 require(lubridate)
 require(ggplot2)
@@ -48,14 +45,14 @@ hist(summary_date$daily_total,
 )
 ```
 
-![plot of chunk calculateMeanSteps_by_day](figure/calculateMeanSteps_by_day-1.png) 
+![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
 ```
 
 ```
-## [1] 9354.23
+## [1] 9354
 ```
 
 ```r
@@ -66,7 +63,7 @@ median(summary_date$daily_total, na.rm = T)
 ## [1] 10395
 ```
 
-The **mean** number of steps over the 61 day period is **9354.23** and the **median** number of steps is **10395**.
+The **mean** number of steps over the 61 day period is **9354.2** and the **median** number of steps is **10395**.
 
 ## What is the average daily activity pattern?
 
@@ -84,7 +81,7 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![plot of chunk calculateMeanSteps_by_interval](figure/calculateMeanSteps_by_interval-1.png) 
+![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
 
 ```r
 with(summary_interval, interval[which(interval_mean == max(interval_mean))])
@@ -99,7 +96,7 @@ The 5-minute interval that, on average, contains the maximum number of steps is 
 
 ## Imputing missing values
 
-The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.3826). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the class shared a useful hack for this on the (class forum)[https://class.coursera.org/repdata-036/forum/thread?thread_id=73]. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
+The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.38). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the class shared a useful hack for this on the (class forum)[https://class.coursera.org/repdata-036/forum/thread?thread_id=73]. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
 
 
 ```r
@@ -115,7 +112,7 @@ mean(dt$steps, na.rm = T)
 ```
 
 ```
-## [1] 37.3826
+## [1] 37
 ```
 
 ```r
@@ -138,14 +135,14 @@ hist(summary_date$daily_total,
 )
 ```
 
-![plot of chunk imputMissingSteps](figure/imputMissingSteps-1.png) 
+![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
 
 ```r
 mean(summary_date$daily_total, na.rm = T)
 ```
 
 ```
-## [1] 10766.19
+## [1] 10766
 ```
 
 ```r
@@ -153,10 +150,10 @@ median(summary_date$daily_total, na.rm = T)
 ```
 
 ```
-## [1] 10766.19
+## [1] 10766
 ```
 
-Using the imputed values, the **mean = 10766.19** and the **median = 10766.19**. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days. 
+Using the imputed values, the **mean = 10766.2** and the **median = 10766.2**. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days. 
 
 Using the imputed data, both the mean and median number of steps increases because additional steps are being added to the data set. 
 
@@ -181,4 +178,4 @@ qplot(interval, interval_mean, data=summary_interval,
 )
 ```
 
-![plot of chunk compareWeekendsToWeekdays](figure/compareWeekendsToWeekdays-1.png) 
+![](PA1_template_files/figure-html/compareWeekendsToWeekdays-1.png) 
