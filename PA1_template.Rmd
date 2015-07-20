@@ -5,21 +5,87 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
 
-
-
+```{r echo=TRUE}
+activity <- read.csv("activity.csv")
+head(activity)
+str(activity)
+```
 ## What is mean total number of steps taken per day?
+I use the dplyr package to handle the data and do the calculations.
 
+```{r echo=TRUE, results="asis"}
+library(dplyr)
+activity$date <- as.Date(activity$date)
+str(activity)
+options(digits=1)
+daily_steps <- group_by(activity, date) %>% summarise_each(funs(sum(., na.rm = TRUE)))
+barplot(daily_steps$steps, names.arg=daily_steps$date, xlab="Date", ylab="Steps", main="Number of Steps per Day", col="light blue")
+mean <- mean(daily_steps$steps)
+median <- median(daily_steps$steps)
+```
 
+The mean daily steps was `r mean`, and the median daily steps was `r median`.
 
 ## What is the average daily activity pattern?
+To plot a time series plot average daily steps vs 5 min intervals.
 
+```{r echo=TRUE, results="asis"}
+steps_interval <- aggregate(steps~interval, data=activity, FUN= "mean") 
+names(steps_interval) <- c("interval", "steps")
+plot(steps_interval, type = "l")
 
+max <- steps_interval$interval[which.max(steps_interval$steps)]
+max_steps <- steps_interval$steps[which.max(steps_interval$steps)]
+```
+
+The `r max`'s 5-min interval had the max average number of `r max_steps` steps.
 
 ## Imputing missing values
+-Calculate the total nubmer of missing values in the data set.
 
+```{r echo=TRUE}
+nas <- sum(is.na(activity))
+```
+The total number of missing values was `r nas`.
 
+-Fill in the missing values with mean steps and create a new data set.
+
+```{r echo=TRUE}
+splt.interval <- split(activity, as.factor(activity$interval))
+missing <- is.na(activity$steps)
+mean_interval <- sapply(splt.interval, function(x) mean(x$steps, na.rm=T))
+days <- length(levels(as.factor(activity$date)))
+
+data1 <- activity
+data1[missing, ]$steps <- rep(mean_interval, days)[missing]
+```
+-Histogram of total steps each day after filled NAs with mean steps
+
+```{r echo=TRUE, results="asis"}
+new_daily_steps <- group_by(data1, date) %>% summarise_each(funs(sum(., na.rm = TRUE)))
+barplot(new_daily_steps$steps, names.arg=new_daily_steps$date, xlab="Date", ylab="Steps", col.axis="blue", main="Number of Steps per Day", col="light blue")
+new_mean <- mean(new_daily_steps$steps)
+new_median <- median(new_daily_steps$steps)
+```
+
+The mean steps `r new_mean` and median steps `r new_median` were the same when na's were replaced with average steps.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Create weekdays/weekends identifiers
+
+```{r weeklypattern, echo=TRUE}
+activity$week <- as.factor(ifelse(weekdays(activity$date) %in% c("Saturday","Sunday"), "Weekend", "Weekday"))
+
+meansteps2 <- aggregate(activity$steps, by = list(activity$week, activity$interval), mean, na.rm=TRUE)
+mediansteps2 <- aggregate(activity$steps, by = list(activity$week, activity$interval), median, na.rm=TRUE)
+
+intsteps2 <- cbind(meansteps2[], mediansteps2$x)
+names(intsteps2) = c("weekday", "interval","mean.steps", "median.steps")
+
+library(ggplot2)
+
+ggplot(intsteps2, aes(x = interval, y = mean.steps)) + ylab("Number of Steps") + geom_line() + facet_grid(weekday~.)
+```
+The patterns show that weekend activities delayed for certain amount of time compared to the weekday pattern.
