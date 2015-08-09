@@ -1,23 +1,13 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
-```{r echo=FALSE, message=FALSE}
-options(warn=-1, scipen=999)
-library(dplyr)
-library(ggplot2)
-library(lubridate)
-library(data.table)
-```
+
 
 ## Loading and preprocessing the data
 
 Data are loaded into the variable "activity". 
 
-```{r}
+
+```r
 activity <- tbl_dt(read.csv("activity.csv", stringsAsFactors = FALSE))
 ```
 
@@ -27,7 +17,8 @@ activity <- tbl_dt(read.csv("activity.csv", stringsAsFactors = FALSE))
 
 The activity data are summarized by grouping the data by date into the variable "tns". 
 
-```{r}
+
+```r
 tns <- 
     activity %>% 
     group_by(date) %>% 
@@ -35,7 +26,8 @@ tns <-
 ```
 
 ### Plot
-```{r}
+
+```r
 qplot(date, steps, 
       data = tns, 
       geom = "histogram", stat = "identity", 
@@ -43,53 +35,63 @@ qplot(date, steps,
       ) + theme(axis.text.x = element_text(angle = 90))
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+
+```r
 #Mean and median of total nr of steps taken per day
 mean_tns   <- mean(tns$steps)
 median_tns <- median(tns$steps)
 ```
-Mean of the total number of steps taken per day  : `r mean_tns`  
-Median of the total number of steps taken per day: `r median_tns`  
+Mean of the total number of steps taken per day  : 9354.2295082  
+Median of the total number of steps taken per day: 10395  
 
 ## What is the average daily activity pattern?
 
 The avarage daily activity pattern are summarized by grouping the activity data by interval into the variable "adap".
 
 ### Data processing
-```{r}
+
+```r
 adap <- 
     activity %>% 
     group_by(interval) %>% 
     summarize(steps = mean(steps, na.rm = TRUE))
 ```
 ### Plot
-```{r}
+
+```r
 qplot(interval, steps, 
       data = adap, 
       geom = "line", stat = "identity",
       main = "Avarage daily activity")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+
+```r
 #Max number of steps
 max_ns <- adap[which.max(adap$steps),interval]
 ```
 
-Interval containing the maximum number of steps : `r max_ns`  
+Interval containing the maximum number of steps : 835  
 
 ## Imputing missing values
 
-```{r}
+
+```r
 #Number of missing values 
 na_nr <- nrow(activity %>% filter(is.na(steps)))
 ```
 
-The initial dataset contains `r na_nr` missing values for the step variable.  
+The initial dataset contains 2304 missing values for the step variable.  
 
 *Imputation strategy:*   To correct the dataset those missing values will be replaced by the mean value of the corresponding 5-minutes interval. This will be done by a lookup to the table "adap", which already contains the number of step's average for each interval. 
 
 ### Data processing
-```{r}
+
+```r
 #Activity dataset with no missing value
 activity_c <- 
     activity %>%
@@ -102,21 +104,25 @@ tns_c <-
     summarize(steps = sum(steps, na.rm = TRUE))
 ```
 ### Plot
-```{r}
+
+```r
 qplot(date, steps, 
       data = tns_c, 
       geom = "histogram", stat = "identity",
       main = "Corrected total number of steps taken each day"
       ) + theme(axis.text.x = element_text(angle = 90))
-```  
+```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
+
+```r
 #Mean and median of total nr of steps taken per day
 mean_tns_c   <- mean(tns_c$steps)
 median_tns_c <- median(tns_c$steps)
 ```
-Mean of the total number of steps taken per day  : `r mean_tns_c`    
-Median of the total number of steps taken per day: `r median_tns_c` 
+Mean of the total number of steps taken per day  : 10766.1886792    
+Median of the total number of steps taken per day: 10766.1886792 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -124,7 +130,8 @@ Median of the total number of steps taken per day: `r median_tns_c`
 
 A dataset "adap_w" containing the average number of step per interval is generated. A new variable "wd" is added to "adap_w" to enable us to segregate the rows between those belonging to a weekday and those belonging to a  weekend. 
 
-```{r}
+
+```r
 adap_w <- 
     activity_c %>% 
     mutate(wd  = ifelse(wday(date) %in% c(1,7),"Weekend","Weekday")) %>%
@@ -133,10 +140,13 @@ adap_w <-
 adap_w$wd = as.factor(adap_w$wd)
 ```
 ### Plot
-```{r}
+
+```r
 qplot(interval, steps, 
       data = adap_w, 
       facets = wd ~ . , 
       geom = "line",
       main = "Activity patterns comparison between weekdays and weekends?")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
