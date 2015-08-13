@@ -8,6 +8,11 @@ output:
 
 ## Loading and preprocessing the data
 
+library(dplyr)
+library(lattice)
+library(tidyr)
+library(lubridate)
+
 act <- read.csv("activity.csv")
 
 
@@ -22,6 +27,10 @@ act.day <- aggregate(act$steps, by =list (act$date), sum)
 ### Create total steps per interval
 
 act.int <- aggregate(act$steps, by=list (act$interval, sum, na.rm=TRUE, na.action=NULL))
+
+### Create dataframe with with mean steps per interval
+
+act.meanint <- aggreate(act$steps, by=list(act$interval, mean, na.rm=TRUE, na.action=NULL))
 
 ## What is mean total number of steps taken per day?
 
@@ -41,6 +50,10 @@ act.median <- median(act.day$steps, na.rm=TRUE)
 
 ## What is the average daily activity pattern?
 
+
+aveplot <- ggplot(act.meanint$interval, act.meanint$)
+
+### Make a Time Series Plot of Average Daily Actity
 
 
 ## Imputing missing values
