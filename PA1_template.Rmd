@@ -23,22 +23,32 @@ act$date <- as.Date(act$date , format = "%Y-%m-%d")
 ### Create total steps per day
 
 act.day <- aggregate(act$steps, by =list (act$date), sum)
+names(act.day)[1] <- "Date"
+names(act.day)[2] <- "Steps"
 
 ### Create total steps per interval
 
-act.int <- aggregate(act$steps, by=list (act$interval, sum, na.rm=TRUE, na.action=NULL))
+act.int <- aggregate(act$steps, by=list (act$interval), sum, na.rm=TRUE, na.action=NULL)
+names(act.int)[1] <- "Interval"
+names(act.int)[2] <- "Steps"
 
 ### Create dataframe with with mean steps per interval
 
-act.meanint <- aggreate(act$steps, by=list(act$interval, mean, na.rm=TRUE, na.action=NULL))
+act.meanint <- aggregate(act$steps, by=list(act$interval), mean, na.rm=TRUE, na.action=NULL)
+names(act.meanint)[1] <- "Interval"
+names(act.meanint)[2] <- "Mean Steps"
+
 
 ## What is mean total number of steps taken per day?
 
 ### Make a histogram of total number of steps taken each day
+png("ACTday.png", width=480, height=480, bg="white")
 
 hist(act.day$steps),
   main = "Histogram of Total Number of Steps Take Each Day",
   xlab= "Total Number of Steps Taken"
+  
+  dev.off()
   
 ### Mean number of steps taken each day  
 
@@ -50,8 +60,13 @@ act.median <- median(act.day$steps, na.rm=TRUE)
 
 ## What is the average daily activity pattern?
 
+png("AVEplot.png", width=480, height=480, bg="white")
+aveplot <- ggplot(act.meanint$interval, act.meanint$interval"Mean Steps", type="n"),
+  main="Time Series Plot of Average # of Steps Taken"
+  xlab= "5 Minutes Intervals"
+  ylab= "AVerage # of Steps Taken"
 
-aveplot <- ggplot(act.meanint$interval, act.meanint$)
+dev.off()
 
 ### Make a Time Series Plot of Average Daily Actity
 
