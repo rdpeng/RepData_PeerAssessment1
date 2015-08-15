@@ -1,25 +1,138 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
+title: 'Reproducible Research: Peer Assessment 1'
+output:
   html_document:
-    keep_md: true
+    keep_md: yes
+  pdf_document: default
 ---
 
 
 ## Loading and preprocessing the data
+```{r echo=TRUE}
+#import necessary libraries
+library(data.table)
+library(lubridate)
+library(ggplot2)
+library(lattice)
 
+
+unzip('activity.zip')
+data <- fread('activity.csv',header = TRUE)
+data[,date:=as.Date(date)]
+```
 
 
 ## What is mean total number of steps taken per day?
 
+#### 1. Calculate the total number of steps taken per day
+```{r echo=TRUE}
+#select and sum steps where not equal NA
+sumsOfSteps <- data[!is.na(steps),sum(steps),by=date]
+
+#change variable name V1 to sumOfSteps
+sumsOfSteps <- sumsOfSteps[,sumOfSteps:=as.numeric(V1)]
+#remove V1 and display sumsOfSteps
+sumsOfSteps[,V1:=NULL]
+```
+
+#### 2. Make a histogram of the total number of steps taken each day
+```{r echo=TRUE}
+#draw histogram
+hist(sumsOfSteps[,sumOfSteps],breaks = 30,main='Sum of Steps per Day',xlab = 'Sum of Steps',col='red',density = 20)
+```
+
+#### 3. Calculate and report the mean and median of the total number of steps taken per day
+```{r echo=TRUE}
+#calculate mean by ignoring NA values
+meanOfSteps <- data[!is.na(steps),mean(steps),by=date]
+meanOfSteps <- meanOfSteps[,mean:=V1]
+#report mean per day
+meanOfSteps[,V1:=NULL]
+
+#calculate median by ignoring NA values
+medianOfSteps <-  data[!is.na(steps),as.double(median(steps)),by=date]
+medianOfSteps <- medianOfSteps[,median:=V1]
+#report median per day
+medianOfSteps[,V1:=NULL]
+```
 
 
 ## What is the average daily activity pattern?
+#### 1. Make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+```{r echo=TRUE}
+avgPattern <- data[!is.na(steps),mean(steps),by=interval]
+avgPattern <- avgPattern[,averageSteps:=V1]
 
+#report avgPattern
+avgPattern[,V1:=NULL]
 
+#draw the plot
+g <- ggplot(avgPattern,aes(y=averageSteps,x=interval))
+g+geom_line(aes(colour=averageSteps))+scale_colour_gradient(low='blue')+ggtitle('Average Daily Activity Pattern')+xlab('interval (5-min)')+ylab('Average Steps (per interval)')
+```
+
+#### 2. The interval which has maximum mean value
+```{r echo=TRUE}
+#find maximum 
+max <- avgPattern[,max(averageSteps)]
+avgPattern[averageSteps==max]
+```
+On average across all the days in the dataset 5-min interval 835 contains the maximum number of steps with mean 206.17
 
 ## Imputing missing values
+#### 1. Calculate and report the total number of missing values in the dataset
+```{r echo=TRUE}
+#calculate NA values 
+data[is.na(steps),.N]
+```
+Total number of NA values is 2304 in the dataset.
 
+#### 2&3. Filling in all of the missing values in the dataset 
+ - The strategy for this part is filling NA values in with the mean for corresponding 5-minute interval
+```{r echo=TRUE}
+#change type of steps integer to double and copy data.table to a new data set
+newDataSet <- copy(data[,steps := as.double(steps)]) 
+#assign average steps by interval to NA values 
+newDataSet[is.na(steps) & interval==avgPattern[,interval],steps:=avgPattern[,averageSteps]]
+```
+#### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 
+```{r echo=TRUE}
+newSumsOfSteps <- newDataSet[,sum(steps),by=date]
+hist(newSumsOfSteps[,V1],breaks = 30,main='Sum of Steps per Day',xlab = 'Sum of Steps',col='blue',density = 20)
+```
+##### Mean of steps in imputed data set:
+```{r echo=T}
+newMeanOfSteps <- newDataSet[,mean(steps),by=date]
+newMeanOfSteps <- newMeanOfSteps[,mean:=V1]
+newMeanOfSteps[,V1:=NULL]
+```
+##### Median of steps in imputed data set:
+```{r echo=T}
+newMedianOfSteps <- newDataSet[,median(steps),by=date]
+newMedianOfSteps <- newMedianOfSteps[,median:=V1]
+newMedianOfSteps[,V1:=NULL]
+```
+As one can see the results from part1 vs part2 of sum, mean and median values differ in some ways:
+
+ - First of all sums of steps increased dramatically because we just replaced 2304 NA values to corresponding mean by interval
+
+ - Mean values doesn't changed for valid rows, but there are some days have only NA values. These days' mean change NA to 37.3825996
+ 
+ - Median values stay as the same but again the days with only NA values changed to 34.11321
 
 ## Are there differences in activity patterns between weekdays and weekends?
+#### 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r echo=TRUE}
+Sys.setlocale('LC_TIME','en_US')
+newDataSet <- newDataSet[,day:='weekday']
+newDataSet <- newDataSet[weekdays(date)=='Sunday' | weekdays(date)=='Saturday', day:='weekend']
+newDataSet <- newDataSet[,mean:=mean(steps),keyby=interval]
+newDataSet <- newDataSet[,day:=as.factor(day)]
+```
+#### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+
+```{r echo=TRUE}
+xyplot(mean~interval|day,newDataSet,type = "l",lwd=1,  layout = c(1, 2),xlab = "Interval", ylab = "Avg. Number of steps")
+```
+
