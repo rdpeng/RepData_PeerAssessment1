@@ -1,0 +1,177 @@
+Reproducible Research Assignment 1
+==================================
+  
+First, we load the data, and remove the NA values.
+
+```r
+activity <- read.csv("activity.csv")
+goodActivity <- activity[!is.na(activity$steps),]
+```
+  
+It's easiest to handle this data if it's in a data frame.
+
+```r
+suppressWarnings(library(data.table))
+```
+
+```
+## data.table 1.9.4  For help type: ?data.table
+## *** NB: by=.EACHI is now explicit. See README to restore previous behaviour.
+## 
+## Attaching package: 'data.table'
+## 
+## The following object is masked from 'package:xts':
+## 
+##     last
+```
+
+```r
+DT <- data.table(goodActivity, key="date")
+```
+  
+We also need to collapse this data by date.
+
+```r
+byDate <- DT[, list(steps=sum(steps),
+          interval=sum(interval)), by=date]
+byDate$steps <- as.numeric(byDate$steps)
+```
+  
+From here, we can easily receive a histogram of the steps, 
+and also the mean/median steps taken (by date).
+
+```r
+hist(byDate$steps)
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+```r
+mean(byDate$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(byDate$steps)
+```
+
+```
+## [1] 10765
+```
+  
+We can separate the data again by interval, instead of by date.
+
+```r
+byInterval <- DT[, list( steps=( mean(steps) )), by=interval]
+```
+  
+And make a time series graph now that it is separated by 
+interval:
+
+```r
+plot(byInterval, type="l")
+```
+
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+  
+The interval on which the maximum steps are counted can be found 
+using the following code:
+
+```r
+byInterval[byInterval$steps==max(byInterval$steps),]$interval
+```
+
+```
+## [1] 835
+```
+  
+We can go back and calculate the number of missing values, 
+by executing the following code:
+
+```r
+nrow(activity[is.na(activity$steps),])
+```
+
+```
+## [1] 2304
+```
+
+A very simple strategy we can implement for solving the NA 
+value issue is to look at the mean steps taken for a given
+interval when we separated the data by interval, and insert
+that value into the data to replace the NA value.
+
+```r
+naactivity <- activity[is.na(activity$steps),]
+intervals <- naactivity$interval
+steps <- numeric(length(intervals))
+for(i in 1:length(intervals)){
+    steps[i] <- byInterval[byInterval$interval == intervals[i]]$steps
+}
+naactivity$steps <- steps
+```
+  
+Histogram of the total number of steps taken each day, followed
+by the mean and median total number of steps taken per day:
+
+```r
+totalActivity <- rbind(naactivity, goodActivity)
+TDT <- data.table(totalActivity, key="date")
+byDateTotal <- TDT[, list(steps=sum(steps), 
+                interval=sum(interval)), by=date]
+byDateTotal$steps <- as.numeric(byDateTotal$steps)
+hist(byDateTotal$steps)
+```
+
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
+
+```r
+mean(byDateTotal$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(byDateTotal$steps)
+```
+
+```
+## [1] 10766.19
+```
+Add a new column called "day"
+
+```r
+dates <- TDT$date
+dates <- as.POSIXct(dates)
+dates <- weekdays(dates)
+dates[dates=="Monday" | dates=="Tuesday" | dates=="Wednesday" | dates=="Thursday" | dates=="Friday"] <- "weekday"
+dates[dates=="Saturday" | dates=="Sunday"] <- "weekend"
+TDT$dayType <- dates
+```
+And separate into two data tables
+
+```r
+TDTWeekday <- TDT[TDT$dayType == "weekday"]
+TDTWeekend <- TDT[TDT$dayType == "weekend"]
+byIntervalWeekday <- TDTWeekday[, list(steps=(mean(steps))), by=interval]
+byIntervalWeekend <- TDTWeekend[, list(steps=(mean(steps))), by=interval]
+```
+Time series plot of the weekdays' intervals on the X axis, and the number of steps on the y axis:
+
+```r
+plot(byIntervalWeekday$steps, type="l")
+```
+
+![plot of chunk unnamed-chunk-13](figure/unnamed-chunk-13-1.png) 
+Time series plot of the weekends' intervals on the X axis, and the number of steps on the y axis:
+
+```r
+plot(byIntervalWeekend$steps, type="l")
+```
+
+![plot of chunk unnamed-chunk-14](figure/unnamed-chunk-14-1.png) 
