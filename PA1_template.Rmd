@@ -1,25 +1,109 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: 'Reproducible Research: Peer Assessment 1'
+output: html_document
 ---
 
-
 ## Loading and preprocessing the data
-
+```{r}
+library(lubridate)
+library(dplyr)
+activity<- read.csv("./activity.csv")
+activity$date<- as.Date(activity$date)
+activity$interval<- substr(as.POSIXct(sprintf("%04.0f", activity$interval), format='%H%M'), 12, 16)
+```
 
 
 ## What is mean total number of steps taken per day?
 
+# 1.Total number of steps taken per day
+```{r}
+steps_per_day<- activity %>% 
+  group_by(date) %>% 
+  summarize(total_steps = sum(steps))
+```
 
+# 2. Histogram of the total number of steps taken each day
+```{r}
+hist(steps_per_day$total_steps, breaks=15, 
+     main="Histogram of the total number of steps taken each day",
+     xlab="Total number of steps taken each day")
+```
+
+# 3. The mean and median of the total number of steps taken per day
+```{r}
+summary(steps_per_day$total_steps)
+```
 
 ## What is the average daily activity pattern?
 
+# 1. Plot of the 5-minute interval and the average number of steps taken, averaged across all days
+```{r}
+steps_per_interval<- activity %>% 
+  group_by(interval) %>% 
+  summarize(average_steps = mean(steps))
+
+plot(steps_per_interval$interval, steps_per_interval$average_steps, type="l",
+     xlab="5-minute interval", ylab="Average number of steps taken per day")
+```
+
+## 2. The 5 min interval with the maximum number of steps
+```{r}
+arrange(steps_per_interval, desc(average_steps))
+```
+On average across all the days in the dataset, the 08:35 (i.e. the 08:35 - 08:40, 5-minute interval) contains the maximum number of steps which is 184.0334.
 
 
 ## Imputing missing values
+# 1. Total number of missing values in the dataset
+```{r}
+summary(activity)
+```
+The total number of missing values in the dataset (i.e. the total number of rows with NAs) is 2304.
 
+# 2. Strategy for filling in all of the missing values in the dataset
+The mean total number of steps is used for filling the missing values.
+
+# 3. A new dataset, activity2, that is equal to the original dataset but with the missing data filled in
+```{r}
+activity2<-activity
+activity2$steps[is.na(activity2$steps)]<-37.38
+```
+
+# 4. Histogram of the total number of steps taken each day after the missing data is filled in
+```{r}
+steps_per_day2<- activity2 %>% 
+  group_by(date) %>% 
+  summarize(total_steps = sum(steps))
+
+hist(steps_per_day2$total_steps, breaks=15, 
+     main="Histogram of the total number of steps taken each day",
+     xlab="Total number of steps taken each day")
+```
+
+The mean and median total number of steps taken per day for activity2 (i.e after missing data is filled in) and for activity1 (i.e before missing data is filled in) are shown below:
+```{r}
+summary(steps_per_day2$total_steps)
+summary(steps_per_day$total_steps)
+```
+The mean and median values differ from the estimates from the first part of the assignment.
+Imputing missing data has an impact on the estimates of the total daily number of steps. It prevents discarding any case that has a missing value, which could introduce bias or affect the representativeness of the results. The data set can now be analysed using standard time series analysis techniques. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+# 1. New factor variable, wDay_wEnd, is added with two levels – “Weekday” and “Weekend” indicating whether a given date is a weekday or weekend day.
+```{r}
+weekdays <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+wDay_wEnd <- activity2 %>% 
+  mutate(wDay_wEnd= factor((weekdays(activity2$date) %in% weekdays), 
+                           levels=c(FALSE, TRUE), labels=c('Weekend', 'Weekday'))) %>%
+  group_by(wDay_wEnd) %>%
+  mutate(average_steps = mean(steps))
+```
+  
+# 2. Plot of the 5-minute interval and the average number of steps taken averaged across all weekday days or weekend days.
+```{r}
+plot(wDay_wEnd$interval, wDay_wEnd$average_steps, type="l",
+     xlab="5-minute interval", ylab="Average number of steps taken per weekday or weekend")
+```
+
