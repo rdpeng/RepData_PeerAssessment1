@@ -1,25 +1,95 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+Tarea #1 para el curso Investigación Reproducible
+==================================================
 
+```{r echo = FALSE, }
+library(lubridate)
+library(plyr)
+data <- read.csv("activity.csv")
+data$date <- as.POSIXct(data$date)
+data_na <- na.omit(data)
+```
 
-## Loading and preprocessing the data
+## Cuál es el número promedio de pasos diarios?
 
+En el histograma se puede observar que el número de pasos promedio por día se distribuye
+como una Normal.
 
+```{r}
+data_day <- aggregate(data_na$steps, by = list(date = data_na$date), FUN = sum)
+hist(data_day$x, main = "", xlab = "Promedio de pasos por día", ylab = "",
+     freq = FALSE, ylim = c(0, 0.00012))
+lines(density(data_day$x, na.rm = TRUE), col = 3, lwd = 2)
+title("¿Cuál es el promedio de pasos por día?")
+```
 
-## What is mean total number of steps taken per day?
+Abajo se observan los resultados de la media (1) y la mediana (2)
 
+```{r}
+mean(data_day$x)
+median(data_day$x)
+```
 
+## Cuál es le patrón diario para los intervalos de 5 minutos?
 
-## What is the average daily activity pattern?
+Se observa el patrón del número de pasos promedio.
 
+```{r}
+data_intervalo <- aggregate(data_na$steps, by = list(interval = data_na$interval),
+                            FUN = mean)
+plot(data_intervalo$interval, data_intervalo$x, type = "l", col = 4, lwd = 2,
+     xlab = "Intervalos de 5 minutos", ylab = "# pasos promedio")
+title("Patrón de pasos por intervalos de 5 minutos")
+```
 
+El intervalode 5 minutos donde más se realizan pasos en promedio es:
 
-## Imputing missing values
+```{r}
+data_intervalo$interval[data_intervalo$x == max(data_intervalo$x)]
+```
 
+## Imputar lo datos y cálcular el promedio
 
+Se usa el pomedio de los intervalos de 5 minutos para imputar los datos faltantes; se observa
+que la gráfica no cambia mucho por la misma naturaleza de la imputación.
 
-## Are there differences in activity patterns between weekdays and weekends?
+El total de datos faltantes es:
+
+```{r}
+table(is.na(data))
+```
+
+```{r echo = FALSE}
+data_fill <- join(data, data_intervalo, by = "interval")
+data_fill$steps[is.na(data_fill$steps)] <- round(data_fill$x)
+data_fill <- data_fill[, -4]
+```
+
+```{r}
+data_day2 <- aggregate(data_fill$steps, by = list(date = data_fill$date), FUN = sum)
+hist(data_day2$x, main = "", xlab = "Promedio de pasos por día", ylab = "",
+     freq = FALSE, ylim = c(0, 0.00020))
+lines(density(data_day2$x, na.rm = TRUE), col = 3, lwd = 2)
+title("¿Cuál es el promedio de pasos por día?")
+```
+
+El promedio y la mediana son los siguientes:
+
+```{r}
+mean(data_day2$x)
+median(data_day2$x)
+```
+
+## Existen diferencias entre los días de semana y los fines de semana?
+
+En la gráfica se puede observar las diferencias:
+
+```{r echo = FALSE}
+data_w <- mutate(data_fill, day = weekdays(data_fill$date, abbreviate = TRUE))
+finde <- matrix(c("dom.", "sáb.", "jue.", "lun.", "mar.", "mié.", "vie.",
+                  rep("weekend", 2), rep("weekday", 5)), ncol = 2)
+colnames(finde) <- c("day", "marca")
+finde <- as.data.frame(finde)
+data_w <- join(data_w, finde, by = "day")
+data_w_int <- aggregate(data_w$steps, by = list(interval = data_w$interval,
+                                                    marca = data_w$marca), FUN = mean)
+```
