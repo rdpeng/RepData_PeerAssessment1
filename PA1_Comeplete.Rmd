@@ -1,0 +1,89 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+This bit will load the data and also convert the date column which is in factor format into dates.
+```{r}
+steps<-read.csv("activity.csv")
+steps$date<-as.Date(steps$date)
+```
+## What is mean total number of steps taken per day?
+To find out the mean number of total steps we are going to sum up the steps per day (stepsPday) then take the mean, excluding the NAs.
+```{r}
+stepsPday<-aggregate(steps[c("steps")], FUN=sum ,by=list(steps$date))
+```
+Below is the a Table showing the total number of steps per day
+```{r}
+stepsPday
+```
+Removing the NAs here is a histogram of the total number of steps taken each day.
+```{r}
+hist(stepsPday$steps,xlab="Number of steps")
+```
+
+The mean and median below, respectivley
+```{r}
+mean(stepsPday$steps ,na.rm = TRUE)
+median(stepsPday$steps,na.rm=TRUE)
+```
+
+## What is the average daily activity pattern?
+To get the average daily pattern we will first remove the NAs then average the steps per interval
+```{r}
+dailypat<-subset(steps,complete.cases(steps)==TRUE)
+avgint<-aggregate(dailypat$steps,FUN=mean,by=list(dailypat$interval),rm.na=TRUE)
+plot(avgint,type="l",xlab="Interval",ylab="Average Steps")
+```
+
+Its obvious to see that one interval stands out with the most average number of steps.
+```{r}
+subset(avgint,avgint$x==max(avgint$x))
+```
+
+## Imputing missing values
+First we will look at how many values we are missing.  To do this we will take the total number of records in the original dataset then subtract the count of complete cases.  This leaves us with the below
+```{r}
+length(steps$steps)-length(complete.cases(dailypat))
+```
+The model I am going to use to fill in the missing values will be to take the average steps for that interval.  The below will first merge the steps then when there is an NA use the average for that interval
+
+```{r}
+names(avgint)[names(avgint)=="Group.1"]<-"interval"
+stepsfilled<-merge(steps,avgint)
+stepsfilled$clean<-ifelse(is.na(stepsfilled$steps)==TRUE,stepsfilled$x,stepsfilled$steps)
+stepsfilled<-stepsfilled[,c(5,3,1)]
+names(stepsfilled)[names(stepsfilled)=="clean"]<-"steps"
+stepsPdayF<-aggregate(stepsfilled[c("steps")], FUN=sum ,by=list(stepsfilled$date))
+```
+Now we will plot a histogram and compute the mean and median for the fixed data
+
+```{r}
+hist(stepsPdayF$steps,xlab="Number of steps")
+```
+
+Below you will be presented the updated mean and median along side the originals.  In the case of the mean it has not changed and the median has shifted to be the same as the mean.
+```{r}
+paste(mean(stepsPdayF$steps), mean(stepsPday$steps ,na.rm = TRUE),sep="  ")
+paste(median(stepsPdayF$steps),median(stepsPday$steps,na.rm=TRUE),sep="  ")
+```
+
+avgint<-aggregate(dailypat$steps,FUN=mean,by=list(dailypat$interval),rm.na=TRUE)
+## Are there differences in activity patterns between weekdays and weekends?
+To determine if there are differences we will first figure out which records are from weekends and which are not.
+
+```{r}
+stepsfilled$day<-weekdays(stepsfilled$date)
+stepsfilled$daytype<-ifelse(stepsfilled$day=="Sunday" | stepsfilled$day=="Saturday","weekend","weekday")
+
+Day_int_avg<-aggregate(stepsfilled$steps,FUN=mean,by=list(stepsfilled$interval,stepsfilled$daytype),rm.na=TRUE)
+require(ggplot2)
+p <- ggplot(Day_int_avg, aes(Group.1, x)) + geom_line()
+p + facet_grid(Group.2 ~ .)
+
+
+
