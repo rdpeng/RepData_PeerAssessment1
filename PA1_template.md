@@ -1,10 +1,5 @@
----
-title: "Reproducible Research: Peer Assessment 1"  
-output:  
-  html_document:  
-    keep_md: true  
-date: Data Retrieved at '`r Sys.time()`'
----
+# Reproducible Research: Peer Assessment 1
+Data Retrieved at '`r Sys.time()`'  
 In the last 10 years a number of personal activity monitors such as ["Fitbit"](https://en.wikipedia.org/wiki/Fitbit) have emerged as part of the [Quantified Self Movement](https://en.wikipedia.org/wiki/Quantified_Self). The homework assignment requires simple analysis of activity monitor data which is descibed in the homework instructions as:
 
 > This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
@@ -13,7 +8,8 @@ In the last 10 years a number of personal activity monitors such as ["Fitbit"](h
 
 The data was downloaded along with template code from the repo provided in the instructions for the ["Reproducible Research"](https://www.coursera.org/course/repdata) *Peer Assignment 1* at Coursera at the time given in the title of this report. Before the data is read from the current working directory, a few librarys need to be loaded.
 
-```{r setoptions, echo=TRUE, message=FALSE, warning=FALSE}
+
+```r
 ## we set global options to show only 2 decimals
 options(scipen = 1, digits = 2)
 require(knitr)
@@ -24,18 +20,19 @@ opts_chunk$set(echo = TRUE, results = "markup")
 ```
 The activity data was read into a data table using *csv2()*. The date field in the table was converted from character to the POSIX Date class. The interval data was converted from string (e.g. 1355 means 1:55 PM), and then added to the POSIXct date, creating a very convenient date-time that is easy to plot. The time zone is considered to be unimportant for this report.
 
-```{r loadActivityData, echo=TRUE, message=FALSE}
+
+```r
 dt <- read.csv2("./activity.csv", sep = ",", stringsAsFactors = F, header = T)  
 
 dt <- mutate(dt, date = ymd(date))
 minute(dt$date) <- dt$interval %% 100   # minutes are the 2 rightmost digits
 hour(dt$date)   <- dt$interval %/% 100  # hours are on left
-
 ```
 
 ## What is mean total number of steps taken per day?
 Using *group_by()* the data can be arranged by day of year, and then it is simple to calculate daily statistics. The only trick is the result of *summarize* is an object that can be plotted, which greatly simplifies the code.
-```{r calculateMeanSteps_by_day, echo=TRUE}
+
+```r
 by_date <- group_by(dt, doy = yday(date))
 
 summary_date <- summarise(by_date, daily_total = sum(steps, na.rm = T))
@@ -46,18 +43,33 @@ hist(summary_date$daily_total,
      main = "Daily Steps", 
      xlab = "Steps"
 )
-
-mean(summary_date$daily_total, na.rm = T)
-median(summary_date$daily_total, na.rm = T)
-
 ```
 
-The **mean** number of steps over the `r length(summary_date$daily_total)` day period is **`r format(mean(summary_date$daily_total, na.rm = T), nsmall = 1)`** and the **median** number of steps is **`r median(summary_date$daily_total, na.rm = T)`**.
+![](PA1_template_files/figure-html/calculateMeanSteps_by_day-1.png) 
+
+```r
+mean(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 9354
+```
+
+```r
+median(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10395
+```
+
+The **mean** number of steps over the 61 day period is **9354.2** and the **median** number of steps is **10395**.
 
 ## What is the average daily activity pattern?
 
 Another way to view the data is to average across days to get the typical number of steps at a given time. This can be simply done by repeating the code above, grouping by interval rather than date.
-```{r calculateMeanSteps_by_interval, echo=TRUE}
+
+```r
 by_interval <- group_by(dt, interval)
 
 summary_interval <- summarise(by_interval, interval_mean = mean(steps, na.rm = TRUE))
@@ -67,21 +79,43 @@ qplot(interval, interval_mean, data=summary_interval,
       main="Average Steps",
       xlab="Interval", ylab="mean(Steps)"
 )
-
-with(summary_interval, interval[which(interval_mean == max(interval_mean))])
-
 ```
 
-The 5-minute interval that, on average, contains the maximum number of steps is `r with(summary_interval, interval[which(interval_mean == max(interval_mean))])`, which makes sense as people are often busy around 8:30 AM.
+![](PA1_template_files/figure-html/calculateMeanSteps_by_interval-1.png) 
+
+```r
+with(summary_interval, interval[which(interval_mean == max(interval_mean))])
+```
+
+```
+## [1] 835
+```
+
+The 5-minute interval that, on average, contains the maximum number of steps is 835, which makes sense as people are often busy around 8:30 AM.
 
 
 ## Imputing missing values
 
-The data above is misleading because I have not corrected for the **`r sum(is.na(dt$steps))` missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (`r format(mean(dt$steps, na.rm = T), nsmall=2)`). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the class shared a useful hack for this on the (class forum)[https://class.coursera.org/repdata-036/forum/thread?thread_id=73]. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
+The data above is misleading because I have not corrected for the **2304 missing values of *steps*.** This leads to the histogram indicating a larger number of zero *steps* than is correct. One approach would be to replace missing values of *steps* with the mean steps oveall all intervals (37.38). Instead the average number of steps in each interval is calculated and used to replace steps on a per interval basis. Shiping Zhang, a student in the class shared a useful hack for this on the (class forum)[https://class.coursera.org/repdata-036/forum/thread?thread_id=73]. This only works because there are no missing intervals, just missing data. In other words dt is a repeating set of same 288 intervals so the assignment "repeats" or "wraps" thru the 288 mean values. Wish I thought of this.
 
-```{r imputMissingSteps, echo=TRUE}
+
+```r
 sum(is.na(dt$steps))
+```
+
+```
+## [1] 2304
+```
+
+```r
 mean(dt$steps, na.rm = T)
+```
+
+```
+## [1] 37
+```
+
+```r
 imputed_dt <- dt
 
 # Following is cleaver hack by Shiping Zhang to replace NA with interval mean.
@@ -99,13 +133,27 @@ hist(summary_date$daily_total,
      main = "Daily Steps (imputed values are interval mean)", 
      xlab = "Steps"
 )
-
-mean(summary_date$daily_total, na.rm = T)
-median(summary_date$daily_total, na.rm = T)
-
 ```
 
-Using the imputed values, the **mean = `r format(mean(summary_date$daily_total, na.rm = T), nsmall = 1)`** and the **median = `r format(median(summary_date$daily_total, na.rm = T), nsmall = 1)`**. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days. 
+![](PA1_template_files/figure-html/imputMissingSteps-1.png) 
+
+```r
+mean(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10766
+```
+
+```r
+median(summary_date$daily_total, na.rm = T)
+```
+
+```
+## [1] 10766
+```
+
+Using the imputed values, the **mean = 10766.2** and the **median = 10766.2**. Note that by coincidence the mean and the median are the same because we have replaced missing values with the average values on 8 missing days. 
 
 Using the imputed data, both the mean and median number of steps increases because additional steps are being added to the data set. 
 
@@ -114,7 +162,8 @@ Examining the histogram I see a much more evenly distributed number of steps, wh
 ## Are there differences in activity patterns between weekdays and weekends?
 
 To further check the validity of the date, I made a plot highlighting the difference in activity between weekend and weekdays. Note that activity begins more gradually on the weekends is more uniform, and extends farther into the night. Weekdays have higher peak values of steps, perhaps because most people are rushing in morning before work. 
-```{r compareWeekendsToWeekdays, echo=TRUE}
+
+```r
 imputed_dt = mutate(imputed_dt, weekend = ifelse(grepl('^S', weekdays(imputed_dt$date)), "weekend", "weekday"))
 
 by_interval <- group_by(imputed_dt, interval, weekend)
@@ -128,3 +177,5 @@ qplot(interval, interval_mean, data=summary_interval,
       xlab="Interval", ylab="mean(Steps)"
 )
 ```
+
+![](PA1_template_files/figure-html/compareWeekendsToWeekdays-1.png) 
