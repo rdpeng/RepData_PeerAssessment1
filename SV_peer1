@@ -1,0 +1,124 @@
+Enter file contents here# Coursera Reproducible Research: Peer Assessment 1
+
+---
+
+```{r setoptions, echo=FALSE, results='hide'}
+```
+
+
+
+Importing data
+```{r}
+activity <- read.csv("activity.csv")
+```
+
+
+
+## What is mean total number of steps taken per day?
+```{r}
+day_sum <- aggregate(activity$steps, by = list(activity$date), FUN = sum, na.rm = TRUE)
+names(day_sum) <- c("date", "total_steps")
+hist(day_sum$total_steps)
+mean(day_sum$total_steps)
+median(day_sum$total_steps)
+```
+
+What is the average daily activity pattern?
+```{r}
+interval_mean <- aggregate(activity$steps, by = list(activity$interval), FUN = mean, na.rm = TRUE)
+names(interval_mean) <- c("interval", "total_steps")
+plot(interval_mean$interval, interval_mean$total_steps, type="l")
+
+max_mean <- max(interval_mean$total_steps)
+interval_mean[interval_mean$total_steps %in% max_mean, 1]
+```
+	
+## Imputing missing values
+
+Total number of missing values in the dataset
+```{r}
+nrow(as.matrix(null_steps[null_steps==TRUE]))
+```
+
+Here i have chosen to replace the missing values with the means of the whole dataset
+```{r}
+activity_imp <- activity
+activity_imp$steps[is.na(activity_imp$steps)] <- mean(activity_imp$steps, na.rm=TRUE)
+```
+
+After imputing, the histogram is as one would expect, more clustered around the middle. Here i include the original un-imputed dataset
+with the imputed one for easier comparison
+```{r}
+day_sum_imp <- aggregate(activity_imp$steps, by = list(activity_imp$date), FUN = sum)
+names(day_sum_imp) <- c("date", "total_steps")
+par(mfrow=c(1,2))
+hist(day_sum_imp$total_steps, main="Imputed")
+hist(day_sum$total_steps, main ="Not Imputed")
+```
+
+Mean before imputation:
+```{r}
+mean(day_sum$total_steps)
+```
+
+Mean after imputation:
+```{r}
+mean(day_sum_imp$total_steps)
+```
+
+Median before imputation:
+```{r}
+median(day_sum$total_steps)
+```
+
+Median after imputation:
+```{r}
+median(day_sum_imp$total_steps)
+```
+
+Both the median and the mean of the steps per day increased after imputation, not surprisingly since the imputed values adds to the total
+number of steps per day. Mean and median per 5-minute interval would not necessarily have increased.
+
+
+# Are there differences in activity patterns between weekdays and weekends?
+
+To get the weekdays in English i have to set the locale
+```{r}
+Sys.setlocale("LC_ALL", "English")
+```
+
+
+Here the variable "Weekdays" is created, and also the variable "Weekend" with its two factors "Weekend" and "Weekday".
+```{r}
+activity_imp$weekday <- weekdays(as.Date(activity_imp$date, format = "%Y-%m-%d"))
+activity_imp$weekend[activity_imp$weekday %in% c("Saturday", "Sunday")] <- c("Weekend")
+activity_imp$weekend[is.na(activity_imp$weekend)] <- c("Weekday")
+```
+
+To check the created variables let look at a crosstabulation:
+```{r}
+table(activity_imp$weekday, activity_imp$weekend)
+```
+
+# Graphs to see the difference in mean between weekends and weekdays
+
+First I create a dataset for each graph
+```{r}
+plot_wd <- subset(activity_imp, activity_imp$weekend=="Weekday")
+plot_we <- subset(activity_imp, activity_imp$weekend=="Weekend")
+```
+
+Then I create datasets with the mean for each interval
+```{r}
+wd_mean <- aggregate(plot_wd$steps, by = list(plot_wd$interval), FUN = mean)
+names(wd_mean) <- c("date", "mean_steps")
+we_mean <- aggregate(plot_we$steps, by = list(plot_we$interval), FUN = mean)
+names(we_mean) <- c("date", "mean_steps")
+```
+
+And finally the graphs themselves;
+```{r}
+par(mfrow=c(2,1))
+with(wd_mean, plot(date, mean_steps, type="l", main="Weekday"))
+with(we_mean, plot(date, mean_steps, type="l", main="Weekend"))
+```
