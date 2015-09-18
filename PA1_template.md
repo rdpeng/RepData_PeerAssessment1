@@ -1,14 +1,22 @@
----
-output: 
-  html_document: 
-    keep_md: yes
----
 Peer Assessment 1 - Reproducible Research
 ==================================================
 
-```{r}
+
+```r
 library(lubridate)
 library(plyr)
+```
+
+```
+## 
+## Attaching package: 'plyr'
+## 
+## The following object is masked from 'package:lubridate':
+## 
+##     here
+```
+
+```r
 library(ggplot2)
 data <- read.csv("activity.csv")
 data$date <- as.POSIXct(data$date)
@@ -17,70 +25,106 @@ data_na <- na.omit(data)
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 data_day <- aggregate(data_na$steps, by = list(date = data_na$date), FUN = sum)
-hist(data_day$x, main = "", xlab = "Promedio de pasos por día", ylab = "",
+hist(data_day$x, main = "", xlab = "Promedio de pasos por dÃ­a", ylab = "",
      freq = FALSE, ylim = c(0, 0.00012))
 lines(density(data_day$x, na.rm = TRUE), col = 3, lwd = 2)
-title("¿Cuál es el promedio de pasos por día?")
+title("Â¿CuÃ¡l es el promedio de pasos por dÃ­a?")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+
+```r
 mean(data_day$x)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(data_day$x)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 data_intervalo <- aggregate(data_na$steps, by = list(interval = data_na$interval),
                             FUN = mean)
 plot(data_intervalo$interval, data_intervalo$x, type = "l", col = 4, lwd = 2,
      xlab = "Intervalos de 5 minutos", ylab = "# pasos promedio")
-title("Patrón de pasos por intervalos de 5 minutos")
+title("PatrÃ³n de pasos por intervalos de 5 minutos")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+
+```r
 data_intervalo$interval[data_intervalo$x == max(data_intervalo$x)]
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
 
 Interval average steps.
 
-```{r}
+
+```r
 table(is.na(data))
 ```
 
-```{r echo = FALSE}
-data_fill <- join(data, data_intervalo, by = "interval")
-data_fill$steps[is.na(data_fill$steps)] <- round(data_fill$x)
-data_fill <- data_fill[, -4]
+```
+## 
+## FALSE  TRUE 
+## 50400  2304
 ```
 
-```{r}
+
+```
+## Warning in data_fill$steps[is.na(data_fill$steps)] <- round(data_fill$x):
+## nÃºmero de items para para sustituir no es un mÃºltiplo de la longitud del
+## reemplazo
+```
+
+
+```r
 data_day2 <- aggregate(data_fill$steps, by = list(date = data_fill$date), FUN = sum)
-hist(data_day2$x, main = "", xlab = "Promedio de pasos por día", ylab = "",
+hist(data_day2$x, main = "", xlab = "Promedio de pasos por dÃ­a", ylab = "",
      freq = FALSE, ylim = c(0, 0.00020))
 lines(density(data_day2$x, na.rm = TRUE), col = 3, lwd = 2)
-title("¿Cuál es el promedio de pasos por día?")
+title("Â¿CuÃ¡l es el promedio de pasos por dÃ­a?")
 ```
 
-```{r}
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+
+```r
 mean(data_day2$x)
+```
+
+```
+## [1] 10765.64
+```
+
+```r
 median(data_day2$x)
+```
+
+```
+## [1] 10762
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r echo = FALSE}
-data_w <- mutate(data_fill, day = weekdays(data_fill$date, abbreviate = TRUE))
-finde <- matrix(c("dom.", "sáb.", "jue.", "lun.", "mar.", "mié.", "vie.",
-                  rep("weekend", 2), rep("weekday", 5)), ncol = 2)
-colnames(finde) <- c("day", "marca")
-finde <- as.data.frame(finde)
-data_w <- join(data_w, finde, by = "day")
-data_w_int <- aggregate(data_w$steps, by = list(interval = data_w$interval,
-                                                    marca = data_w$marca), FUN = mean)
-qplot(x, interval, data = data_w_int, facets = .~marca, geom = "line")
-```
+![](PA1_template_files/figure-html/unnamed-chunk-10-1.png) 
