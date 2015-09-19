@@ -109,7 +109,7 @@ df3 <- newdata %>% group_by(date) %>% summarise(steps=sum(steps))
 hist(df3$steps,col="green",main="Total number of steps with no NAs",xlab="Steps")
 ```
 
-![](./PA1_template_files/figure-html/hist_mean,echo-TRUE-1.png) 
+![](./PA1_template_files/figure-html/hist_mean-1.png) 
 
 ```r
 mean(df3$steps)

@@ -55,7 +55,7 @@ newdata <- data %>% group_by(interval) %>%
 ```
 I am going to use that to create a new histogram of the total number of steps and calculate the mean and median of steps per day.
 
-```{r hist_mean,echo-TRUE}
+```{r hist_mean,echo=TRUE}
 df3 <- newdata %>% group_by(date) %>% summarise(steps=sum(steps))
 hist(df3$steps,col="green",main="Total number of steps with no NAs",xlab="Steps")
 mean(df3$steps)
