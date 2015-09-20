@@ -139,7 +139,7 @@ missing_vals <- sum(is.na(rdata$steps))
 
 ```
 
-The total number of ***missing values*** is **`r missing_vals`**.
+The total number of ***missing values*** is **`r tot_na_value`**.
 
 ### 2. Strategy for filling in all of the missing values in the dataset
 
