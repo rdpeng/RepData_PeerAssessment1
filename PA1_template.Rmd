@@ -1,3 +1,5 @@
+echo = TRUE
+
 Reproducible Research: Peer Assessment 1
 ========================================
 ##Introduciton
@@ -23,6 +25,7 @@ Let's calculate the total number of steps in the data base (using the dply packa
 ```{r}
     library(dplyr)
   st_day<-summarise(group_by(activity, date), steps = sum(steps))
+  st_day
 ```
 A histogram of the total number of steps taken each day
 ```{r}
