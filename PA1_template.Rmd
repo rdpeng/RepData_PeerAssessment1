@@ -1,25 +1,95 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Roy Lee"
+date: "September 20, 2015"
+output: html_document
+keep_md: true
 ---
 
+## Load and preprocess the data.
+```{r}
+activity <- read.csv("activity.csv")
+```
 
-## Loading and preprocessing the data
+## Display the histogram of steps per day.
+```{r}
+sum.steps.per.date <- aggregate(activity$steps, list(activity$date),
+                                sum, na.rm = TRUE)
+names(sum.steps.per.date) <- c("Date", "Sum.Steps")
+hist(sum.steps.per.date$Sum.Steps, breaks = 25, main = "Activity",
+     xlab = "Steps Per Day")
+```
 
+```{r}
+mean.total.number.of.steps <- mean(sum.steps.per.date$Sum.Steps)
+```
+## The mean of the total number of steps taken per day is `r mean.total.number.of.steps`.
 
+```{r}
+median.total.number.of.steps <- median(sum.steps.per.date$Sum.Steps)
+```
+## The median of the total number of steps taken per day is `r median.total.number.of.steps`.
 
-## What is mean total number of steps taken per day?
+## Display the average daily activity pattern.
+```{r}
+mean.steps.per.interval <- aggregate(activity$steps,
+                                     list(activity$interval), mean,
+                                     na.rm = TRUE)
+names(mean.steps.per.interval) <- c("Interval", "Mean.Steps")
+plot(mean.steps.per.interval$Interval,
+     mean.steps.per.interval$Mean.Steps, type = 'l', main = "Activity",
+     xlab = "Interval", ylab = "Mean Number of Steps")
+```
 
+```{r}
+interval.max.number.steps <-
+    mean.steps.per.interval[
+    which.max(mean.steps.per.interval[, 2]), 1]
+```
+## The 5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps is `r interval.max.number.steps`.
 
+## Inputting Missing Values.
 
-## What is the average daily activity pattern?
+```{r}
+total.number.nas <- sum(is.na(activity$steps))
+```
+### The total number of rows with NAs is `r total.number.nas`.
 
+## Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r}
+activity[is.na(activity$steps), "steps"] <- 0 # Just make them zeros.
+```
+### I changed the missing values to zero. I think that is the safest assumption; a missing value means there were no steps. This has the effect of lowering the interval mean values. These should be more accurate. This has no impact on the total number of steps per day.
 
-
-## Imputing missing values
-
-
+## Display the average daily activity pattern.
+```{r}
+mean.steps.per.interval <- aggregate(activity$steps,
+                                     list(activity$interval), mean,
+                                     na.rm = TRUE)
+names(mean.steps.per.interval) <- c("Interval", "Mean.Steps")
+plot(mean.steps.per.interval$Interval,
+     mean.steps.per.interval$Mean.Steps, type = 'l', main = "Activity",
+     xlab = "Interval", ylab = "Mean Number of Steps")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r}
+activity[ ,"day"] <- weekdays(as.Date(activity$date, "%Y-%m-%d"))
+activity[ ,"weekpart"] <-
+    ifelse(activity$day == "Saturday"
+           | activity$day == "Sunday", "Weekend", "Weekday")
+mean.steps.per.weekpart.interval <-
+    aggregate(activity$steps, list(activity$weekpart,
+                                   activity$interval),
+                                   mean, na.rm = TRUE)
+library(lattice)
+xyplot(x ~ Group.2 | Group.1,
+       type = 'l',
+       layout=c(1,2),
+       ylab="Number of Steps",
+       xlab="Interval",
+       data = mean.steps.per.weekpart.interval)
+```
+
+## End.
