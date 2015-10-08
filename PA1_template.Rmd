@@ -5,21 +5,77 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
+```{r}
+require(dplyr)
+require(lubridate)
+require(lattice)
+url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+filename<-"activity.csv"
+temp<-tempfile()
+download.file(url,temp)
+data<-read.csv(unz(temp,filename))
+data<-data.frame(data)
+unlink(temp)
 
-
+data$steps<-as.numeric(data$steps)
+data$date<-as.POSIXct(data$date)
+```
 
 ## What is mean total number of steps taken per day?
+```{r,echo=TRUE}
+sum_steps <- data %>%
+  group_by(date) %>%
+  summarize(sum=sum(steps,na.rm=TRUE))
 
-
+hist(sum_steps$sum)
+print(mean_steps<-mean(sum_steps$sum,na.rm=TRUE))
+print(median_steps<-median(sum_steps$sum,na.rm=TRUE))
+```
 
 ## What is the average daily activity pattern?
+```{r,echo=TRUE}
+sum_ts<-data %>%
+  group_by(interval) %>%
+  summarize(mean_steps=mean(steps,na.rm=TRUE))
 
-
-
+plot(sum_ts,type="l")
+print(filter(sum_ts,mean_steps==max(sum_ts$mean_steps)))
+```
 ## Imputing missing values
+```{r,echo=TRUE}
+sum(is.na(data$steps))
 
+replaceNaMean<-function(steps,interval){
+  if(is.na(steps)){
+    return(sum_ts[sum_ts$interval==interval,]$mean_steps)
+  } else {return(steps)}
+}
 
+data_imputed<-data
+data_imputed$steps<-mapply(FUN=replaceNaMean,steps=data$steps,interval=data$interval)
+sum(is.na(data_imputed$steps))
+
+sum_steps_imputed <- data_imputed %>%
+  group_by(date) %>%
+  summarize(sum=sum(steps,na.rm=TRUE))
+
+hist(sum_steps_imputed$sum)
+print(mean_steps<-mean(sum_steps_imputed$sum,na.rm=TRUE))
+print(median_steps<-median(sum_steps_imputed$sum,na.rm=TRUE))
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r,echo=TRUE}
+weekday <- function(x){
+  if((wday(x)+6)%%7<=5) {"weekday"} else {"weekend"}
+  }
+
+data_imputed$weekday<-as.factor(sapply(X = unlist(data_imputed$date),FUN = weekday))
+
+sum_ts_imputed <-data_imputed %>%
+  group_by(weekday,interval) %>%
+  summarize(mean_steps=mean(steps,na.rm=TRUE))
+
+print(xyplot(mean_steps ~ interval | factor(weekday),data=sum_ts_imputed,type="l",layout=c(1,2)))
+```
