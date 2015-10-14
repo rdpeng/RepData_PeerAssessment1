@@ -6,20 +6,117 @@ output:
 ---
 
 
-## Loading and preprocessing the data
+## Purpose
+
+This document details the analysis performed on data from a personal activity monitoring device. This device collected the number of steps taken at 5 minute intervals throughout the day during the months of October and November, 2012.
+
+
+## 1. Loading and preprocessing the data
+
+The activity data is read into a data frame using the following code. To aid understanding, a summary of the datset is given showing the three variables: steps, date and interval.
+```{r processData}
+data <- read.table(unz("activity.zip", "activity.csv"), header=T, sep=",")
+summary(data)
+```
+
+
+## 2. What is mean total number of steps taken per day?
+The total number of steps per day are then calculated using the aggregate function, and the results are plotted using a histogram
+
+```{r stepsPerDay, fig.height=4}
+stepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = sum, na.rm = TRUE)
+
+hist(stepsPerDay$steps,
+     main="Histogram of total number of steps per day",
+     ylab="Frequency",
+     xlab="Steps",
+     col="coral")
+```
+
+
+The mean and median steps per day are then calculated by way of the following code before presenting the findings in the table below:
+```{r meanMedian, results="asis"}
+library(xtable)
+meanStepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = mean, na.rm = TRUE)
+medianStepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = median, na.rm = TRUE)
+meanMedian<- data.frame(meanStepsPerDay$date,meanStepsPerDay$steps,medianStepsPerDay$steps)
+names(meanMedian)<-c("date","mean steps","median steps")
+meanMedian<-xtable(meanMedian[1:3])
+print(meanMedian, type="html")
+```
+## 3. What is the average daily activity pattern?
+
+The average steps per time interval across all days is calculated and plotted using the code shown below. 
+
+```{r stepsPerInt, fig.height=10, fig.width=16}
+avgStepsPerInt<-aggregate(cbind(steps) ~ interval, data = data, FUN = mean, na.rm = TRUE)
+high<-which.max(avgStepsPerInt$steps)
+highInt<-avgStepsPerInt[high,]$interval
+plot(avgStepsPerInt$interval, avgStepsPerInt$steps, type="l", xlab="Time Interval", ylab="Number of Steps",xaxt="n")
+     title ("Average Steps per Time Interval")
+     axis(1, at = seq(0, 2600, by = 50), las=2)
+```
 
 
 
-## What is mean total number of steps taken per day?
+From the plot one can see that  interval **`r highInt`** contains the maximum number of steps.
 
 
+## 4. Imputing missing values
 
-## What is the average daily activity pattern?
+```{r numNAs}
+numNA<-length(which(is.na(data)))
+```
+
+From the code above we can establish that there are **```r numNA```** intervals without a value. The presence of missing values may introduce bias into some calculations or summaries of the data. To overcome this issue a strategy of substituting the mean value of the resepctive interval for the missing values, has been adopted by way of the following code.
+
+```{r NAReplace}
+mergedData<-merge(data, avgStepsPerInt, by="interval")
+NARows <- is.na(mergedData$steps.x)
+mergedData$steps.x[NARows] <- mergedData$steps.y[NARows]
+```
+
+With the NA values substituted, the analysis detailed in section 2 is replayed show the effect of missing values within the data set. 
+
+```{r stepsPerDaySubst, fig.height=4}
+stepsPerDay2<-aggregate(cbind(steps.x) ~ date, data = mergedData, FUN = sum, na.rm = TRUE)
+
+hist(stepsPerDay2$steps.x,
+     main="Histogram of total number of steps per day (with NAs substituted)",
+     ylab="Frequency",
+     xlab="Steps",
+     col="coral")
+```
+
+**TO BE COMPLETED**
+
+## 5. Are there differences in activity patterns between weekdays and weekends?
+
+Averages per interval for both week days and weekendd were calculated using the code below. These avearages were then plot alongside each other to show the differences in activity patterns between them.
 
 
+```{r diffActPatts,fig.height=10, fig.width=16}
+# --- Convert date variable to date format
+suppressPackageStartupMessages(library(timeDate))
+mergedData$date <- as.POSIXct(strptime(mergedData$date, "%Y-%m-%d",tz = "GMT"))
 
-## Imputing missing values
+# --- add new column signifying weekday(TRUE) or weekend(FALSE)
+mergedData["weekday"]<- isWeekday(mergedData$date)
 
+# --- Calc average per interval/day type (weekday/weekend)
+avgStepsPerInt<-aggregate(cbind(steps.x) ~ weekday+interval, data = mergedData, FUN = mean, na.rm = TRUE)
+weekDayData<-subset(avgStepsPerInt,avgStepsPerInt$weekday==TRUE)
+weekEndData<-subset(avgStepsPerInt,avgStepsPerInt$weekday==FALSE)
 
+# --- Plot the difference between weekday and weekend steps
+par(mfrow=c(2,1))
+plot(weekDayData$interval, weekDayData$steps, type="l", xlab="Time Interval", ylab="Number of Steps",xaxt="n",
+ylim=range(0:250))
+title ("Average Steps per Time Interval on Week Days")
+axis(1, at = seq(0, 2600, by = 50), las=2)
+plot(weekEndData$interval, weekEndData$steps, type="l", xlab="Time Interval", ylab="Number of Steps",xaxt="n",
+     ylim=range(0:250))
+title ("Average Steps per Time Interval on Weekends")
+axis(1, at = seq(0, 2600, by = 50), las=2)
 
-## Are there differences in activity patterns between weekdays and weekends?
+```
