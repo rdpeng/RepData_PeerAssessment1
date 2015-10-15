@@ -7,30 +7,33 @@ output:
 
 ## Loading and preprocessing the data
 ### 1. Load the data
-```{r,message=FALSE}
+```{r,message=FALSE,cache=FALSE}
 # load required packages
 require(dplyr)
 require(lubridate)
 require(lattice)
+```
 
+```{r,message=FALSE,cache=TRUE}
 # identify target url and filename
-url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+url<-"http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 filename<-"activity.csv"
 
 # load zip into a temporary file, unzip dataset and load into a
 # dataframe for dplyr
 temp<-tempfile()
-download.file(url,temp)
+download.file(url,temp,mode="wb")
 data<-read.csv(unz(temp,filename))
 data<-data.frame(data)
 unlink(temp)
 ```
 
 ### 2. Process / transform the data into a format suitable for analysis
-```{r,message=FALSE}
+```{r,message=FALSE,cache=TRUE}
 # convert columns into useful classes for analysis
 data$steps<-as.numeric(data$steps)
 data$date<-as.POSIXct(data$date)
+data$interval<-parse_date_time(sprintf("%04d",data$interval),orders = "H!M!")
 ```
 
 ## What is mean total number of steps taken per day?
@@ -45,13 +48,13 @@ head(sum_steps)
 ```
 ### 2. Make a histogram of the total number of steps taken each day
 ```{r}
-hist(sum_steps$sum)
+hist(x= sum_steps$sum, main = "Histogram of Total Steps Per Day", xlab="Total Steps Per Day",breaks = 30)
 ```
 
 ### 3. Calculate and report the mean and median of the total number of steps taken per day
 ```{r}
-paste("Mean:",mean_steps<-mean(sum_steps$sum,na.rm=TRUE))
-paste("Median:",median_steps<-median(sum_steps$sum,na.rm=TRUE))
+paste("Mean:",mean_steps<-round(mean(sum_steps$sum,na.rm=TRUE)),2)
+paste("Median:",median_steps<-round(median(sum_steps$sum,na.rm=TRUE)),2)
 ```
 
 ## What is the average daily activity pattern?
@@ -70,7 +73,7 @@ plot(sum_ts,type="l")
 maxint<-filter(sum_ts,mean_steps==max(sum_ts$mean_steps))
 maxint
 ```
-Interval `r maxint$interval[1]` contains the maximum average number of steps, with an average of `r round(maxint$mean_steps[1],2)` steps per day.
+The interval at `r strftime(maxint$interval[1], format="%H:%M")` contains the maximum average number of steps, with an average of `r round(maxint$mean_steps[1],2)` steps per day.
 
 ## Imputing missing values
 
@@ -107,7 +110,7 @@ sum_steps_imputed <- data_imputed %>%
   group_by(date) %>%
   summarize(sum=sum(steps,na.rm=TRUE))
 # plot a histogram of the total steps per day
-hist(sum_steps_imputed$sum)
+hist(sum_steps_imputed$sum,main = "Histogram of Total Steps Per Day  (imputed)", xlab="Total Steps Per Day",breaks = 30)
 ```
 
 #### Calculate and report the mean and median total number of steps taken per day. 
