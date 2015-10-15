@@ -94,7 +94,7 @@ NARows <- is.na(mergedData$steps.x)
 mergedData$steps.x[NARows] <- mergedData$steps.y[NARows]
 ```
 
-With the NA values substituted, the analysis detailed in section 2 is replayed show the effect of missing values within the data set. 
+With the NA values substituted, the analysis detailed in section 2 is replayed showing the effect of imputing the missing values within the data set. 
 
 
 ```r
@@ -106,7 +106,7 @@ meanSteps <- mean(stepsPerDay$totSteps, na.rm = TRUE)
 medianSteps <- median(stepsPerDay$totSteps, na.rm = TRUE)
 
 hist(stepsPerDay$totSteps,
-     main="Histogram of total number of steps per day (with NAs substituted)",
+     main="Histogram of total number of steps per day (with imputing)",
      ylab="Frequency",
      xlab="Steps",
      col="coral",
