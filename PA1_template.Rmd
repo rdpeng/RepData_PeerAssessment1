@@ -16,34 +16,36 @@ This document details the analysis performed on data from a personal activity mo
 The activity data is read into a data frame using the following code. To aid understanding, a summary of the datset is given showing the three variables: steps, date and interval.
 ```{r processData}
 data <- read.table(unz("activity.zip", "activity.csv"), header=T, sep=",")
+data$date <- as.Date(data$date, format = "%Y-%m-%d")
 summary(data)
 ```
 
 
 ## 2. What is mean total number of steps taken per day?
-The total number of steps per day are then calculated using the aggregate function, and the results are plotted using a histogram
+The total number of steps per day are then calculated and the results are plotted using a histogram, followed by the calculation of the mean and median. 
 
-```{r stepsPerDay, fig.height=4}
-stepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = sum, na.rm = TRUE)
+```{r stepsPerDay, fig.height=8}
 
-hist(stepsPerDay$steps,
+library("plyr")
+stepsPerDay<-ddply(data, ~date, summarise, totSteps = sum(steps, na.rm = TRUE))
+
+hist(stepsPerDay$totSteps,
      main="Histogram of total number of steps per day",
      ylab="Frequency",
      xlab="Steps",
-     col="coral")
+     col="coral",
+     breaks=20)
+axis(1, at=seq(0,30000,by=5000))
+
+meanSteps <- mean(stepsPerDay$totSteps, na.rm = TRUE)
+medianSteps <- median(stepsPerDay$totSteps, na.rm = TRUE)
 ```
 
 
-The mean and median steps per day are then calculated by way of the following code before presenting the findings in the table below:
-```{r meanMedian, results="asis"}
-library(xtable)
-meanStepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = mean, na.rm = TRUE)
-medianStepsPerDay<-aggregate(cbind(steps) ~ date, data = data, FUN = median, na.rm = TRUE)
-meanMedian<- data.frame(meanStepsPerDay$date,meanStepsPerDay$steps,medianStepsPerDay$steps)
-names(meanMedian)<-c("date","mean steps","median steps")
-meanMedian<-xtable(meanMedian[1:3])
-print(meanMedian, type="html")
-```
+The mean of the total number of steps taken per day is **```r meanSteps```** and the median is **```r medianSteps```**
+
+
+
 ## 3. What is the average daily activity pattern?
 
 The average steps per time interval across all days is calculated and plotted using the code shown below. 
@@ -68,7 +70,7 @@ From the plot one can see that  interval **`r highInt`** contains the maximum nu
 numNA<-length(which(is.na(data)))
 ```
 
-From the code above we can establish that there are **```r numNA```** intervals without a value. The presence of missing values may introduce bias into some calculations or summaries of the data. To overcome this issue a strategy of substituting the mean value of the resepctive interval for the missing values, has been adopted by way of the following code.
+From the code above we can establish that there are **```r numNA```** intervals without a value. The presence of missing values may introduce bias into some calculations or summaries of the data. To overcome this issue a strategy of substituting (imputing) the mean value of the resepctive interval for the missing values, has been adopted by way of the following code.
 
 ```{r NAReplace}
 mergedData<-merge(data, avgStepsPerInt, by="interval")
@@ -78,21 +80,30 @@ mergedData$steps.x[NARows] <- mergedData$steps.y[NARows]
 
 With the NA values substituted, the analysis detailed in section 2 is replayed show the effect of missing values within the data set. 
 
-```{r stepsPerDaySubst, fig.height=4}
-stepsPerDay2<-aggregate(cbind(steps.x) ~ date, data = mergedData, FUN = sum, na.rm = TRUE)
+```{r stepsPerDaySubst, fig.height=8, results="asis"}
+# stepsPerDay<-aggregate(cbind(steps.x) ~ date, data = mergedData, FUN = sum, na.rm = TRUE)
+options(scipen=99999)
+stepsPerDay<-ddply(mergedData,~date,summarise,totSteps=sum(steps.x,na.rm=TRUE))
 
-hist(stepsPerDay2$steps.x,
+meanSteps <- mean(stepsPerDay$totSteps, na.rm = TRUE)
+medianSteps <- median(stepsPerDay$totSteps, na.rm = TRUE)
+
+hist(stepsPerDay$totSteps,
      main="Histogram of total number of steps per day (with NAs substituted)",
      ylab="Frequency",
      xlab="Steps",
-     col="coral")
+     col="coral",
+     breaks=20)
+axis(1, at=seq(0,30000,by=5000))
+axis(2, at=seq(0,20,by=5))
+
 ```
 
-**TO BE COMPLETED**
+The mean  and median of the total number of steps taken per day has increased as a result of the imputing to  **```r meanSteps```** and **```r medianSteps```** respectively
 
 ## 5. Are there differences in activity patterns between weekdays and weekends?
 
-Averages per interval for both week days and weekendd were calculated using the code below. These avearages were then plot alongside each other to show the differences in activity patterns between them.
+Averages per interval for both week days and weekend were calculated using the code below. These avearages were then plot alongside each other to show the differences in activity patterns between them.
 
 
 ```{r diffActPatts,fig.height=10, fig.width=16}
