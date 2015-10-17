@@ -8,15 +8,18 @@
 require(dplyr)
 require(lubridate)
 require(lattice)
+```
 
+
+```r
 # identify target url and filename
-url<-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+url<-"http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 filename<-"activity.csv"
 
 # load zip into a temporary file, unzip dataset and load into a
 # dataframe for dplyr
 temp<-tempfile()
-download.file(url,temp)
+download.file(url,temp,mode="wb")
 data<-read.csv(unz(temp,filename))
 data<-data.frame(data)
 unlink(temp)
@@ -28,6 +31,7 @@ unlink(temp)
 # convert columns into useful classes for analysis
 data$steps<-as.numeric(data$steps)
 data$date<-as.POSIXct(data$date)
+data$interval<-parse_date_time(sprintf("%04d",data$interval),orders = "H!M!")
 ```
 
 ## What is mean total number of steps taken per day?
@@ -46,6 +50,7 @@ head(sum_steps)
 ## Source: local data frame [6 x 2]
 ## 
 ##         date   sum
+##       (time) (dbl)
 ## 1 2012-10-01     0
 ## 2 2012-10-02   126
 ## 3 2012-10-03 11352
@@ -56,27 +61,27 @@ head(sum_steps)
 ### 2. Make a histogram of the total number of steps taken each day
 
 ```r
-hist(sum_steps$sum)
+hist(x= sum_steps$sum, main = "Histogram of Total Steps Per Day", xlab="Total Steps Per Day",breaks = 30)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
 ### 3. Calculate and report the mean and median of the total number of steps taken per day
 
 ```r
-paste("Mean:",mean_steps<-mean(sum_steps$sum,na.rm=TRUE))
+paste("Mean:",mean_steps<-round(mean(sum_steps$sum,na.rm=TRUE)),2)
 ```
 
 ```
-## [1] "Mean: 9354.22950819672"
+## [1] "Mean: 9354 2"
 ```
 
 ```r
-paste("Median:",median_steps<-median(sum_steps$sum,na.rm=TRUE))
+paste("Median:",median_steps<-round(median(sum_steps$sum,na.rm=TRUE)),2)
 ```
 
 ```
-## [1] "Median: 10395"
+## [1] "Median: 10395 2"
 ```
 
 ## What is the average daily activity pattern?
@@ -90,7 +95,7 @@ sum_ts<-data %>%
 plot(sum_ts,type="l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
 
 ###2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -103,10 +108,11 @@ maxint
 ```
 ## Source: local data frame [1 x 2]
 ## 
-##   interval mean_steps
-## 1      835   206.1698
+##              interval mean_steps
+##                (time)      (dbl)
+## 1 0000-01-01 08:35:00   206.1698
 ```
-Interval 835 contains the maximum average number of steps, with an average of 206.17 steps per day.
+The interval at 01:35 contains the maximum average number of steps, with an average of 206.17 steps per day.
 
 ## Imputing missing values
 
@@ -155,10 +161,10 @@ sum_steps_imputed <- data_imputed %>%
   group_by(date) %>%
   summarize(sum=sum(steps,na.rm=TRUE))
 # plot a histogram of the total steps per day
-hist(sum_steps_imputed$sum)
+hist(sum_steps_imputed$sum,main = "Histogram of Total Steps Per Day  (imputed)", xlab="Total Steps Per Day",breaks = 30)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
 #### Calculate and report the mean and median total number of steps taken per day. 
 
@@ -210,4 +216,4 @@ sum_ts_imputed <-data_imputed %>%
 xyplot(mean_steps ~ interval | factor(weekday),data=sum_ts_imputed,type="l",layout=c(1,2))
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png) 
