@@ -92,7 +92,7 @@ totalsteps &lt;- cleandata.dt[,list(total.steps = sum(steps)), by='date']</code>
 <h2>What is the average daily activity pattern?</h2>
 <p>The average steps with respect to time interval is computed as follows:</p>
 <pre class="r"><code>avgsteps &lt;- cleandata.dt[,list(avg.steps = mean(steps)), by='interval']</code></pre>
-<p>sum The average daily activity pattern is therefore plotted as follows:</p>
+<p>The average daily activity pattern is therefore plotted as follows:</p>
 <pre class="r"><code>int &lt;- avgsteps$interval
 av.st &lt;- avgsteps$avg.steps
 

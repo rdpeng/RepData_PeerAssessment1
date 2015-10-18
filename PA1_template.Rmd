@@ -48,7 +48,7 @@ The average steps with respect to time interval is computed as follows:
 ```{r}
 avgsteps <- cleandata.dt[,list(avg.steps = mean(steps)), by='interval']
 ```
-sum
+
 The average daily activity pattern is therefore plotted as follows:
 
 ```{r}
@@ -110,3 +110,5 @@ median(ftotalsteps$total.steps)
 Therefore, interpolating with the average values did not appreciably affect the mean or median of the data.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+
