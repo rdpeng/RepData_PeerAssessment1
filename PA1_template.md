@@ -55,7 +55,37 @@ median(totalsteps$total.steps)
 
 ## What is the average daily activity pattern?
 
+The average steps with respect to time interval is computed as follows:
 
+
+```r
+avgsteps <- cleandata.dt[,list(avg.steps = mean(steps)), by='interval']
+```
+
+The average daily activity pattern is therefore plotted as follows:
+
+
+```r
+int <- avgsteps$interval
+av.st <- avgsteps$avg.steps
+
+plot(int,av.st, type = "l")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+Per the plot, the maximum daily activity occurs at the following interval:
+
+
+```r
+maxint <- avgsteps[which(avgsteps$avg.steps == max(avgsteps$avg.steps)),]
+maxint
+```
+
+```
+##    interval avg.steps
+## 1:      835  206.1698
+```
 
 ## Imputing missing values
 
