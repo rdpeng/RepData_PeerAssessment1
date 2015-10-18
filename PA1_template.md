@@ -1,16 +1,12 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
 Initially, missing entries will be removed using the complete.cases function
 
-```{r}
+
+```r
 data <- read.csv("activity.csv")
 
 clean <- complete.cases(data)
