@@ -4,22 +4,101 @@ output:
   html_document:
     keep_md: true
 ---
+## Load necesary packages 
 
+packages <- c("data.table", "ggplot2", "xtable", "VIM")
+sapply(packages, require, character.only=TRUE, quietly=TRUE)
 
 ## Loading and preprocessing the data
 
+executable <- file.path("C:", "Program Files (x86)", "7-Zip", "7z.exe")
+parameters <- "x"
+f <- file.path(getwd(), "activity.zip")
+switch <- "-aoa"
+cmd <- paste(paste0("\"", executable, "\""), parameters, paste0("\"", f, "\""), switch)
+cmd
+system(cmd)
 
+## Reading file to dt
+
+dt <- read.csv(file.path(getwd(), "activity.csv"))
+dt <- data.table(dt)
+
+## Convert 'date' column to date format
+
+dt <- dt[, date := as.Date(date)]
+setkey(dt, date, interval)
+str(dt)
+dt
 
 ## What is mean total number of steps taken per day?
 
+dtDaily <- dt[, list(sumSteps = sum(steps)), date]
 
+ggplot(dtDaily, aes(x=sumSteps)) +
+	geom_histogram(alpha=1/2, binwidth=1000)
+
+tab <- dtDaily[, list(n = .N, nValid = sum(!is.na(sumSteps)), mean = mean(sumSteps, na.rm=TRUE), median = median(sumSteps, na.rm=TRUE))]
+print(xtable(tab), type="html", include.rownames=FALSE)
+
+dtDaily <- dtDaily[, status := "Before imputation"]
+dtDailyBeforeImputation <- dtDaily
+	
 
 ## What is the average daily activity pattern?
 
+dtIntervals <- dt[, list(meanSteps = mean(steps, na.rm=TRUE)), interval]
 
+ggplot(dtIntervals, aes(x=interval, y=meanSteps)) +
+	geom_line()
 
 ## Imputing missing values
 
+dt <- dt[, isStepsMissing := is.na(steps)]
+tab <- dt[, .N, isStepsMissing]
+print(xtable(tab), type="html", include.rownames=FALSE)
+
+dt <- kNN(dt)
+
+tab <- dt[, .N, list(isMissing = is.na(steps))]
+print(xtable(tab), type="html", include.rownames=FALSE)
+
+dtMissingness <- dt[, list(countMissing = sum(isStepsMissing), countRecords = .N, propMissing = sum(isStepsMissing / .N)), date]
+dtMissingness[countMissing > 0]
+
+dtDaily <- dt[, list(sumSteps = sum(steps), isImputed = sum(steps_imp) > 0), date]
+head(dtDaily)
+
+dtDaily <- dtDaily[, status := "After imputation"]
+dtDailyBeforeImputation <- dtDailyBeforeImputation[, isImputed := FALSE]
+dtDaily <- rbind(dtDaily, dtDailyBeforeImputation, use.names=TRUE)
+ggplot(dtDaily, aes(x=sumSteps, fill=isImputed)) +
+	geom_histogram(alpha=1/2, binwidth=1000) +
+  facet_wrap(~ status, nrow=2) +
+  theme(legend.position="bottom")
+  
+  tab <- dtDaily[, list(n = .N, nValid = sum(!is.na(sumSteps)), mean = mean(sumSteps, na.rm=TRUE), median = median(sumSteps, na.rm=TRUE)), status]
+print(xtable(tab), type="html", include.rownames=FALSE)
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+levels <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+newLevels <- c("Weekend", rep("Weekday", 5), "Weekend")
+dt <- dt[, dayOfWeek := factor(weekdays(date), levels=levels)]
+dt <- dt[, dayType := factor(newLevels[dayOfWeek])]
+dt[, .N, list(dayType, dayOfWeek)]
+message(sprintf("Is dayOfWeek a factor? %s. Is dayType a factor? %s", is.factor(dt$dayOfWeek), is.factor(dt$dayType)))
+
+dtIntervals <- dt[, list(meanSteps = mean(steps, na.rm=TRUE)), list(dayType, interval)]
+
+ggplot(dtIntervals, aes(x=interval, y=meanSteps, color=dayType)) +
+	geom_line() +
+	facet_wrap(~ dayType, nrow=2) +
+	theme(legend.position="none")
+	
+ggplot(dtIntervals, aes(x=interval, y=meanSteps, color=dayType)) +
+	geom_line() +
+	theme(legend.position="bottom")
+	
+	
