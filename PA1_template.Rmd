@@ -4,7 +4,7 @@ output:
   html_document:
     keep_md: true
 ---
-## Load necesary packages 
+# Load necesary packages 
 
 packages <- c("data.table", "ggplot2", "xtable", "VIM")
 sapply(packages, require, character.only=TRUE, quietly=TRUE)
@@ -19,12 +19,12 @@ cmd <- paste(paste0("\"", executable, "\""), parameters, paste0("\"", f, "\""), 
 cmd
 system(cmd)
 
-## Reading file to dt
+# Reading file to dt
 
 dt <- read.csv(file.path(getwd(), "activity.csv"))
 dt <- data.table(dt)
 
-## Convert 'date' column to date format
+# Convert 'date' column to date format
 
 dt <- dt[, date := as.Date(date)]
 setkey(dt, date, interval)
