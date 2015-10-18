@@ -15,7 +15,7 @@ output:
 
 ```
 
-## What is mean total number of steps taken per day?
+## What is mean total number of steps taken per day??
 ```{r mean}
 steps1 <- na.omit(data)
 sumi <- data.frame()
