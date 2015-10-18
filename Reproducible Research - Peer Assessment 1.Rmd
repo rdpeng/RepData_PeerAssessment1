@@ -1,0 +1,147 @@
+---
+title: "Reproducible Research - Peer Assessment 1"
+author: "Iñigo Montoya"
+date: "18 de octubre de 2015"
+output: html_document
+keep_md: true
+---
+
+## Loading and preprocessing the data
+First step is to load the data, from the corresponding ZIP file, in two steps:
+- Unzip the file and load the file.
+- Read the extracted csv file
+
+For this piece code to work, the orginal activity.zip file must be in the same folder. Otherwise, use setwd() to set the right working directory. 
+
+For large data set this code should be cached.
+
+In order to easily summarize data using tapply, the interval column is converted to a factor.
+
+```{r}
+unzip_file <- unzip("activity.zip")
+activity_file <-read.csv("activity.csv")
+rm(unzip_file)
+
+activity_file$interval <-as.factor(activity_file$interval) 
+```
+
+## What is mean total number of steps taken per day?
+
+As an exploratory data analysis the histogram of total number of steps per day is shown below.
+
+Missing values in the dataset are ignored.
+
+```{r}
+steps_per_day <- tapply(activity_file$steps, activity_file$date, sum)
+hist(steps_per_day, col = "red", main = "Histogram - Steps per day", 
+     labels = TRUE, xlab = "Nr of steps per day", ylim = c(0, 30))
+```
+
+
+Then mean and median of the total number of steps taken per day can be calculated as follows:
+
+```{r}
+mean(steps_per_day, na.rm=TRUE)
+median(steps_per_day, na.rm=TRUE)
+```
+
+Which are consistent with the aboce histogram.
+
+## What is the average daily activity pattern?
+
+The following plot displays the average number of steps for each 5-minutes intervals accross all days.
+
+Missing Values are supressed.
+
+```{r}
+mean_steps_per_interval <- tapply(activity_file$steps, activity_file$interval, mean, na.rm = TRUE)
+
+plot(names(mean_steps_per_interval), mean_steps_per_interval, 
+     xlab = "Interval", ylab = "Steps - Mean", main= "Mean Nr of Steps per Interval", type = "l", col = "red")
+```
+
+
+The interval with the highest mean is the following
+
+```{r}
+names(which(mean_steps_per_interval == max(mean_steps_per_interval)))
+```
+
+Which corresponds with the peak in the graph.
+
+
+## Imputing missing values
+
+There are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+The number of missing values can be checked in the "steps" column: 
+
+```{r}
+nr_na <- is.na(activity_file$steps)
+sum(nr_na)
+```
+
+In order to fill-in the gaps, the strategy used is to use the average of the same interval across all days.
+
+Other more complex strategies (like the same interval in the same weekdays) may lead to better results.
+
+So a new filled-in dataset is created following this approach:
+
+```{r}
+filledin_activity_file <- activity_file
+for (i in 1:nrow(activity_file)) {
+    if (nr_na[i]) {
+        filledin_activity_file$steps[i] <- mean_steps_per_interval [[activity_file$interval[i]]]
+    }
+}
+```
+
+The histogram for this new dataset is:
+```{r}
+filledin_steps_per_day <- tapply(filledin_activity_file$steps, filledin_activity_file$date, sum)
+hist(filledin_steps_per_day, col = "red", main = "Histogram - Steps per day - with filled-in values", 
+     labels = TRUE, xlab = "Nr of steps per day", ylim = c(0,40 ))
+```
+
+Logically, there is more data in the average values.
+
+The mean and median are:
+```{r}
+mean(filledin_steps_per_day, na.rm=TRUE)
+median(filledin_steps_per_day, na.rm=TRUE)
+```
+
+So the mean remains the same and the median gets equal to the mean, as a result of the strategy of using the interval mean and the large number of missing values (2304 out of 17568).
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+A new factor is added to the dataset to identify weekends and weekdays.
+Filled-in data is used for this analysis.
+
+```{r}
+weekday_factor <- as.factor(format(as.Date(filledin_activity_file$date), "%u") %in% c(6,7))
+levels(weekday_factor) <- list("weekday" = "FALSE", "weekend" = "TRUE")
+
+filledin_activity_file <- cbind(filledin_activity_file, weekday_factor)
+```
+
+
+The following graph shows the very different pattern followed during weekdays and weekends. The number of steps during working hours are much less, but the peak is higher on weekdays than during the weekends where number of stepsis higher but more distributed more even.
+
+
+```{r}
+par(mfrow = c(2, 1),mar = c(2, 2, 2, 1), oma = c(0, 0, 1, 0))
+#Weekend Graph 
+weekend_activity <- subset(filledin_activity_file, weekday_factor == "weekend")
+weekend_interval_mean <- tapply(weekend_activity$steps, weekend_activity$interval, mean)
+
+plot(names(weekend_interval_mean), weekend_interval_mean, ylim = c(0,250),
+     xlab = "Interval", ylab = "Steps Mean", main= "Mean Nr of Steps per Interval - Weekend", type = "l", col = "red")
+            
+#Weekday Graph 
+weekday_activity <- subset(filledin_activity_file, weekday_factor == "weekday")
+weekday_interval_mean <- tapply(weekday_activity$steps, weekday_activity$interval, mean)
+
+plot(names(weekday_interval_mean), weekday_interval_mean, ylim = c(0,250), 
+     xlab = "Interval", ylab = "Steps Mean", main= "Mean Nr of Steps per Interval - Weekday", type = "l", col = "red")
+```
