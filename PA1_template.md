@@ -24,7 +24,7 @@ library(dplyr)
 
 ```r
 library(lattice)
-opts_chunk$set(echo=TRUE,fig.path=".\\figure\\")
+opts_chunk$set(echo=TRUE)
 ```
 
 
@@ -49,7 +49,7 @@ median_every_day <- median(out_date_group$`sum(steps)`)
 histogram(out_date_group$`sum(steps)`,xlab="every day total steps")
 ```
 
-![](.\figure\unnamed-chunk-2-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ```r
 #print(mean_every_day,type="html")
@@ -70,7 +70,7 @@ sec_clean_out_interval_group <- summarize(sec_clean_data_interval_group ,mean(st
 xyplot(`mean(steps)`  ~ interval,data=sec_clean_out_interval_group ,type = "l",ylab=" the average number of steps")
 ```
 
-![](.\figure\unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 ```r
 sprintf(" the 5-minute interval that, on average, the maximum number of steps=%.1f",max(sec_clean_out_interval_group$`mean(steps)`))
@@ -94,7 +94,7 @@ all_out_date_group <- summarize(all_date_group ,sum(steps )  )
 histogram(all_out_date_group$`sum(steps)`,xlab="total number of steps taken each day ")
 ```
 
-![](.\figure\unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 ```r
 mean_replace_na_steps <- mean(all_out_date_group$`sum(steps)`)
@@ -120,4 +120,4 @@ week_all_out_date_group <- summarize(week_all_date_group ,mean(steps )  )
 xyplot(`mean(steps)`  ~ interval|Week,data=week_all_out_date_group ,type = "l",layout=c(1,2),ylab="Numbers of steps")
 ```
 
-![](.\figure\unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 

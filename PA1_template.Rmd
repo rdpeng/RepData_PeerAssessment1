@@ -12,7 +12,7 @@ output:
 library(knitr)
 library(dplyr)
 library(lattice)
-opts_chunk$set(echo=TRUE,fig.path=".\\figure\\")
+opts_chunk$set(echo=TRUE)
 ```
 
 
