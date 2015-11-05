@@ -1,0 +1,65 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+The dataset is [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip). Download the data file, unzip it and put it into your working directory. Loading the data using the following R code:
+
+```{R}
+D<- read.csv("D:/COURSERA_Reproducible_Research/Assignment1/repdata-data-activity/activity.csv")
+head(D)
+```
+For the following problems, we ignore the missing values in the dataset as:
+```{R}
+Data <- D[!is.na(D[,1]),]
+
+head(Data)
+
+```
+
+## What is mean total number of steps taken per day?
+For this part, we ignore the missing values in the dataset. The total number of steps taken per day could be performed via:
+```{R}
+
+datesSet <- union(Data[,2],Data[,2])
+totalNumberOfSteps=1:length(datesSet)
+
+for (index in 1: length(datesSet))
+{
+	subData <- Data[Data[,2]==datesSet[index],]
+	totalNumberOfSteps[index] <- sum(subData[,1])
+}
+
+totalNumberOfSteps
+
+```
+
+The histogram of the total number of steps taken each day is:
+```{R}
+
+hist(totalNumberOfSteps)
+```
+
+The mean and median of the total number of steps could be obtained by:
+```{R}
+summary(totalNumberOfSteps)
+```
+
+From above, the mean is 10770 and the median is 10760.
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+
