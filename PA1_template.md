@@ -21,15 +21,6 @@ output: html_document
     
     activity<- na.omit(read.csv("activity.csv"))
 ```
-
-```
-## Warning in file(file, "rt"): cannot open file 'activity.csv': No such file
-## or directory
-```
-
-```
-## Error in file(file, "rt"): cannot open the connection
-```
 ### Get Total Number of Steps per Day
 
 ```r
@@ -54,7 +45,7 @@ output: html_document
 ```
 
 ```
-## [1] NA
+## [1] 10766.19
 ```
 
 ```r
@@ -62,7 +53,7 @@ output: html_document
 ```
 
 ```
-## [1] NA
+## [1] 10765
 ```
 
 ##Average Daily Activity Pattern
@@ -73,9 +64,7 @@ output: html_document
     ggplot(sum_int, aes(interval, steps)) + geom_line() +ggtitle("Average Steps per Interval")
 ```
 
-```
-## Error in seq.default(from = best$lmin, to = best$lmax, by = best$lstep): 'from' must be of length 1
-```
+![plot of chunk plot2](figure/plot2-1.png) 
 
 ### On average Interval 835 has the highest number of steps with 10927.  See code below...
 
@@ -84,14 +73,13 @@ output: html_document
 ```
 
 ```
-##     interval          steps    
-##  Min.   :   0.0   Min.   : NA  
-##  1st Qu.: 588.8   1st Qu.: NA  
-##  Median :1177.5   Median : NA  
-##  Mean   :1177.5   Mean   :NaN  
-##  3rd Qu.:1766.2   3rd Qu.: NA  
-##  Max.   :2355.0   Max.   : NA  
-##                   NA's   :288
+##     interval          steps        
+##  Min.   :   0.0   Min.   :    0.0  
+##  1st Qu.: 588.8   1st Qu.:  131.8  
+##  Median :1177.5   Median : 1808.0  
+##  Mean   :1177.5   Mean   : 1981.3  
+##  3rd Qu.:1766.2   3rd Qu.: 2800.2  
+##  Max.   :2355.0   Max.   :10927.0
 ```
 
 ```r
@@ -99,8 +87,8 @@ output: html_document
 ```
 
 ```
-## [1] interval steps   
-## <0 rows> (or 0-length row.names)
+##   interval steps
+## 1      835 10927
 ```
 
 ## Imputing Missing Values
@@ -108,18 +96,6 @@ output: html_document
 
 ```r
     activity<- read.csv("activity.csv")
-```
-
-```
-## Warning in file(file, "rt"): cannot open file 'activity.csv': No such file
-## or directory
-```
-
-```
-## Error in file(file, "rt"): cannot open the connection
-```
-
-```r
     na<- is.na(activity$steps)
     table(na)
 ```
@@ -134,30 +110,18 @@ output: html_document
 
 ```r
     activity_na<- read.csv("activity.csv")
-```
-
-```
-## Warning in file(file, "rt"): cannot open file 'activity.csv': No such file
-## or directory
-```
-
-```
-## Error in file(file, "rt"): cannot open the connection
-```
-
-```r
     activity_na[is.na(activity_na)]=mean(activity_na$steps, na.rm=TRUE)
     head(activity_na)
 ```
 
 ```
-##     steps       date interval    wDay
-## 1 37.3826 2012-10-01        0 weekday
-## 2 37.3826 2012-10-01        5 weekday
-## 3 37.3826 2012-10-01       10 weekday
-## 4 37.3826 2012-10-01       15 weekday
-## 5 37.3826 2012-10-01       20 weekday
-## 6 37.3826 2012-10-01       25 weekday
+##     steps       date interval
+## 1 37.3826 2012-10-01        0
+## 2 37.3826 2012-10-01        5
+## 3 37.3826 2012-10-01       10
+## 4 37.3826 2012-10-01       15
+## 5 37.3826 2012-10-01       20
+## 6 37.3826 2012-10-01       25
 ```
 
 ### Histogram of Number of Steps per Day with NAs as Averages
@@ -216,31 +180,7 @@ output: html_document
     wd_ave<- ddply(wd, .(interval), summarize,  steps=mean(steps))
     we_ave<- ddply(we, .(interval), summarize,  steps=mean(steps))
     wd_var<- read.csv("weekday.csv", header=TRUE)
-```
-
-```
-## Warning in file(file, "rt"): cannot open file 'weekday.csv': No such file
-## or directory
-```
-
-```
-## Error in file(file, "rt"): cannot open the connection
-```
-
-```r
     we_var<- read.csv("weekend.csv", header=TRUE)
-```
-
-```
-## Warning in file(file, "rt"): cannot open file 'weekend.csv': No such file
-## or directory
-```
-
-```
-## Error in file(file, "rt"): cannot open the connection
-```
-
-```r
     wd_ave2<- bind_cols(wd_ave, wd_var)
     we_ave2<- bind_cols(we_ave, we_var)
     wd_plot<- bind_rows(wd_ave2, we_ave2)

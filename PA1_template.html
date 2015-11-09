@@ -217,13 +217,6 @@ hr {
     activity&lt;- na.omit(read.csv(&quot;activity.csv&quot;))
 </code></pre>
 
-<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file &#39;activity.csv&#39;: No such file
-## or directory
-</code></pre>
-
-<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection
-</code></pre>
-
 <h3>Get Total Number of Steps per Day</h3>
 
 <pre><code class="r">    sum&lt;- ddply(activity, .(date), summarize,  steps=sum(steps))
@@ -244,13 +237,13 @@ hr {
 <pre><code class="r">    mean(sum$steps)
 </code></pre>
 
-<pre><code>## [1] NA
+<pre><code>## [1] 10766.19
 </code></pre>
 
 <pre><code class="r">    median(sum$steps)
 </code></pre>
 
-<pre><code>## [1] NA
+<pre><code>## [1] 10765
 </code></pre>
 
 <p>##Average Daily Activity Pattern</p>
@@ -261,29 +254,27 @@ hr {
     ggplot(sum_int, aes(interval, steps)) + geom_line() +ggtitle(&quot;Average Steps per Interval&quot;)
 </code></pre>
 
-<pre><code>## Error in seq.default(from = best$lmin, to = best$lmax, by = best$lstep): &#39;from&#39; must be of length 1
-</code></pre>
+<p><img src="data:image/png;base64,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" alt="plot of chunk plot2"/> </p>
 
 <h3>On average Interval 835 has the highest number of steps with 10927.  See code below&hellip;</h3>
 
 <pre><code class="r">    summary(sum_int)
 </code></pre>
 
-<pre><code>##     interval          steps    
-##  Min.   :   0.0   Min.   : NA  
-##  1st Qu.: 588.8   1st Qu.: NA  
-##  Median :1177.5   Median : NA  
-##  Mean   :1177.5   Mean   :NaN  
-##  3rd Qu.:1766.2   3rd Qu.: NA  
-##  Max.   :2355.0   Max.   : NA  
-##                   NA&#39;s   :288
+<pre><code>##     interval          steps        
+##  Min.   :   0.0   Min.   :    0.0  
+##  1st Qu.: 588.8   1st Qu.:  131.8  
+##  Median :1177.5   Median : 1808.0  
+##  Mean   :1177.5   Mean   : 1981.3  
+##  3rd Qu.:1766.2   3rd Qu.: 2800.2  
+##  Max.   :2355.0   Max.   :10927.0
 </code></pre>
 
 <pre><code class="r">    filter(sum_int, steps==&quot;10927&quot;)
 </code></pre>
 
-<pre><code>## [1] interval steps   
-## &lt;0 rows&gt; (or 0-length row.names)
+<pre><code>##   interval steps
+## 1      835 10927
 </code></pre>
 
 <h2>Imputing Missing Values</h2>
@@ -291,16 +282,7 @@ hr {
 <h3>Total Number of Rows with Missing Values (True = number of rows with NAs)</h3>
 
 <pre><code class="r">    activity&lt;- read.csv(&quot;activity.csv&quot;)
-</code></pre>
-
-<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file &#39;activity.csv&#39;: No such file
-## or directory
-</code></pre>
-
-<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection
-</code></pre>
-
-<pre><code class="r">    na&lt;- is.na(activity$steps)
+    na&lt;- is.na(activity$steps)
     table(na)
 </code></pre>
 
@@ -312,26 +294,17 @@ hr {
 <h3>Filling in NAs with column (&ldquo;steps&rdquo;) averages and creating new dataset.  Head for new dataset is below&hellip;</h3>
 
 <pre><code class="r">    activity_na&lt;- read.csv(&quot;activity.csv&quot;)
-</code></pre>
-
-<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file &#39;activity.csv&#39;: No such file
-## or directory
-</code></pre>
-
-<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection
-</code></pre>
-
-<pre><code class="r">    activity_na[is.na(activity_na)]=mean(activity_na$steps, na.rm=TRUE)
+    activity_na[is.na(activity_na)]=mean(activity_na$steps, na.rm=TRUE)
     head(activity_na)
 </code></pre>
 
-<pre><code>##     steps       date interval    wDay
-## 1 37.3826 2012-10-01        0 weekday
-## 2 37.3826 2012-10-01        5 weekday
-## 3 37.3826 2012-10-01       10 weekday
-## 4 37.3826 2012-10-01       15 weekday
-## 5 37.3826 2012-10-01       20 weekday
-## 6 37.3826 2012-10-01       25 weekday
+<pre><code>##     steps       date interval
+## 1 37.3826 2012-10-01        0
+## 2 37.3826 2012-10-01        5
+## 3 37.3826 2012-10-01       10
+## 4 37.3826 2012-10-01       15
+## 5 37.3826 2012-10-01       20
+## 6 37.3826 2012-10-01       25
 </code></pre>
 
 <h3>Histogram of Number of Steps per Day with NAs as Averages</h3>
@@ -382,26 +355,8 @@ hr {
     wd_ave&lt;- ddply(wd, .(interval), summarize,  steps=mean(steps))
     we_ave&lt;- ddply(we, .(interval), summarize,  steps=mean(steps))
     wd_var&lt;- read.csv(&quot;weekday.csv&quot;, header=TRUE)
-</code></pre>
-
-<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file &#39;weekday.csv&#39;: No such file
-## or directory
-</code></pre>
-
-<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection
-</code></pre>
-
-<pre><code class="r">    we_var&lt;- read.csv(&quot;weekend.csv&quot;, header=TRUE)
-</code></pre>
-
-<pre><code>## Warning in file(file, &quot;rt&quot;): cannot open file &#39;weekend.csv&#39;: No such file
-## or directory
-</code></pre>
-
-<pre><code>## Error in file(file, &quot;rt&quot;): cannot open the connection
-</code></pre>
-
-<pre><code class="r">    wd_ave2&lt;- bind_cols(wd_ave, wd_var)
+    we_var&lt;- read.csv(&quot;weekend.csv&quot;, header=TRUE)
+    wd_ave2&lt;- bind_cols(wd_ave, wd_var)
     we_ave2&lt;- bind_cols(we_ave, we_var)
     wd_plot&lt;- bind_rows(wd_ave2, we_ave2)
 </code></pre>
