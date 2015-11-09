@@ -7,19 +7,83 @@ output:
 
 
 ## Loading and preprocessing the data
+First, the data is loaded:
 
+```{r}
+tab=read.csv("D:\\celina\\reproduce\\activity.csv")
+```
 
 
 ## What is mean total number of steps taken per day?
+The average steps per day are
 
+```{r}
+aggregate(steps~date,data=tab,mean)   
+```
 
 
 ## What is the average daily activity pattern?
+The median steps per day are
 
+```{r}
+aggregate(steps~date,data=tab,median)   
+```
+
+As for the  average daily activity pattern, according to the line chart, the trend is similar to inverse bell. The maximum number of steps is found as below.
+
+```{r max,fig.align='center'}
+r2=aggregate(steps~interval,data=tab,mean)    ## avg step/interval
+plot(r2$steps~r2$interval,type='l',col='blue',xlab="interval",ylab="steps")
+r2[which(r2$steps==max(r2$steps)),] 
+```
 
 
 ## Imputing missing values
+As the data shown above, the tracking data is totaly missing on some specifique day such as "2012-10-01". So roughly we replace the missing data with the mean of 5-minute interval. 
 
 
+```{r}
+c=tab[is.na(tab),]        ## na data
+dim(c)
+summary(c)
+d=rep(r2$steps,8)
+c$steps=d
+tab2=merge(c,tab,by=c("date","interval"),all.y=T)
+tab2$steps.x[is.na(tab2$steps.x)]=0
+tab2$steps.y[is.na(tab2$steps.y)]=0
+tab2$steps.new=tab2$steps.x+tab2$steps.y
+```
+Now the new steps/day is as below, also the new mean and median. 
+
+```{r}
+a2=aggregate(steps.new~date,data=tab2,sum)  
+barplot(a2$steps.new,col="blue")
+aggregate(steps.new~date,data=tab2,median )
+aggregate(steps.new~date,data=tab2,mean )
+```
+
+Obvously we have the complete dataset because the NA is overlooked automatically by R. So the mean of data is larger than before.
+
+```{r,fig.align='center'}
+par(mfrow=c(1,2))
+boxplot(tab$steps,main="Boxplot of original data")
+boxplot(tab2$steps.new,main="Boxplot of after filling missing data")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+When the weekday is input into data, we find the steps/interval is totally different. Overall the steps/interval is smaller on weekend than on weekday.
+
+```{r,fig.align='center'}
+tab2$weekday=weekdays(as.Date(tab2$date))
+tab2$wd=1
+for (i in 1:17568){
+if (tab2$weekday[i] =="Sunday") tab2$wd[i]=0
+if (tab2$weekday[i] =="Saturday") tab2$wd[i]=0
+}
+b2=aggregate(steps.new~interval+wd,data=tab2,mean)    ## avg step/interval
+b2.wd=b2[which(b2$wd==1),]
+b2.wkend=b2[-which(b2$wd==1),]
+plot(b2.wd$steps~b2.wd$interval,type='l',col='blue',main="Weekdays of steps/interval")
+plot(b2.wkend$steps~b2.wkend$interval,type='l',col='blue',main="Weekends of steps/interval")
+
+```
