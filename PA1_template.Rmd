@@ -1,0 +1,102 @@
+---
+title: "PA1_template"
+author: "Ben Brauer"
+date: "November 3, 2015"
+output: html_document
+---
+## Loading and preprocessing the data
+
+### Download and unzip file in working directory.
+
+### Load "activity" and requisite R packages
+
+```{r, echo=TRUE}
+    library(stats)
+    library(plyr)
+    library(dplyr)
+    library(ggplot2)
+    library(lubridate)
+    library(timeDate)
+    
+    activity<- na.omit(read.csv("activity.csv"))
+```
+### Get Total Number of Steps per Day
+```{r, echo=TRUE}
+    sum<- ddply(activity, .(date), summarize,  steps=sum(steps))
+```
+### Histogram of Total Number of Steps per Day
+```{r plot1, echo=TRUE}
+        ggplot(data=sum, aes(steps)) +geom_histogram() + ggtitle("Number of Steps per Day")
+```
+
+###  Mean and median of total number of steps per day
+```{r, echo=TRUE}
+    mean(sum$steps)
+    median(sum$steps)
+```
+
+##Average Daily Activity Pattern
+###  The following plot describes a time-series of 5-minute intervals (x-axis) and average steps taken, averaged across all days (y-axis).
+```{r plot2, echo=TRUE}
+    sum_int<- ddply(activity, .(interval), summarize, steps=sum(steps))
+    ggplot(sum_int, aes(interval, steps)) + geom_line() +ggtitle("Average Steps per Interval")
+```
+
+### On average Interval 835 has the highest number of steps with 10927.  See code below...
+```{r, echo=TRUE}
+    summary(sum_int)
+    filter(sum_int, steps=="10927")
+```
+
+## Imputing Missing Values
+### Total Number of Rows with Missing Values (True = number of rows with NAs)
+```{r, echo=TRUE}
+    activity<- read.csv("activity.csv")
+    na<- is.na(activity$steps)
+    table(na)
+```
+
+### Filling in NAs with column ("steps") averages and creating new dataset.  Head for new dataset is below...
+```{r, echo=TRUE}
+    activity_na<- read.csv("activity.csv")
+    activity_na[is.na(activity_na)]=mean(activity_na$steps, na.rm=TRUE)
+    head(activity_na)
+```
+
+### Histogram of Number of Steps per Day with NAs as Averages
+```{r plot3, echo=TRUE}
+    sum_na<- ddply(activity_na, .(date), summarize,  steps=sum(steps))
+    hist(sum_na$steps, main = "Number of Steps per Day with NAs as Averages", col = "red")
+```
+
+###The Mean of total numbers of steps per day is exactly the same, given that NA's were replaced by mean values per respective interval.  The median was slightly lower, given that mean's were lower during 'spiky' periods.
+```{r, echo=TRUE}
+    sum_na<- ddply(activity_na, .(date), summarize,  steps=sum(steps))
+    mean(sum_na$steps)
+    median(sum_na$steps)
+```
+
+### Adding weekdays and weekends
+```{r, echo=TRUE}
+    activity_na$date<- as.Date(activity_na$date)
+    wDay<- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+    activity_na$wDay<- factor((weekdays(activity_na$date) %in% wDay), 
+                              levels=c(FALSE, TRUE), labels=c('weekend', 'weekday'))
+    head(activity_na)
+```
+
+### Plot comparing steps during weekends and weekdays.
+```{r plot4, echo=TRUE}
+    wd<- filter(activity_na, wDay=="weekday")
+    we<- filter(activity_na, wDay=="weekend")
+    wd_ave<- ddply(wd, .(interval), summarize,  steps=mean(steps))
+    we_ave<- ddply(we, .(interval), summarize,  steps=mean(steps))
+    wd_var<- read.csv("weekday.csv", header=TRUE)
+    we_var<- read.csv("weekend.csv", header=TRUE)
+    wd_ave2<- bind_cols(wd_ave, wd_var)
+    we_ave2<- bind_cols(we_ave, we_var)
+    wd_plot<- bind_rows(wd_ave2, we_ave2)
+    
+    g<- ggplot(wd_plot, aes(interval, steps))
+    g+geom_line()+facet_grid(weekday~.) + theme_bw()
+```
