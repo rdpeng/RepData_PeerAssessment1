@@ -5,7 +5,7 @@ date: "18 septembre 2015"
 output: 
   html_document:
     keep_md: true
----
+---  
 ## Loading and preprocessing the data
 ```{r load}
   data <- read.csv("C:/Users/Thanh/Documents/GitHub/Huong/activity.csv",header=TRUE,sep=",")
