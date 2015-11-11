@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 ## Introduction
 This pproject explores data from a personal monitor using the nuber of steps taken in 5 minute intervals during October and November of 2012.
 
@@ -24,7 +19,8 @@ The code and results, along with explanation, are contained within this document
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 unzip("activity.zip")
 origData <-
     read.csv(
@@ -38,24 +34,49 @@ origData <-
 
 We aggregate the daily data, ouput a histogram and the mean and median of the daily steps.
 
-```{r}
+
+```r
 dailySteps<-aggregate(steps~date,data=origData,sum,na.rm=TRUE)
 hist(dailySteps$steps)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 mean(dailySteps$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(dailySteps$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
 Now we aggregate the data by the 5-minute intervals and plot the averages per each interval.  
-```{r}
+
+```r
 stepsInterval<-aggregate(steps~interval,data=origData,mean,na.rm=TRUE)
 plot(steps~interval,data=stepsInterval,type="l")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
   
 And we determine which 5 minute interval contains the maximum number of steps.  
-```{r}
+
+```r
 stepsInterval[which.max(stepsInterval$steps),]$interval
+```
+
+```
+## [1] 835
 ```
 
 
@@ -63,7 +84,8 @@ stepsInterval[which.max(stepsInterval$steps),]$interval
 ## Imputing missing values
 Because there are a number of NA (missing data) occurances in our sataset, we will impute the missing values by taking the average for 5-minute interval across all days, and insert that as the imputed value.  Then we will determine if the results change significantly.
 
-```{r}
+
+```r
 missingData <- sum(is.na(origData$steps))
 
 #--------------------- look below for output sprintf --------
@@ -71,7 +93,12 @@ sprintf("Number of missing points is %i, %3.1f%% of total.",
         missingData,missingData/length(origData$steps)*100)
 ```
 
-```{r}
+```
+## [1] "Number of missing points is 2304, 13.1% of total."
+```
+
+
+```r
 # ---------------------- begin imputed value processing -----
 imputedData <- origData                                        #Make a copy of the original data
 intervalMeans <- aggregate(steps ~ interval, origData, mean)   # Calculate step means by interval
@@ -87,9 +114,24 @@ for (i in 1:length(imputedData$steps)){                        # Loop through al
 
 imputedDailySteps<-aggregate(steps~date,data=imputedData,sum,na.rm=TRUE)
 hist(imputedDailySteps$steps)
-mean(imputedDailySteps$steps)
-median(imputedDailySteps$steps)
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
+mean(imputedDailySteps$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
+median(imputedDailySteps$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 
