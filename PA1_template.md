@@ -18,9 +18,10 @@ The code and results, along with explanation, are contained within this document
 
 
 
-## Loading and preprocessing the data
+## Loading and preprocessing the data and loading libraries
 
 ```r
+library("lattice")
 unzip("activity.zip")
 origData <-
     read.csv(
@@ -37,25 +38,26 @@ We aggregate the daily data, ouput a histogram and the mean and median of the da
 
 ```r
 dailySteps<-aggregate(steps~date,data=origData,sum,na.rm=TRUE)
-hist(dailySteps$steps)
+hist(dailySteps$steps,
+     xaxt = "n",
+     main = "Histogram of daily steps",
+     xlab = "Bins for step ranges")
+axis(side=1,
+     at=axTicks(1),
+     labels=formatC(axTicks(1),
+     format="d",
+     big.mark=','))
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ```r
-mean(dailySteps$steps)
+sprintf("The mean of daily steps is %.0f, and the median is %.0f.",
+        mean(dailySteps$steps),median(dailySteps$steps))
 ```
 
 ```
-## [1] 10766.19
-```
-
-```r
-median(dailySteps$steps)
-```
-
-```
-## [1] 10765
+## [1] "The mean of daily steps is 10766, and the median is 10765."
 ```
 
 ## What is the average daily activity pattern?
@@ -64,6 +66,8 @@ Now we aggregate the data by the 5-minute intervals and plot the averages per ea
 
 ```r
 stepsInterval<-aggregate(steps~interval,data=origData,mean,na.rm=TRUE)
+
+
 plot(steps~interval,data=stepsInterval,type="l")
 ```
 
@@ -82,7 +86,7 @@ stepsInterval[which.max(stepsInterval$steps),]$interval
 
 
 ## Imputing missing values
-Because there are a number of NA (missing data) occurances in our sataset, we will impute the missing values by taking the average for 5-minute interval across all days, and insert that as the imputed value.  Then we will determine if the results change significantly.
+Because there are a number of NA (missing data) occurances in our dataset, we will impute the missing values by taking the median for that 5-minute interval across all days, and insert it as the imputed value.  Then we will determine if the results change significantly.
 
 
 ```r
@@ -101,9 +105,9 @@ sprintf("Number of missing points is %i, %3.1f%% of total.",
 ```r
 # ---------------------- begin imputed value processing -----
 imputedData <- origData                                        #Make a copy of the original data
-intervalMeans <- aggregate(steps ~ interval, origData, mean)   # Calculate step means by interval
+intervalMedians <- aggregate(steps ~ interval, origData, median)   # Calculate step median by interval
                                                                
-imputedData$substitute <- rep(intervalMeans$steps)             # Replicate for each day and add
+imputedData$substitute <- rep(intervalMedians$steps)             # Replicate for each day and add
                                                                # col of substitute data
 # Loop through data, substituting imputed value for each NA
 
@@ -113,27 +117,59 @@ for (i in 1:length(imputedData$steps)){                        # Loop through al
 }
 
 imputedDailySteps<-aggregate(steps~date,data=imputedData,sum,na.rm=TRUE)
-hist(imputedDailySteps$steps)
+hist(imputedDailySteps$steps,
+     xaxt = "n",
+     main = "Histogram of daily steps (imputed)",
+     xlab = "Bins for step ranges")
+axis(side=1,
+     at=axTicks(1),
+     labels=formatC(axTicks(1),
+     format="d",
+     big.mark=','))
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 ```r
-mean(imputedDailySteps$steps)
+sprintf("The mean of daily steps (with imputation) is %.1f, and the median is %.1f.",
+mean(imputedDailySteps$steps),
+median(imputedDailySteps$steps))
 ```
 
 ```
-## [1] 10766.19
+## [1] "The mean of daily steps (with imputation) is 9503.9, and the median is 10395.0."
 ```
 
 ```r
-median(imputedDailySteps$steps)
+sprintf("Imputing cause a change of %.1f%% in mean and %.1f%% in median",
+(mean(dailySteps$steps)-mean(imputedDailySteps$steps))/mean(dailySteps$steps)*100,
+(median(dailySteps$steps)-median(imputedDailySteps$steps))/median(dailySteps$steps)*100)
 ```
 
 ```
-## [1] 10766.19
+## [1] "Imputing cause a change of 11.7% in mean and 3.4% in median"
 ```
 
-
-
+Imputing median values does not make much difference in the totals although it does move the median.  
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Lastly we investigate if there is any significant changes on weekends.
+
+First we create factors for Weekend and Weekday and place them in imputedData$dayClass  
+Then we aggregate by weekend and weekday and mean steps per interval  
+Lastely plot two panels, one for weekdays and one for weekends.
+
+
+```r
+imputedData$dayClass <- as.factor(ifelse ((substr(weekdays(imputedData$date),1,1) == "S"),
+                                "Weekend" ,"Weekday"))
+
+stepsDayClass <- aggregate(steps ~ interval + dayClass, data = imputedData, mean)
+
+xyplot(steps ~ interval | dayClass, stepsDayClass, type = "l", layout = c(1, 2),
+       xlab = "Interval", ylab = "Number of steps")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
+
