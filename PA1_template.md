@@ -129,7 +129,7 @@ summary(totalStepsPerDay)
 ```
 
 ```r
-hist(totalStepsPerDay$steps, main="Hist of total steps per day", xlab="No of steps")
+hist(totalStepsPerDay$steps, main="Hist of total steps per day omitting NA", xlab="No of steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
@@ -334,7 +334,7 @@ summary(totalStepsPerDay)
 ```
 
 ```r
-hist(totalStepsPerDay$steps, main="Hist of total steps per day", xlab="No of steps")
+hist(totalStepsPerDay$steps, main="Hist of total steps per day AFTER impute", xlab="No of steps")
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
@@ -399,10 +399,10 @@ tail(df4)
 ```r
 df5 <- df4 %>% filter(weekdayOrWeekend !="Saturday" & weekdayOrWeekend != "Sunday")
 
-totalStepsPerInterval <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+totalStepsPerIntervalWeekdays <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
 
 
-head(totalStepsPerInterval)
+head(totalStepsPerIntervalWeekdays)
 ```
 
 ```
@@ -419,7 +419,7 @@ head(totalStepsPerInterval)
 ```
 
 ```r
-tail(totalStepsPerInterval)
+tail(totalStepsPerIntervalWeekdays)
 ```
 
 ```
@@ -436,7 +436,7 @@ tail(totalStepsPerInterval)
 ```
 
 ```r
-summary(totalStepsPerInterval)
+summary(totalStepsPerIntervalWeekdays)
 ```
 
 ```
@@ -448,12 +448,6 @@ summary(totalStepsPerInterval)
 ##  3rd Qu.:1766.2   3rd Qu.:2247.3  
 ##  Max.   :2355.0   Max.   :9354.3
 ```
-
-```r
-plot(totalStepsPerInterval,type="l",main="5 min time series  weekdays", ylab="Average steps", xlab="5 min intervals ")
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
 ###Weekends
 
@@ -490,10 +484,10 @@ tail(df4)
 ```r
 df5 <- df4 %>% filter(weekdayOrWeekend =="Saturday" | weekdayOrWeekend == "Sunday")
 
-totalStepsPerInterval <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+totalStepsPerIntervalWeekends <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
 
 
-head(totalStepsPerInterval)
+head(totalStepsPerIntervalWeekends)
 ```
 
 ```
@@ -510,7 +504,7 @@ head(totalStepsPerInterval)
 ```
 
 ```r
-tail(totalStepsPerInterval)
+tail(totalStepsPerIntervalWeekends)
 ```
 
 ```
@@ -527,7 +521,7 @@ tail(totalStepsPerInterval)
 ```
 
 ```r
-summary(totalStepsPerInterval)
+summary(totalStepsPerIntervalWeekends)
 ```
 
 ```
@@ -540,8 +534,14 @@ summary(totalStepsPerInterval)
 ##  Max.   :2355.0   Max.   :2524.77
 ```
 
+###Plot panel
+
 ```r
-plot(totalStepsPerInterval,type="l",main="5 min time series  weekends", ylab="Average steps", xlab="5 min intervals ")
+par(mfrow=c(2,1)) 
+
+plot(totalStepsPerIntervalWeekdays,type="l",main="5 min time series  weekdays", ylab="Average steps", xlab="5 min intervals ")
+
+plot(totalStepsPerIntervalWeekends,type="l",main="5 min time series  weekends", ylab="Average steps", xlab="5 min intervals ")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png) 

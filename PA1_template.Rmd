@@ -36,7 +36,7 @@ head(totalStepsPerDay)
 tail(totalStepsPerDay)
 summary(totalStepsPerDay)
 
-hist(totalStepsPerDay$steps, main="Hist of total steps per day", xlab="No of steps")
+hist(totalStepsPerDay$steps, main="Hist of total steps per day omitting NA", xlab="No of steps")
 
 ```
 
@@ -103,7 +103,7 @@ head(totalStepsPerDay)
 tail(totalStepsPerDay)
 summary(totalStepsPerDay)
 
-hist(totalStepsPerDay$steps, main="Hist of total steps per day", xlab="No of steps")
+hist(totalStepsPerDay$steps, main="Hist of total steps per day AFTER impute", xlab="No of steps")
 
 ```
 
@@ -131,14 +131,14 @@ tail(df4)
 
 df5 <- df4 %>% filter(weekdayOrWeekend !="Saturday" & weekdayOrWeekend != "Sunday")
 
-totalStepsPerInterval <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+totalStepsPerIntervalWeekdays <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
 
 
-head(totalStepsPerInterval)
-tail(totalStepsPerInterval)
-summary(totalStepsPerInterval)
+head(totalStepsPerIntervalWeekdays)
+tail(totalStepsPerIntervalWeekdays)
+summary(totalStepsPerIntervalWeekdays)
 
-plot(totalStepsPerInterval,type="l",main="5 min time series  weekdays", ylab="Average steps", xlab="5 min intervals ")
+
 
 ```
 
@@ -151,13 +151,21 @@ tail(df4)
 
 df5 <- df4 %>% filter(weekdayOrWeekend =="Saturday" | weekdayOrWeekend == "Sunday")
 
-totalStepsPerInterval <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+totalStepsPerIntervalWeekends <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
 
 
-head(totalStepsPerInterval)
-tail(totalStepsPerInterval)
-summary(totalStepsPerInterval)
+head(totalStepsPerIntervalWeekends)
+tail(totalStepsPerIntervalWeekends)
+summary(totalStepsPerIntervalWeekends)
+```
 
-plot(totalStepsPerInterval,type="l",main="5 min time series  weekends", ylab="Average steps", xlab="5 min intervals ")
+###Plot panel
+```{r}
+
+par(mfrow=c(2,1)) 
+
+plot(totalStepsPerIntervalWeekdays,type="l",main="5 min time series  weekdays", ylab="Average steps", xlab="5 min intervals ")
+
+plot(totalStepsPerIntervalWeekends,type="l",main="5 min time series  weekends", ylab="Average steps", xlab="5 min intervals ")
 
 ```
