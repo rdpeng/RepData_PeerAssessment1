@@ -9,10 +9,7 @@ output:
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Loading the data
-```{r setoptions, echo=FALSE}
-opts_chunk$set(results="asis")
-opts_chunk$set(fig.path="figures/")
-```
+
 The data is loaded:
 ```r
 df <- read.csv("activity.csv")
@@ -40,7 +37,7 @@ abline(v=smedian, col="blue")
 legend('topright', c("Mean","Median"), lty=1,  col=c("red","blue"), cex=0.8 )
 ```
 
-The **mean** and **median** are slightly different. The **mean** is `r mean(tdf$x, na.rm=T)` and the **median** is `r median(tdf$x, na.rm=T)`.
+The **mean** and **median** are slightly different. The **mean** is 1.0766189 &times; 10<sup>4</sup> and the **median** is 10765.
 
 ## What is the average daily activity pattern?
 
@@ -50,11 +47,11 @@ mdf <- aggregate(df$steps, by = list(df$interval), FUN = mean, na.rm=T)
 plot(mdf$"Group.1", mdf$x, type="l",xlab="5-minute interval", ylab="number of steps taken, averaged across all days", main="A time series plot")
 ```
 
-2. The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is `r mdf[which.max(mdf[,2]),1]`
+2. The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is 835
 
 ## Imputing missing values
 
-1. The total number of missing values in the dataset (i.e. the total number of rows with `NA`s) is:`r table(complete.cases(df))["FALSE"]`
+1. The total number of missing values in the dataset (i.e. the total number of rows with `NA`s) is:2304
 
 2. We would use the mean for that 5-minute interval,  averaged across all days.
 
@@ -79,7 +76,7 @@ abline(v=smedian, col="blue")
 legend('topright', c("Mean","Median"), lty=1,  col=c("red","blue"), cex=0.8 )
 ```
 
-The **mean** and **median** are the same and are `r mean(t3df$x)`.
+The **mean** and **median** are the same and are 1.0766189 &times; 10<sup>4</sup>.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
