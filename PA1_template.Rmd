@@ -1,25 +1,522 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducable Research"
+output: html_document
 ---
 
+#Introduction
 
-## Loading and preprocessing the data
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+#Data
+
+The data for this assignment can be downloaded from the course web site:
+Dataset: [Activity monitoring data](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)  
+The variables included in this dataset are:
+steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+date: The date on which the measurement was taken in YYYY-MM-DD format
+interval: Identifier for the 5-minute interval in which measurement was taken
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+###Conventions used in this document:
+Variable names from a dataset are in all capital letters.
+
+###Requirements
+Reproducing this analysis requires use of the following R packages
+```{r echo=TRUE, results="hide"}
+library(dplyr);
+library(ggplot2);
+library(mice);
+library(knitr);
+library(chron);
+library(scales);
+```
+
+###Load Raw Data:
+
+```{r echo=TRUE, results='hide'}
+
+#helper function to get data
+getData <- function(url, zipName, dataFileName){
+  print(paste("loading data file: ", dataFileName));
+  tryCatch(
+    {
+      
+      #check if data file already exists
+      if(file.exists(dataFileName)){
+        print(paste("ready to use: ", dataFileName));
+        return();
+      }
+      else{
+        print(paste(dataFileName, " does not exist, attempting to get data from: ", zipName));
+      }
+      
+      #if data file does not exist look for an archive that should contain it
+      #or download the archive
+      if(!file.exists(zipName)){
+        print(paste(zipName, " does not exist, attempting to get data from: ", url));
+        download.file(dataURL, destfile = zipName);
+        print(paste(zipName, " successfully downloaded from: ", url));
+      }
+      
+      #if the archive is found try to unpack it
+      if(file.exists(zipName)){
+        print(paste("unzipping: ", zipName));
+        unzip(zipName)
+        print(paste(zipName, " successfully unzipped"));
+      }
+      else{
+        stop(paste(zipName, " does not exist, check URL and zip name for accuracy"));
+      }
+    
+      #check if data file was in the archive
+      if(!file.exists(dataFileName)){
+        stop(paste("File not found: ", dataFileName))
+      }
+      
+    }, 
+    warning = function(w) {print(w);}, 
+    error = function(e) {print(e);}
+  );
+}
+
+
+dataURL="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+zipName <- "repdata-data-activity.zip"
+dataFileName <- "activity.csv";
+
+#download and unzip data if necessary
+getData(zipName, zipName, dataFileName);
+
+#read raw data
+rawActivityData <- read.csv(dataFileName, header=TRUE);
+
+```
+
+#Perform exploratory analysis on the raw data.
+
+###Basic summary views:
+
+```{r echo=TRUE}
+
+dim(rawActivityData);
+str(rawActivityData);
+summary(rawActivityData);
+head(rawActivityData);
+
+```
+
+The STEPS variable contains `r sum(is.na(rawActivityData) == TRUE)` NA entries,  
+we'll need to look at the distribution of NA values.
+
+The DATES variable appears to have reasonable entries,  
+we'll need to verify the dates are valid and data is collected  
+in the same manner for each date.
+
+The INTERVAL variable contains cryptic values,  
+we'll need to interpret the meaning of entries in this variable.
+
+Segment raw data by DATE to ensure the date values represent valid dates,  
+and each DATE has the same number of INTERVAL values which are measured  
+by the same intervals:
+
+```{r echo=TRUE}
+
+#ensure DATE variable contains valid date values, this function will fail
+#if some entry is not a valid date
+validDates <- data.frame(dates = as.Date(rawActivityData$date));
+
+#check the range of dates for validity
+range(validDates$dates);
+
+#segment data by DATE
+dataByDate <- split(rawActivityData, rawActivityData$date);  
+
+#check number of dates
+dateCount <- length(dataByDate);
+
+#make sure all dates have the same number of intervals
+rowCountByDate <- sapply(dataByDate, function(x) nrow(x));
+allCountsEqual <- all(rowCountByDate == rowCountByDate[1]);
+
+#test if each date has the exact same intervals
+intervals <- lapply(dataByDate, function(x) as.data.frame(x)[,3]);
+intervalComparison <- all(unlist(intervals[1]) == unlist(intervals));
+
+```
+
+We see all DATE entries represent valid dates,  
+the range of dates `r range(validDates$dates)[1]` -- `r range(validDates$dates)[2]` matches the data description,  
+and the data contains `r dateCount` dates.  
+Each date contains `r rowCountByDate[1]` observations,  
+and  each DATE is segmented by the same INTERVAL values.
+
+According the description of the raw data, each  
+INTERVAL represents 5 minutes of time.  So given `r rowCountByDate[1]`  
+observations per day we account for `r 5 * rowCountByDate[1] / 60` hours per day.
+
+```{r echo=TRUE}
+#do the math to show range of intervals equates to 24 hours per day
+5 * 288 / 60
+```
+
+The data contains `r length(unique(rawActivityData$interval))` unique intervals.  
+visually examine the INTERVAL values to interpret their meaning:
+```{r echo=TRUE}
+unique(rawActivityData$interval);
+```
+
+Interesting, rather than sequentially numbering the  
+the intervals 1-`r rowCountByDate[1]` the INTERVAL values equate to 24  
+hour time in the format hhmm, with 0 as midnight -- the minutes change  
+in increments of 5.
+
+Examine the distribution of NA values:
+
+```{r echo=TRUE}
+naCounts <- sapply(dataByDate, function(x) sum(is.na(as.data.frame(x)[,1])==TRUE));
+tnaCounts <- table(naCounts);
+tnaCounts
+```
+
+This shows each day contains either 0 or 288 NA values for the STEPS variable,  
+with `r as.vector(tnaCounts[2])` dates which contain only NA values for STEPS.   
+The missing (NA) STEP entries account for `r round(100 * sum(is.na(rawActivityData) == TRUE) / nrow(rawActivityData), 2)`% of the data.
+
+Other than the abundance of NA values the data looks pretty clean,  
+so let's get to work.
 
 
 
-## What is mean total number of steps taken per day?
+#Q & A
+
+###What is mean total number of steps taken per day?  
+
+1. Calculate total number of steps taken each day
+```{r echo=TRUE, results="hide"}
+sumStepsPerDate <- rawActivityData[complete.cases(rawActivityData),]  %>% 
+                   group_by(date) %>% 
+                   summarise(totalsteps=sum(steps));
+
+#quick exam of summary data
+str(sumStepsPerDate);
+head(sumStepsPerDate);
+dim(sumStepsPerDate);
+```
+
+2. Make a histogram of the total number of steps taken each day.
+
+```{r echo=TRUE}
+ggplot(data=sumStepsPerDate, aes(sumStepsPerDate$totalsteps)) + 
+  geom_histogram(breaks=seq(0, max(sumStepsPerDate$totalsteps), 
+                            by = max(sumStepsPerDate$totalsteps) / length(unique(sumStepsPerDate$date))), 
+                 col="red", 
+                 fill="green", 
+                 alpha = .2) + 
+  xlab("Steps per Day") +
+  ylab("Count of Days with X Steps per Day") +
+  ggtitle("Sum of Steps Per Day (NA Removed)");
+```
+
+3. Calculate and report the mean and median of the total number of steps taken per day.
+
+```{r echo=TRUE}
+
+meanSumStepsPerDay <- mean(sumStepsPerDate$totalsteps);
+medianSumStepsPerDay <- median(sumStepsPerDate$totalsteps);
+
+```
+
+Mean total steps taken per day (rounded): `r as.character(round(meanSumStepsPerDay))`  
+Median of total steps taken per day: `r medianSumStepsPerDay`  
+
+###What is the average daily activity pattern?
+
+1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
+the average number of steps taken, averaged across all days (y-axis).
+
+```{r echo=TRUE}
+
+#compute mean steps per 5 minute interval
+meanStepsPerInterval <- rawActivityData[complete.cases(rawActivityData),]  %>% 
+                        group_by(interval) %>% 
+                        summarise(meansteps=mean(steps));
+
+formattedIntervals <- sprintf("%04d", meanStepsPerInterval$interval);
+
+splitCodes <- paste(substr(formattedIntervals,1,2) , ":" , 
+                    substr(formattedIntervals,3,4), ":", "00", 
+                    sep="");
+
+#splitTimes <- times(splitCodes);
+posixIntervals <- as.POSIXct(splitCodes, format="%H:%M:%S")
+
+#create line plot - looks like the max mean interval is around 200 steps
+ggplot(NULL, aes(posixIntervals, meanStepsPerInterval$meansteps)) + 
+  geom_line() +
+  xlab("Interval") +
+  ylab("Total Steps per Interval") +
+  ggtitle("Mean Total Steps Per Interval (NA Removed)") +
+  scale_x_datetime(labels=date_format("%H:%M")) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 1));
+
+
+```
+
+2. Which 5-minute interval, on average across all the days in the dataset, 
+contains the maximum number of steps?
+
+```{r echo=TRUE}
+#compute max average interval
+maxStepsPerInterval = max(meanStepsPerInterval$meansteps);
+
+maxInterval <- meanStepsPerInterval %>% 
+               filter(meansteps == maxStepsPerInterval) %>%
+               select(interval);
+
+```
+Interval `r maxInterval` contains the maximum average steps across all days (rounded): `r as.character(round(maxStepsPerInterval, 2))`.
+
+###Imputing missing values  
+
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)  
+
+Previous NA analysis shows `r as.vector(tnaCounts[2])` dates contain only NA values for STEPS.
+
+```{r echo=TRUE, results="hide"}
+#compute number of NA values in raw data
+table(is.na(rawActivityData));
+#2304 total NAs in raw data
+
+#which columns contain NA values?
+summary(rawActivityData);
+#looks like only the steps variable contains NA values
+
+#confirm the 2304 NAs are one per row
+table(complete.cases(rawActivityData));
+
+#what percent of data is missing from the steps variable?
+pctNA <- sum(is.na(rawActivityData$steps))/length(rawActivityData$steps)*100;
+```
+
+Further analysis of the NA values shows all 2304 NAs appear in the STEPS field,
+which comprises `r round(pctNA,2)`% of the data in this field.
+
+
+2. Devise a strategy for filling in all of the missing values in the dataset.
+
+Use the [MICE](https://cran.r-project.org/web/packages/mice/index.html) package to impute missing data!  
+It's definitely more interesting then computing more means, etc...
+
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r impute_data, echo=TRUE, results="hide"}
+#show the MICE summary of the raw data,
+#confirming STEPS variable contains 2304 NA values
+md.pattern(rawActivityData);
+
+#impute missing values -- this takes a minute or two depending on values for m and maxit.
+tempData <- mice(rawActivityData, m=5, maxit=10, meth='pmm', seed=500);
+imputedActivityData <- complete(tempData,1);
+
+```
+
+```{r echo=TRUE}
+
+#show summary of dataframe with imputed values for steps
+summary(imputedActivityData);
+
+```
+
+4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r echo=TRUE}
+#compute sum of steps for each date
+sumImputedStepsPerDate <- imputedActivityData  %>% 
+                          group_by(date) %>% 
+                          summarise(totalsteps=sum(steps));
+
+ggplot(data=sumImputedStepsPerDate, aes(sumImputedStepsPerDate$totalsteps)) + 
+  geom_histogram(breaks=seq(0, max(sumImputedStepsPerDate$totalsteps), 
+                            by = max(sumImputedStepsPerDate$totalsteps) / length(unique(sumImputedStepsPerDate$date))), 
+                 col="red", 
+                 fill="green", 
+                 alpha = .2) + 
+  xlab("Steps per Day") +
+  ylab("Count of Days With X Steps per Day") +
+  ggtitle("Sum of Steps Per Day (NA Imputed)");
+
+
+meanSumImputedStepsPerDay <- mean(sumImputedStepsPerDate$totalsteps);
+medianSumImputedStepsPerDay <- median(sumImputedStepsPerDate$totalsteps);
+
+
+```
+
+
+###Mean steps per day change
+Mean total steps per day of data with NAs removed (rounded): `r as.character(round(meanSumStepsPerDay))`  
+Mean total steps per day of imputed data (rounded): `r as.character(round(meanSumImputedStepsPerDay))` 
+
+The difference between NA removed data and Imputed data is (rounded): `r round(meanSumStepsPerDay - meanSumImputedStepsPerDay)`    
+which equates to the perrcent change(rounded):  `r round(100 * (meanSumStepsPerDay-meanSumImputedStepsPerDay) / (meanSumStepsPerDay+meanSumImputedStepsPerDay) / 2, 2)`  
+
+###Mean steps per day change
+Median total steps per day of r data with NAs removed: `r medianSumStepsPerDay`  
+Median total steps per day of imputed data: `r medianSumImputedStepsPerDay`  
+
+The difference in NA removed data and Imputed data is: `r round(medianSumStepsPerDay - medianSumImputedStepsPerDay)`  
+which equates to the perrcent change:  `r round(100 * (medianSumStepsPerDay-medianSumImputedStepsPerDay) / (medianSumStepsPerDay+medianSumImputedStepsPerDay) / 2, 2)`  
 
 
 
-## What is the average daily activity pattern?
+
+
+Graphical comparison of mean steps per interval: NAs removed vs. imputing values for NAs
+
+```{r echo=TRUE, fig.width=12}
+#impute data and then compare mean per interval between NA removed data and imputed data
+#compute mean steps per interval using imputed data
+meanImputedStepsPerInterval <- imputedActivityData  %>% 
+                               group_by(interval) %>% 
+                               summarise(meansteps=mean(steps));
+
+formattedIntervals <- sprintf("%04d", meanImputedStepsPerInterval$interval);
+
+splitCodes <- paste(substr(formattedIntervals,1,2) , ":" , 
+                    substr(formattedIntervals,3,4), ":", "00", 
+                    sep="");
+
+#splitTimes <- times(splitCodes);
+posixIntervals <- as.POSIXct(splitCodes, format="%H:%M:%S");
+
+#create plot
+ggplot(NULL, aes(posixIntervals, meanStepsPerInterval$meansteps)) + 
+  geom_line(data = meanStepsPerInterval, aes(color="NA_Removed")) +
+  geom_step(data = meanImputedStepsPerInterval, aes(color="Imputed")) +
+  xlab("Interval") +
+  ylab("Total Steps per Interval") +
+  ggtitle("Mean Steps per Interval:  NA removed vs. Imputed") + 
+  scale_x_datetime(labels=date_format("%H:%M")) +
+  scale_colour_manual(name="Line Color", values=c(NA_Removed="black", Imputed="red")) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 1));
+
+```
+
+
+Graphical comparison of total steps per day: NAs removed vs. imputing values for NAs
+
+```{r echo=TRUE, fig.width=12}
+#compare plot of sum steps per date:  raw data (NA removed)  vs. imputed data
+ggplot(NULL, aes(date, totalsteps, group=1)) + 
+  geom_line(data = sumStepsPerDate, aes(color="NA_Removed")) +
+  geom_step(data = sumImputedStepsPerDate, aes(color="Imputed")) +
+  xlab("Date") +
+  ylab("Total Steps per Interval") +
+  ggtitle("Total Steps per Day:  NA removed vs. Imputed")+
+  theme(axis.text.x = element_text(angle = -90, hjust = 1)) + 
+  scale_colour_manual(name="Line Color", values=c(NA_Removed="black", Imputed="red"));
+
+```
+
+###Are there differences in activity patterns between weekdays and weekends?
+
+1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+```{r echo=TRUE}
+
+#add weekend/weekday factor to the data set
+#that contains imputed data
+imputedActivityData$day_type <- as.factor(ifelse(grepl("Saturday|Sunday" , weekdays(as.Date( as.character(imputedActivityData$date)))), "weekend", "weekday"));
+
+#confirm new factor column appears correct
+str(imputedActivityData);
+table(imputedActivityData$day_type)
+
+```
+
+2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+
+```{r echo=TRUE, fig.height=10, fig.width=12}
+
+#summarize weekday data by interval
+imputedWeekDaysMeanStepsPerInterval <- subset(imputedActivityData, day_type == "weekday") %>% 
+                                       group_by(interval) %>% 
+                                       summarise(meansteps=mean(steps));
+
+#summarize weekend data by interval
+imputedWeekEndsMeanStepsPerInterval <- subset(imputedActivityData, day_type == "weekend") %>% 
+                                       group_by(interval) %>% 
+                                       summarise(meansteps=mean(steps));
+
+
+formattedIntervals <- sprintf("%04d", imputedWeekDaysMeanStepsPerInterval$interval);
+
+splitCodes <- paste(substr(formattedIntervals,1,2) , ":" , 
+                    substr(formattedIntervals,3,4), ":", "00", 
+                    sep="");
+
+#splitTimes <- times(splitCodes);
+posixIntervals <- as.POSIXct(splitCodes, format="%H:%M:%S");
+
+#2 panel plot off weekends vs. weekdays
+par(mfrow=c(2,1));
+plot(x=posixIntervals, 
+     y=imputedWeekDaysMeanStepsPerInterval$meansteps, 
+     type="l",
+     xlab="Interval (Formatted in hhmm 24 hour time)", 
+     ylab="Mean Steps",
+     ylim=c(0, max(imputedWeekDaysMeanStepsPerInterval$meansteps,
+                   imputedWeekEndsMeanStepsPerInterval$meansteps)));
+     title(main="Weekday Intervals");
+
+plot(x=posixIntervals, 
+     y=imputedWeekEndsMeanStepsPerInterval$meansteps, 
+     type="l",
+     xlab="Interval", 
+     ylab="Mean Steps",
+     ylim=c(0, max(imputedWeekDaysMeanStepsPerInterval$meansteps,
+                   imputedWeekEndsMeanStepsPerInterval$meansteps)));
+     title(main="Weekend Intervals");
 
 
 
-## Imputing missing values
+
+
+```
 
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+This analysis is begging for a over-lay of the previous 2 graphs,  
+so here it is:
+
+```{r echo=TRUE, fig.height=10, fig.width=12}
+plot(x=posixIntervals, 
+     y=imputedWeekDaysMeanStepsPerInterval$meansteps, 
+     type="l",
+     col="red",
+     xlab="Interval", 
+     ylab="Mean Steps",
+     ylim=c(0, max(imputedWeekDaysMeanStepsPerInterval$meansteps,
+                   imputedWeekEndsMeanStepsPerInterval$meansteps)));
+
+lines(x=posixIntervals, 
+      y=imputedWeekEndsMeanStepsPerInterval$meansteps,
+      col="black");
+
+title(main="Weekday vs Weekend Mean Steps per Interval");
+legend(x="topright", legend=c("Weekdays", "Weekends"),
+       col=c("red", "black"), lwd=1)
+
+
+```
+
+This shows clear indication that people walk/run more
+during the morning of weekdays, while they walk/run more
+during the afternoon of weekends.
+
+
+
+
