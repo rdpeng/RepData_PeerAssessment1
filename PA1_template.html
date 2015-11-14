@@ -221,17 +221,19 @@ hr {
 </code></pre></li>
 <li><p>A histogram of the total number of steps taken each day is the following:</p>
 
-<pre><code class="r">hist(tdf$steps, xlab=&quot;Number of steps taken per day&quot;, main=&quot;A histogram of the total number of steps taken each day&quot;)
+<pre><code class="r">hist(tdf$x, xlab=&quot;Number of steps taken per day&quot;, main=&quot;A histogram of the total number of steps taken each day&quot;)
 </code></pre></li>
 <li><p>The <strong>mean</strong> and <strong>median</strong> total number of steps taken per day are calculated:</p>
 
-<pre><code class="r">smean &lt;- mean(tdf$steps)
-smedian &lt;- median(tdf$steps)
+<pre><code class="r">smean &lt;- mean(tdf$x, na.rm=T)
+smedian &lt;- median(tdf$x, na.rm=T)
 abline(v=smean, col=&quot;red&quot;)
 abline(v=smedian, col=&quot;blue&quot;)
 legend(&#39;topright&#39;, c(&quot;Mean&quot;,&quot;Median&quot;), lty=1,  col=c(&quot;red&quot;,&quot;blue&quot;), cex=0.8 )
-</code></pre></li>
+</code></pre><p><img src="figures/foo1.png"></p></li>
 </ol>
+
+<p>The <strong>mean</strong> and <strong>median</strong> are slightly different. The <strong>mean</strong> is 1.0766189 &times; 10<sup>4</sup> and the <strong>median</strong> is 10765.</p>
 
 <h2>What is the average daily activity pattern?</h2>
 
@@ -239,8 +241,9 @@ legend(&#39;topright&#39;, c(&quot;Mean&quot;,&quot;Median&quot;), lty=1,  col=c
 <li><p>A time series plot (i.e. <code>type = &quot;l&quot;</code>) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) is made:</p>
 
 <pre><code class="r">mdf &lt;- aggregate(df$steps, by = list(df$interval), FUN = mean, na.rm=T)
-plot(mdf$&quot;Group.1&quot;, mdf$x, type=&quot;l&quot;)
-</code></pre></li>
+plot(mdf$&quot;Group.1&quot;, mdf$x, type=&quot;l&quot;,xlab=&quot;5-minute interval&quot;, ylab=&quot;number of steps taken, averaged across all days&quot;, main=&quot;A time series plot&quot;)
+</code></pre>
+<p><img src="figures/foo2.png"></p></li>
 <li><p>The 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps is 835</p></li>
 </ol>
 
@@ -248,16 +251,53 @@ plot(mdf$&quot;Group.1&quot;, mdf$x, type=&quot;l&quot;)
 
 <ol>
 <li><p>The total number of missing values in the dataset (i.e. the total number of rows with <code>NA</code>s) is:2304</p></li>
-<li><p>Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.</p></li>
-<li><p>Create a new dataset that is equal to the original dataset but with the missing data filled in.</p></li>
-<li><p>Make a histogram of the total number of steps taken each day and Calculate and report the <strong>mean</strong> and <strong>median</strong> total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?</p></li>
+<li><p>We would use the mean for that 5-minute interval,  averaged across all days.</p></li>
+<li><p>A new dataset that is equal to the original dataset but with the missing data filled in is created.</p>
+
+<pre><code class="r">newdf&lt;-df
+t2df &lt;- merge(newdf[is.na(newdf$steps),], mdf, by.x=&quot;interval&quot;, by.y=&quot;Group.1&quot;)
+t2df$steps &lt;- NULL
+colnames(t2df)[names(t2df)==&quot;x&quot;]&lt;- &quot;steps&quot;
+t2df&lt;-t2df[c(3,2,1)]
+newdf[is.na(newdf$steps),]&lt;-t2df
+</code></pre></li>
+<li><p>A histogram of the total number of steps taken each day is the following:</p>
+
+<pre><code class="r">t3df &lt;- aggregate(newdf$steps, by = list(newdf$date), FUN = sum)
+hist(t3df$x, xlab=&quot;Number of steps taken per day&quot;, main=&quot;A histogram of the total number of steps taken each day&quot;)
+smean &lt;- mean(t3df$x)
+smedian &lt;- median(t3df$x)
+abline(v=smean, col=&quot;red&quot;)
+abline(v=smedian, col=&quot;blue&quot;)
+legend(&#39;topright&#39;, c(&quot;Mean&quot;,&quot;Median&quot;), lty=1,  col=c(&quot;red&quot;,&quot;blue&quot;), cex=0.8 )
+</code></pre>
+<p><img src="figures/foo3.png"></p></li>
 </ol>
+
+<p>The <strong>mean</strong> and <strong>median</strong> are the same and are 1.0766189 &times; 10<sup>4</sup>.</p>
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 
 <ol>
-<li><p>Create a new factor variable in the dataset with two levels &ndash; &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo; indicating whether a given date is a weekday or weekend day.</p></li>
-<li><p>Make a panel plot containing a time series plot (i.e. <code>type = &quot;l&quot;</code>) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using <strong>simulated data</strong>:</p></li>
+<li><p>A new factor variable in the dataset is created with two levels &ndash; &ldquo;weekday&rdquo; and &ldquo;weekend&rdquo; indicating whether a given date is a weekday or weekend day:</p>
+
+<pre><code class="r">newdf$day&lt;- format(as.Date(newdf$date),&quot;%w&quot;)
+newdf$day[newdf$day==&quot;0&quot;|newdf$day==&quot;6&quot;] &lt;- &quot;weekend&quot;
+newdf$day[newdf$day!=&quot;weekend&quot;] &lt;- &quot;weekday&quot;
+newdf$day &lt;- as.factor(newdf$day)
+</code></pre></li>
+<li><p>A panel plot containing a time series plot (i.e. <code>type = &quot;l&quot;</code>) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis) is the following:</p>
+
+<pre><code class="r">par(mfrow=2:1)
+new2df&lt;-newdf[newdf$day==&quot;weekday&quot;,]
+m2df &lt;- aggregate(new2df$steps, by = list(new2df$interval), FUN = mean)
+plot(m2df$&quot;Group.1&quot;, m2df$x, type=&quot;l&quot;,xlab=&quot;5-minute interval&quot;, ylab=&quot;number of steps&quot;, main=&quot;Weekday&quot;)
+
+new2df&lt;-newdf[newdf$day==&quot;weekend&quot;,]
+m2df &lt;- aggregate(new2df$steps, by = list(new2df$interval), FUN = mean)
+plot(m2df$&quot;Group.1&quot;, m2df$x, type=&quot;l&quot;,xlab=&quot;5-minute interval&quot;, ylab=&quot;number of steps&quot;, main=&quot;Weekend&quot;)
+</code></pre>
+<p><img src="figures/foo4.png"></p></li>
 </ol>
 
 </body>
