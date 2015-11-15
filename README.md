@@ -3,7 +3,7 @@
 It is now possible to collect a large amount of data about personal
 movement using activity monitoring devices such as a
 [Fitbit](http://www.fitbit.com), [Nike
-Fuelband](http://www.nike.com/us/en_us/c/nikeplus-fuelband), or
+Fuelband](http://www.nike.com/us/en_us/c/nikeplus-fuel), or
 [Jawbone Up](https://jawbone.com/up). These type of devices are part of
 the "quantified self" movement -- a group of enthusiasts who take
 measurements about themselves regularly to improve their health, to
@@ -63,7 +63,7 @@ For the plotting aspects of this assignment, feel free to use any
 plotting system in R (i.e., base, lattice, ggplot2)
 
 Fork/clone the [GitHub repository created for this
-assignment](http://github.com/rdpeng/RepData_PeerAssessment1). You
+assignment](https://github.com/rdpeng/RepData_PeerAssessment1). You
 will submit this assignment by pushing your completed files into your
 forked repository on GitHub. The assignment submission will consist of
 the URL to your GitHub repository and the SHA-1 commit ID for your
