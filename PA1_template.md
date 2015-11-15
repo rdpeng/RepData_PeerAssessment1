@@ -102,6 +102,13 @@ qplot(data = smstpsaggdata, x = date, y = steps, geom ="histogram", stat = "iden
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+Mean and median - mnstpsperday and mdstpsperday - after execution
+
+> mnstpsperday
+[1] 37.3826
+> mdstpsperday
+[1] 0
+
 
 ##Question 2
 

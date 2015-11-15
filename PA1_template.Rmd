@@ -63,6 +63,13 @@ mdstpsperday <- median(assign1data$steps, na.rm = T)
 
 qplot(data = smstpsaggdata, x = date, y = steps, geom ="histogram", stat = "identity")
 ```
+Mean and median - mnstpsperday and mdstpsperday - after execution
+
+> mnstpsperday
+[1] 37.3826
+> mdstpsperday
+[1] 0
+
 
 ##Question 2
 
