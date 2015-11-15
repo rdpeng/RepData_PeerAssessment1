@@ -1,5 +1,10 @@
-RepData Peer Assessment 1
-==============================================================
+@@ -0,0 +1,101 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 Loading and preprocessing the data
@@ -85,7 +90,6 @@ plot(stepsperintWE$x, type="l", main="Weekend")
 
 
 ```
-
 
 
 
