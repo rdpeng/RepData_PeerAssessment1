@@ -1,0 +1,220 @@
+@@ -0,0 +1,219 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+<title>Reproducible Research: Peer Assessment 1</title>
+
+<script src="data:application/x-javascript,%2F%2A%21%20jQuery%20v1%2E11%2E0%20%7C%20%28c%29%202005%2C%202014%20jQuery%20Foundation%2C%20Inc%2E%20%7C%20jquery%2Eorg%2Flicense%20%2A%2F%0A%21function%28a%2Cb%29%7B%22object%22%3D%3Dtypeof%20module%26%26%22object%22%3D%3Dtypeof%20module%2Eexports%3Fmodule%2Eexports%3Da%2Edocument%3Fb%28a%2C%210%29%3Afunction%28a%29%7Bif%28%21a%2Edocument%29throw%20new%20Error%28%22jQuery%20requires%20a%20window%20with%20a%20document%22%29%3Breturn%20b%28a%29%7D%3Ab%28a%29%7D%28%...(line truncated)...
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="data:text/css,%2F%2A%21%0A%20%2A%20Bootstrap%20v3%2E3%2E1%20%28http%3A%2F%2Fgetbootstrap%2Ecom%29%0A%20%2A%20Copyright%202011%2D2014%20Twitter%2C%20Inc%2E%0A%20%2A%20Licensed%20under%20MIT%20%28https%3A%2F%2Fgithub%2Ecom%2Ftwbs%2Fbootstrap%2Fblob%2Fmaster%2FLICENSE%29%0A%20%2A%2F%2F%2A%21%20normalize%2Ecss%20v3%2E0%2E2%20%7C%20MIT%20License%20%7C%20git%2Eio%2Fnormalize%20%2A%2Fhtml%7Bfont%2Dfamily%3Asans%2Dserif%3B%2Dwebkit%2Dtext%2Dsize%2Dadjust%3A100%25%3B%2Dms%2Dtext%2Dsize%2Dadjust%3A100%25%...(line truncated)...
+<script src="data:application/x-javascript,%2F%2A%21%0A%20%2A%20Bootstrap%20v3%2E3%2E1%20%28http%3A%2F%2Fgetbootstrap%2Ecom%29%0A%20%2A%20Copyright%202011%2D2014%20Twitter%2C%20Inc%2E%0A%20%2A%20Licensed%20under%20MIT%20%28https%3A%2F%2Fgithub%2Ecom%2Ftwbs%2Fbootstrap%2Fblob%2Fmaster%2FLICENSE%29%0A%20%2A%2F%0Aif%28%22undefined%22%3D%3Dtypeof%20jQuery%29throw%20new%20Error%28%22Bootstrap%27s%20JavaScript%20requires%20jQuery%22%29%3B%2Bfunction%28a%29%7Bvar%20b%3Da%2Efn%2Ejquery%2Esplit%28%22%20%22%29%5B0%5D...(line truncated)...
+<script src="data:application/x-javascript,%2F%2A%2A%0A%2A%20%40preserve%20HTML5%20Shiv%203%2E7%2E2%20%7C%20%40afarkas%20%40jdalton%20%40jon%5Fneal%20%40rem%20%7C%20MIT%2FGPL2%20Licensed%0A%2A%2F%0A%2F%2F%20Only%20run%20this%20code%20in%20IE%208%0Aif%20%28%21%21window%2Enavigator%2EuserAgent%2Ematch%28%22MSIE%208%22%29%29%20%7B%0A%21function%28a%2Cb%29%7Bfunction%20c%28a%2Cb%29%7Bvar%20c%3Da%2EcreateElement%28%22p%22%29%2Cd%3Da%2EgetElementsByTagName%28%22head%22%29%5B0%5D%7C%7Ca%2EdocumentElement%3Breturn%...(line truncated)...
+<script src="data:application/x-javascript,%2F%2A%21%20Respond%2Ejs%20v1%2E4%2E2%3A%20min%2Fmax%2Dwidth%20media%20query%20polyfill%20%2A%20Copyright%202013%20Scott%20Jehl%0A%20%2A%20Licensed%20under%20https%3A%2F%2Fgithub%2Ecom%2Fscottjehl%2FRespond%2Fblob%2Fmaster%2FLICENSE%2DMIT%0A%20%2A%20%20%2A%2F%0A%0Aif%20%28%21%21window%2Enavigator%2EuserAgent%2Ematch%28%22MSIE%208%22%29%29%20%7B%0A%21function%28a%29%7B%22use%20strict%22%3Ba%2EmatchMedia%3Da%2EmatchMedia%7C%7Cfunction%28a%29%7Bvar%20b%2Cc%3Da%2Edocum...(line truncated)...
+
+<style type="text/css">code{white-space: pre;}</style>
+<link href="data:text/css,pre%20%2Eoperator%2C%0Apre%20%2Eparen%20%7B%0A%20color%3A%20rgb%28104%2C%20118%2C%20135%29%0A%7D%0A%0Apre%20%2Eliteral%20%7B%0A%20color%3A%20%23990073%0A%7D%0A%0Apre%20%2Enumber%20%7B%0A%20color%3A%20%23099%3B%0A%7D%0A%0Apre%20%2Ecomment%20%7B%0A%20color%3A%20%23998%3B%0A%20font%2Dstyle%3A%20italic%0A%7D%0A%0Apre%20%2Ekeyword%20%7B%0A%20color%3A%20%23900%3B%0A%20font%2Dweight%3A%20bold%0A%7D%0A%0Apre%20%2Eidentifier%20%7B%0A%20color%3A%20rgb%280%2C%200%2C%200%29%3B%0A%7D%0A%0Apre%2...(line truncated)...
+<script src="data:application/x-javascript,%0Avar%20hljs%3Dnew%20function%28%29%7Bfunction%20m%28p%29%7Breturn%20p%2Ereplace%28%2F%26%2Fgm%2C%22%26amp%3B%22%29%2Ereplace%28%2F%3C%2Fgm%2C%22%26lt%3B%22%29%7Dfunction%20f%28r%2Cq%2Cp%29%7Breturn%20RegExp%28q%2C%22m%22%2B%28r%2EcI%3F%22i%22%3A%22%22%29%2B%28p%3F%22g%22%3A%22%22%29%29%7Dfunction%20b%28r%29%7Bfor%28var%20p%3D0%3Bp%3Cr%2EchildNodes%2Elength%3Bp%2B%2B%29%7Bvar%20q%3Dr%2EchildNodes%5Bp%5D%3Bif%28q%2EnodeName%3D%3D%22CODE%22%29%7Breturn%20q%7Dif%28%2...(line truncated)...
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+</head>
+
+<body>
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img { 
+  max-width:100%; 
+  height: auto; 
+}
+</style>
+<div class="container-fluid main-container">
+
+
+<div id="header">
+<h1 class="title">Reproducible Research: Peer Assessment 1</h1>
+</div>
+
+
+<p>Loading and preprocessing the data</p>
+<pre class="r"><code>MyData &lt;- read.csv(&quot;activity.csv&quot;, header=TRUE, sep=&quot;,&quot;)</code></pre>
+<p>What is mean total number of steps taken per day?</p>
+<pre class="r"><code>#1 Calculate the total number of steps taken per day
+stepsperday &lt;- aggregate(MyData$steps, list(MyData$date), sum, na.rm=TRUE)
+stepsperday</code></pre>
+<pre><code>##       Group.1     x
+## 1  2012-10-01     0
+## 2  2012-10-02   126
+## 3  2012-10-03 11352
+## 4  2012-10-04 12116
+## 5  2012-10-05 13294
+## 6  2012-10-06 15420
+## 7  2012-10-07 11015
+## 8  2012-10-08     0
+## 9  2012-10-09 12811
+## 10 2012-10-10  9900
+## 11 2012-10-11 10304
+## 12 2012-10-12 17382
+## 13 2012-10-13 12426
+## 14 2012-10-14 15098
+## 15 2012-10-15 10139
+## 16 2012-10-16 15084
+## 17 2012-10-17 13452
+## 18 2012-10-18 10056
+## 19 2012-10-19 11829
+## 20 2012-10-20 10395
+## 21 2012-10-21  8821
+## 22 2012-10-22 13460
+## 23 2012-10-23  8918
+## 24 2012-10-24  8355
+## 25 2012-10-25  2492
+## 26 2012-10-26  6778
+## 27 2012-10-27 10119
+## 28 2012-10-28 11458
+## 29 2012-10-29  5018
+## 30 2012-10-30  9819
+## 31 2012-10-31 15414
+## 32 2012-11-01     0
+## 33 2012-11-02 10600
+## 34 2012-11-03 10571
+## 35 2012-11-04     0
+## 36 2012-11-05 10439
+## 37 2012-11-06  8334
+## 38 2012-11-07 12883
+## 39 2012-11-08  3219
+## 40 2012-11-09     0
+## 41 2012-11-10     0
+## 42 2012-11-11 12608
+## 43 2012-11-12 10765
+## 44 2012-11-13  7336
+## 45 2012-11-14     0
+## 46 2012-11-15    41
+## 47 2012-11-16  5441
+## 48 2012-11-17 14339
+## 49 2012-11-18 15110
+## 50 2012-11-19  8841
+## 51 2012-11-20  4472
+## 52 2012-11-21 12787
+## 53 2012-11-22 20427
+## 54 2012-11-23 21194
+## 55 2012-11-24 14478
+## 56 2012-11-25 11834
+## 57 2012-11-26 11162
+## 58 2012-11-27 13646
+## 59 2012-11-28 10183
+## 60 2012-11-29  7047
+## 61 2012-11-30     0</code></pre>
+<pre class="r"><code>#2 Make a histogram of the total number of steps each day
+hist(stepsperday[,2])</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAclBMVEUAAAAAACsAAFUAK4AAVaorAAArACsrAFUrKwArKysrK4ArVaorgNRVAABVACtVgIBVqv+AKwCAKyuAgFWAqoCA1KqA1P+qVQCqVSuqVVWq1ICq/6qq/9Sq///UgCvU/9TU////qlX/1ID//6r//9T///95XypdAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAUL0lEQVR4nO2dbWOjOpJGSSeenbsb9yY7d+Odl2biOP7/f3FBAiEbY7uCqC4q53xIuzHoQfKJAJmg6ghgmOp37wDANRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwjWdBP...(line truncated)...
+<pre class="r"><code>#3 Calculate and report the mean and median of the total number of steps taken per day
+mn &lt;- mean(stepsperday[,2], na.rm=TRUE)
+me &lt;- median(stepsperday[,2], na.rm=TRUE)
+print(paste0(&quot;Mean: &quot;, mn))</code></pre>
+<pre><code>## [1] &quot;Mean: 9354.22950819672&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;Median: &quot;, me))</code></pre>
+<pre><code>## [1] &quot;Median: 10395&quot;</code></pre>
+<p>What is the average daily activity pattern?</p>
+<pre class="r"><code>#1 Make a time series plot
+stepsperint &lt;- aggregate(MyData$steps, list(MyData$interval), mean, na.rm=TRUE)
+plot(stepsperint$x, type=&quot;l&quot;, main=&quot;Time Series Plot at Intervals&quot;)</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAdVBMVEUAAAAAACsAAFUAK4AAVaorAAArACsrAFUrKwArKysrgNRVAABVACtVK4BVVVVVqqpVqtRVqv+AKwCAKyuAK1WAgFWAqoCA1NSA1P+qVQCqVVWq/6qq///UgCvUqlXU1P/U/9TU////qlX/1ID//6r//9T///+7J6tpAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAYUUlEQVR4nO2diXbjMHIA4bEnh7057GQTKztMdjS2/v8TIxI8wAM8ADTYpKrem7HMo9EQyyAAUaS5ASjG7J0AwBwICqpBUFANgoJqEBRUg6CgGgQF1SAoqAZBQTUICqpBUFANgoJqEBRUg6CgGgQF1SAoqAZBQTUICqpBUFANgoJqEBRUg6CgGgQF1SAoqAZBQTUICqpBUFANgoJqEBRUg6CgGgQF1SAoqOYRB...(line truncated)...
+<pre class="r"><code>#2 Which 5-min internval, on average across all the days in the dataset, contains the max num of steps?
+mx &lt;- which.max(stepsperint[,2])
+print(paste0(stepsperint[mx,1], &quot; is the max 5-min interval&quot;))</code></pre>
+<pre><code>## [1] &quot;835 is the max 5-min interval&quot;</code></pre>
+<p>Inputing missing values</p>
+<pre class="r"><code>#1 Calculate num of missing values 
+sum(is.na(MyData$steps))</code></pre>
+<pre><code>## [1] 2304</code></pre>
+<pre class="r"><code>#2 To use mean for for replacement
+#3 Create a new dataset
+MyData2 &lt;- MyData
+for (i in which(sapply(MyData2, is.numeric))){
+  MyData2[is.na(MyData2[,i]), i] &lt;- mean(MyData2[,i], na.rm=TRUE)
+}
+#4 Make a histogram, calculate mean and median total num of steps taken per day. 
+stepsperday2 &lt;- aggregate(MyData2$steps, list(MyData2$date), sum, na.rm=TRUE)
+hist(stepsperday2[,2])</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAdVBMVEUAAAAAACsAAFUAK4AAVaorAAArACsrAFUrKwArKysrK4ArVaorgNRVAABVACtVgIBVqv+AKwCAKyuAgFWAqoCA1KqA1P+qVQCqVSuqVVWq1ICq/6qq/9Sq///UgCvU1P/U/9TU////qlX/1ID//6r//9T////9juhiAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAUVklEQVR4nO2da0OrOhZA8ap3XnpH52HndTpj1f7/nziQkJCWgt0C++xs1/rg8QDNJukyhJRmN0cAwzQ/+wQA5kBQMA2CgmkQFEyDoGAaBAXTICiYBkHBNAgKpkFQMA2CgmkQFEyDoGAaBAXTICiYBkHBNAgKpkFQMA2CgmkQFEyDoGAaBAXTICiYBkHBNAgKpkFQMA2CgmkQFEyDoGAaBAXTICiYBkHBND4F/...(line truncated)...
+<pre class="r"><code>mn &lt;- mean(stepsperday2[,2], na.rm=TRUE)
+me &lt;- median(stepsperday2[,2], na.rm=TRUE)
+print(paste0(&quot;New Mean: &quot;, mn))</code></pre>
+<pre><code>## [1] &quot;New Mean: 10766.1886792453&quot;</code></pre>
+<pre class="r"><code>print(paste0(&quot;New Median: &quot;, me))</code></pre>
+<pre><code>## [1] &quot;New Median: 10766.1886792453&quot;</code></pre>
+<pre class="r"><code>print(&quot;Yes, different significantly from part one. It has increased the mean and median&quot;)</code></pre>
+<pre><code>## [1] &quot;Yes, different significantly from part one. It has increased the mean and median&quot;</code></pre>
+<p>Weedays and weekends activity patterns</p>
+<pre class="r"><code>#1 Create a new factor variable in the dataset with two levels - weekend and weekday
+MyData2[,&quot;wkday&quot;] &lt;- weekdays(as.Date(MyData2$date))
+
+MyData2$wkday[MyData2$wkday==&quot;Monday&quot; | MyData2$wkday==&quot;Tuesday&quot; | MyData2$wkday==&quot;Wednesday&quot; | MyData2$wkday==&quot;Thursday&quot; | MyData2$wkday==&quot;Friday&quot;] &lt;- &quot;weekday&quot;
+
+MyData2$wkday[MyData2$wkday==&quot;Saturday&quot; | MyData2$wkday==&quot;Sunday&quot;] &lt;- &quot;weekend&quot;
+
+#2 plot
+MyDataWD &lt;- MyData2[MyData2$wkday==&quot;weekday&quot;,]
+stepsperintWD &lt;- aggregate(MyDataWD$steps, list(MyDataWD$interval), mean, na.rm=TRUE)
+
+MyDataWE &lt;- MyData2[MyData2$wkday==&quot;weekend&quot;,]
+stepsperintWE &lt;- aggregate(MyDataWE$steps, list(MyDataWE$interval), mean, na.rm=TRUE)
+
+plot(stepsperintWD$x, type=&quot;l&quot;, main=&quot;Weekday&quot;)</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAdVBMVEUAAAAAACsAAFUAK4AAVaorAAArACsrAFUrKwArKysrgIArgNRVAABVACtVK4BVVVVVqqpVqtRVqv+AKwCAK1WAgFWA1KqA1P+qVQCqgCuq1ICq/6qq///UgCvU1IDU1P/U/9TU////qlX/1ID//6r//9T/////OJiDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAXsUlEQVR4nO2djXarPHZAlZtk2mkynU7cadz2c2euk/j9H7H8GzACJB2Jg9h7rXttY/lIMjtCEliYG4BizNYFAJgDQUE1CAqqQVBQDYKCahAUVIOgoBoEBdUgKKgGQUE1CAqqQVBQDYKCahAUVIOgoBoEBdUgKKgGQUE1CAqqQVBQDYKCahAUVIOgoBoEBdUgKKgGQUE1CAqqQVBQDYKCahAUVIOgoBoEBdUgq...(line truncated)...
+<pre class="r"><code>plot(stepsperintWE$x, type=&quot;l&quot;, main=&quot;Weekend&quot;)</code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAqAAAAHgCAMAAABNUi8GAAAAdVBMVEUAAAAAACsAAFUAK4AAVaorAAArACsrAFUrKwArKysrgIArgNRVAABVACtVK4BVVVVVqqpVqtRVqv+AKwCAK1WAgFWA1KqA1P+qVQCqgCuq1ICq/6qq///UgCvU1IDU1P/U/9TU////qlX/1ID//6r//9T/////OJiDAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAXsUlEQVR4nO2dDXujvJVANTNJu23SbZtsd9zd8bbjJPz/n7jm0wILEOJeuMLnvM8bYyxfCTgjJIGFKwAM4/YuAMAUCAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQcE0CAqmQVAwDYKCaRAUTIOgYBoEBdMgKJgGQ...(line truncated)...
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
