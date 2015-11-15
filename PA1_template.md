@@ -1,9 +1,4 @@
----
-title: "PeerAssignment1"
-output:
-  html_document:
-    keep_md: yes
----
+# PeerAssignment1
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
@@ -19,12 +14,53 @@ Show any code that is needed to
 
 2) Process/transform the data (if necessary) into a format suitable for your analysis
 
-```{r, echo=TRUE}
+
+```r
 library(timeDate)
+```
+
+```
+## Warning: package 'timeDate' was built under R version 3.2.2
+```
+
+```r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.2
+```
+
+```r
 library(scales)
 library(Hmisc)
+```
 
+```
+## Warning: package 'Hmisc' was built under R version 3.2.2
+```
+
+```
+## Loading required package: grid
+## Loading required package: lattice
+## Loading required package: survival
+## Loading required package: Formula
+```
+
+```
+## Warning: package 'Formula' was built under R version 3.2.2
+```
+
+```
+## 
+## Attaching package: 'Hmisc'
+## 
+## The following objects are masked from 'package:base':
+## 
+##     format.pval, round.POSIXt, trunc.POSIXt, units
+```
+
+```r
 assign1data <- read.csv("activity.csv")
 ```
 
@@ -44,7 +80,8 @@ Using aggregate function, sum, mean and median per day and per interval are comp
 
 Overall mean and median are also computed
 
-```{r, echo = "TRUE"}
+
+```r
 smstpsaggdata <- aggregate(steps ~ date, assign1data, sum)
 
 mnstpsaggdata <- aggregate(steps ~ date, assign1data, mean)
@@ -64,6 +101,8 @@ mdstpsperday <- median(assign1data$steps, na.rm = T)
 qplot(data = smstpsaggdata, x = date, y = steps, geom ="histogram", stat = "identity")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
 ##Question 2
 
 What is the average daily activity pattern?
@@ -73,12 +112,17 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
-```{r, echo = "TRUE"}
+
+```r
 ggplot(data=mnstpsaggdataint, aes(x=interval, y=steps)) +
   geom_line() +
   xlab("5-minute interval") +
   ylab("mean of number of steps taken")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 maxstpint <- mnstpsaggdataint[which.max(mnstpsaggdataint$steps),1]
 ```
 
@@ -100,7 +144,8 @@ Make a histogram of the total number of steps taken each day and Calculate and r
 
 Filling is done with mean number of steps in that interval
 
-```{r, echo = "TRUE"}
+
+```r
 no_of_NAs <- sum(!complete.cases(assign1data$steps))
 
 filleddata <- transform(assign1data, steps = ifelse(is.na(assign1data$steps), 
@@ -123,8 +168,9 @@ mnstpsperdayfill <- mean(filleddata$steps, na.rm = T)
 mdstpsperdayfill <- median(filleddata$steps, na.rm = T)
 
 qplot(data = smstpsaggdatafill, x = date, y = steps, geom ="histogram", stat = "identity")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 After filling, the mean changes in a big way. But median remains at 0
 
@@ -153,7 +199,8 @@ Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minut
 
 The top half of the plot is for Weekend days(FALSE) and the bottom half is for weekdays(TRUE)
 
-```{r, echo = "TRUE"}
+
+```r
 filleddata$IsWeekDay <- isWeekday(as.Date(filleddata$date))
 
 mnstpsaggdataintfillWkday <- aggregate(steps ~ interval + IsWeekDay, filleddata, mean)
@@ -162,10 +209,9 @@ ggplot(data=mnstpsaggdataintfillWkday, aes(x=interval, y=steps)) +
   geom_line() +  facet_grid(IsWeekDay ~ .) +
   xlab("5-minute interval") +
   ylab("mean of number of steps taken")
-
 ```
 
-```{r, echo = "TRUE"}
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
 
-```
+
 
