@@ -24,7 +24,7 @@ Variable names from a dataset are in all capital letters.
 
 ###Requirements
 Reproducing this analysis requires use of the following R packages
-```{r echo=TRUE, results="hide"}
+```{r requirements, echo=TRUE, results="hide"}
 library(dplyr);
 library(ggplot2);
 library(mice);
@@ -35,7 +35,7 @@ library(scales);
 
 ###Load Raw Data:
 
-```{r echo=TRUE, results='hide'}
+```{r load_raw_data, echo=TRUE, results='hide'}
 
 #helper function to get data
 getData <- function(url, zipName, dataFileName){
@@ -96,9 +96,9 @@ rawActivityData <- read.csv(dataFileName, header=TRUE);
 
 #Perform exploratory analysis on the raw data.
 
-###Basic summary views:
+###Routine summary views:
 
-```{r echo=TRUE}
+```{r raw_data_summary, echo=TRUE}
 
 dim(rawActivityData);
 str(rawActivityData);
@@ -121,7 +121,7 @@ Segment raw data by DATE to ensure the date values represent valid dates,
 and each DATE has the same number of INTERVAL values which are measured  
 by the same intervals:
 
-```{r echo=TRUE}
+```{r segment_raw_data, echo=TRUE}
 
 #ensure DATE variable contains valid date values, this function will fail
 #if some entry is not a valid date
@@ -156,7 +156,7 @@ According the description of the raw data, each
 INTERVAL represents 5 minutes of time.  So given `r rowCountByDate[1]`  
 observations per day we account for `r 5 * rowCountByDate[1] / 60` hours per day.
 
-```{r echo=TRUE}
+```{r map_intervals_to_24_hours, echo=TRUE}
 #do the math to show range of intervals equates to 24 hours per day
 5 * 288 / 60
 ```
@@ -194,7 +194,7 @@ so let's get to work.
 ###What is mean total number of steps taken per day?  
 
 1. Calculate total number of steps taken each day
-```{r echo=TRUE, results="hide"}
+```{r mean_steps_per_day, echo=TRUE, results="hide"}
 sumStepsPerDate <- rawActivityData[complete.cases(rawActivityData),]  %>% 
                    group_by(date) %>% 
                    summarise(totalsteps=sum(steps));
@@ -207,7 +207,7 @@ dim(sumStepsPerDate);
 
 2. Make a histogram of the total number of steps taken each day.
 
-```{r echo=TRUE}
+```{r steps_per_day_histogram, echo=TRUE}
 ggplot(data=sumStepsPerDate, aes(sumStepsPerDate$totalsteps)) + 
   geom_histogram(breaks=seq(0, max(sumStepsPerDate$totalsteps), 
                             by = max(sumStepsPerDate$totalsteps) / length(unique(sumStepsPerDate$date))), 
@@ -221,7 +221,7 @@ ggplot(data=sumStepsPerDate, aes(sumStepsPerDate$totalsteps)) +
 
 3. Calculate and report the mean and median of the total number of steps taken per day.
 
-```{r echo=TRUE}
+```{r get_mean_sum_steps_per_day, echo=TRUE}
 
 meanSumStepsPerDay <- mean(sumStepsPerDate$totalsteps);
 medianSumStepsPerDay <- median(sumStepsPerDate$totalsteps);
@@ -236,7 +236,7 @@ Median of total steps taken per day: `r medianSumStepsPerDay`
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 the average number of steps taken, averaged across all days (y-axis).
 
-```{r echo=TRUE}
+```{r mean_steps_per_interval, echo=TRUE}
 
 #compute mean steps per 5 minute interval
 meanStepsPerInterval <- rawActivityData[complete.cases(rawActivityData),]  %>% 
@@ -267,7 +267,7 @@ ggplot(NULL, aes(posixIntervals, meanStepsPerInterval$meansteps)) +
 2. Which 5-minute interval, on average across all the days in the dataset, 
 contains the maximum number of steps?
 
-```{r echo=TRUE}
+```{r max_mean_steps_per_interval, echo=TRUE}
 #compute max average interval
 maxStepsPerInterval = max(meanStepsPerInterval$meansteps);
 
@@ -284,7 +284,7 @@ Interval `r maxInterval` contains the maximum average steps across all days (rou
 
 Previous NA analysis shows `r as.vector(tnaCounts[2])` dates contain only NA values for STEPS.
 
-```{r echo=TRUE, results="hide"}
+```{r hack_NAs, echo=TRUE, results="hide"}
 #compute number of NA values in raw data
 table(is.na(rawActivityData));
 #2304 total NAs in raw data
@@ -317,12 +317,12 @@ It's definitely more interesting then computing more means, etc...
 md.pattern(rawActivityData);
 
 #impute missing values -- this takes a minute or two depending on values for m and maxit.
-tempData <- mice(rawActivityData, m=5, maxit=10, meth='pmm', seed=500);
+tempData <- mice(rawActivityData, m=1, maxit=1, meth='pmm', seed=500);
 imputedActivityData <- complete(tempData,1);
 
 ```
 
-```{r echo=TRUE}
+```{r summary_imputed_data, echo=TRUE}
 
 #show summary of dataframe with imputed values for steps
 summary(imputedActivityData);
@@ -331,7 +331,7 @@ summary(imputedActivityData);
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r echo=TRUE}
+```{r sum_steps_per_day_imputed, echo=TRUE}
 #compute sum of steps for each date
 sumImputedStepsPerDate <- imputedActivityData  %>% 
                           group_by(date) %>% 
@@ -375,7 +375,7 @@ which equates to the perrcent change:  `r round(100 * (medianSumStepsPerDay-medi
 
 Graphical comparison of mean steps per interval: NAs removed vs. imputing values for NAs
 
-```{r echo=TRUE, fig.width=12}
+```{r compare_NA_removed_data_with_imputed_data, echo=TRUE, fig.width=12}
 #impute data and then compare mean per interval between NA removed data and imputed data
 #compute mean steps per interval using imputed data
 meanImputedStepsPerInterval <- imputedActivityData  %>% 
@@ -407,7 +407,7 @@ ggplot(NULL, aes(posixIntervals, meanStepsPerInterval$meansteps)) +
 
 Graphical comparison of total steps per day: NAs removed vs. imputing values for NAs
 
-```{r echo=TRUE, fig.width=12}
+```{r comparison_steps_per_day, echo=TRUE, fig.width=12}
 #compare plot of sum steps per date:  raw data (NA removed)  vs. imputed data
 ggplot(NULL, aes(date, totalsteps, group=1)) + 
   geom_line(data = sumStepsPerDate, aes(color="NA_Removed")) +
@@ -424,7 +424,7 @@ ggplot(NULL, aes(date, totalsteps, group=1)) +
 
 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r echo=TRUE}
+```{r create_day_type_factor, echo=TRUE}
 
 #add weekend/weekday factor to the data set
 #that contains imputed data
@@ -439,7 +439,7 @@ table(imputedActivityData$day_type)
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
 
-```{r echo=TRUE, fig.height=10, fig.width=12}
+```{r day_type_panel_plot, echo=TRUE, fig.height=10, fig.width=12}
 
 #summarize weekday data by interval
 imputedWeekDaysMeanStepsPerInterval <- subset(imputedActivityData, day_type == "weekday") %>% 
@@ -492,7 +492,7 @@ plot(x=posixIntervals,
 This analysis is begging for a over-lay of the previous 2 graphs,  
 so here it is:
 
-```{r echo=TRUE, fig.height=10, fig.width=12}
+```{r you_know_you_wanted_it, echo=TRUE, fig.height=10, fig.width=12}
 plot(x=posixIntervals, 
      y=imputedWeekDaysMeanStepsPerInterval$meansteps, 
      type="l",
