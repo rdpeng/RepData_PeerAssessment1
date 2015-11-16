@@ -15,14 +15,26 @@ library(lattice)
 
 # Read and show data
 dfActivity <- read.csv("activity.csv", stringsAsFactors=FALSE)
+```
+
+```
+## Warning in file(file, "rt"): cannot open file 'activity.csv': No such file
+## or directory
+```
+
+```
+## Error in file(file, "rt"): cannot open the connection
+```
+
+```r
 head(dfActivity,3)
 ```
 
 ```
-##   steps       date interval
-## 1    NA 2012-10-01        0
-## 2    NA 2012-10-01        5
-## 3    NA 2012-10-01       10
+##   steps       date interval weekday    wDay
+## 1    NA 2012-10-01        0   hétfõ weekend
+## 2    NA 2012-10-01        5   hétfõ weekend
+## 3    NA 2012-10-01       10   hétfõ weekend
 ```
 
 Process/transform the data (if necessary) into a format suitable for your analysis. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
