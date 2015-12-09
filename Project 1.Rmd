@@ -3,9 +3,8 @@ title: "Reproducible Research Project 1"
 author: "luo meiyu"
 date: "2015年12月9日"
 output: html_document
-keep_md: true
 ---
-
+keep_md: true
 
 ##Loading and preprocessing the data
 
@@ -122,7 +121,8 @@ data<-cbind(data,Type)
 data$Type<-as.character(data$Type)
 
 for(i in 1:dim.data.frame(data)[1])
-{
+{##As I'm working in Chinese environment, the characters below should be ##replaced by "Sunday" or "Saturday" if in English environment
+
   if(data$weekdays[i]=="星期日"||data$weekdays[i]=="星期六"){
     data$Type[i]="weekend"
   }

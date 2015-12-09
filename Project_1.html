@@ -67,6 +67,7 @@ img {
 </div>
 
 
+<p>keep_md: true</p>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <ol style="list-style-type: decimal">
@@ -196,7 +197,8 @@ data&lt;-cbind(data,Type)
 data$Type&lt;-as.character(data$Type)
 
 for(i in 1:dim.data.frame(data)[1])
-{
+{##As I'm working in Chinese environment, the characters below should be ##replaced by &quot;Sunday&quot; or &quot;Saturday&quot; if in English environment
+
   if(data$weekdays[i]==&quot;星期日&quot;||data$weekdays[i]==&quot;星期六&quot;){
     data$Type[i]=&quot;weekend&quot;
   }
