@@ -3,8 +3,8 @@
 It is now possible to collect a large amount of data about personal
 movement using activity monitoring devices such as a
 [Fitbit](http://www.fitbit.com), [Nike
-Fuelband](http://www.nike.com/us/en_us/c/nikeplus-fuelband), or
-[Jawbone Up](https://jawbone.com/up). These type of devices are part of
+FuelBand](https://secure-nikeplus.nike.com/plus/products/fuelband/), or
+[Jawbone UP](https://jawbone.com/up). These type of devices are part of
 the "quantified self" movement -- a group of enthusiasts who take
 measurements about themselves regularly to improve their health, to
 find patterns in their behavior, or because they are tech geeks. But
@@ -13,10 +13,10 @@ obtain and there is a lack of statistical methods and software for
 processing and interpreting the data.
 
 This assignment makes use of data from a personal activity monitoring
-device. This device collects data at 5 minute intervals through out the
+device. This device collects data at 5 minute intervals throughout the
 day. The data consists of two months of data from an anonymous
-individual collected during the months of October and November, 2012
-and include the number of steps taken in 5 minute intervals each day.
+individual collected during the months of October and November, 2012,
+and includes the number of steps taken in 5 minute intervals each day.
 
 ## Data
 
@@ -57,10 +57,10 @@ used to generate the output you present. When writing code chunks in
 the R markdown document, always use `echo = TRUE` so that someone else
 will be able to read the code. **This assignment will be evaluated via
 peer assessment so it is essential that your peer evaluators be able
-to review the code for your analysis**.
+to review the code for your analysis.**
 
 For the plotting aspects of this assignment, feel free to use any
-plotting system in R (i.e., base, lattice, ggplot2)
+plotting system in R (i.e., base, lattice, ggplot2).
 
 Fork/clone the [GitHub repository created for this
 assignment](http://github.com/rdpeng/RepData_PeerAssessment1). You
@@ -103,16 +103,16 @@ the dataset.
 ### Imputing missing values
 
 Note that there are a number of days/intervals where there are missing
-values (coded as `NA`). The presence of missing days may introduce
+values (coded as `NA`). The presence of missing observations may introduce
 bias into some calculations or summaries of the data.
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s)
 
 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in
 
-4. Make a histogram of the total number of steps taken each day and Calculate and report the **mean** and **median** total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+4. Make a histogram of the total number of steps taken each day. Calculate and report the **mean** and **median** total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
 ### Are there differences in activity patterns between weekdays and weekends?
@@ -120,11 +120,11 @@ bias into some calculations or summaries of the data.
 For this part the `weekdays()` function may be of some help here. Use
 the dataset with the filled-in missing values for this part.
 
-1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+1. Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day
 
 1. Make a panel plot containing a time series plot (i.e. `type = "l"`) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). The plot should look something like the following, which was created using **simulated data**:
 
-![Sample panel plot](instructions_fig/sample_panelplot.png) 
+![Sample panel plot](instructions_fig/sample_panelplot.png)
 
 
 **Your plot will look different from the one above** because you will
@@ -137,9 +137,9 @@ using any plotting system you choose.
 
 To submit the assignment:
 
-1. Commit your completed `PA1_template.Rmd` file to the `master` branch of your git repository (you should already be on the `master` branch unless you created new ones)
+1. Commit your completed `PA1_template.Rmd` file to the `master` branch of your git repository (you should already be on the `master` branch unless you created new ones).
 
-2. Commit your `PA1_template.md` and `PA1_template.html` files produced by processing your R markdown file with the `knit2html()` function in R (from the **knitr** package)
+2. Commit your `PA1_template.md` and `PA1_template.html` files produced by processing your R markdown file with the `knit2html()` function in R (from the **knitr** package).
 
 3. If your document has figures included (it should) then they should have been placed in the `figure/` directory by default (unless you overrode the default). Add and commit the `figure/` directory to your git repository.
 
@@ -148,14 +148,14 @@ To submit the assignment:
 5. Submit the URL to your GitHub repository for this assignment on the course web site.
 
 In addition to submitting the URL for your GitHub repository, you will
-need to submit the 40 character SHA-1 hash (as string of numbers from
+need to submit the 40 character SHA-1 hash (a string of numbers from
 0-9 and letters from a-f) that identifies the repository commit that
 contains the version of the files you want to submit. You can do this
 in GitHub by doing the following:
 
-1. Go into your GitHub repository web page for this assignment
+1. Go into your GitHub repository web page for this assignment.
 
-2. Click on the "?? commits" link where ?? is the number of commits you have in the repository. For example, if you made a total of 10 commits to this repository, the link should say "10 commits".
+2. Click on the "_???_ commits" link where _???_ is the number of commits you have in the repository. For example, if you made a total of 10 commits to this repository, the link should say "10 commits".
 
 3. You will see a list of commits that you have made to this repository. The most recent commit is at the very top. If this represents the version of the files you want to submit, then just click the "copy to clipboard" button on the right hand side that should appear when you hover over the SHA-1 hash. Paste this SHA-1 hash into the course web site when you submit your assignment. If you don't want to use the most recent commit, then go down and find the commit you want and copy the SHA-1 hash.
 
