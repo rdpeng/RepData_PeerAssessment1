@@ -125,7 +125,7 @@ Total number of missing values in the original dataset is
 `r sum(is.na(actdf["steps"]))`  
 Total number of missing values after replacing with timeinterval means is `r sum(is.na(actdfcopy["steps"]))`  
 
-###Calculcate totals for this new dataframe   
+###Calculate totals for this new dataframe   
 ```{r total_copy}
 totperdaycopy <- ddply(actdfcopy, .(date), summarize, 
                     dailymean = round(mean(steps, na.rm=TRUE),2),
