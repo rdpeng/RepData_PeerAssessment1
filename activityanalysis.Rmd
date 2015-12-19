@@ -1,0 +1,229 @@
+---
+title: "Activity Monitoring Data Analysis"
+author: "Viji Vennelakanti"
+date: "December 16, 2015"
+output: html_document
+---
+
+This is the R Markdown File to submit an assignment for the Reproducible Research Course from Coursera.
+
+Load necessary packages
+```{r load_packages, echo=FALSE, warning=FALSE}
+library(plyr)
+library(ggplot2)
+library(gridExtra)
+library(Rmisc)
+```
+
+
+## Loading and preprocessing the data
+### Read Data and see how it looks
+Also made a copy of the dataframe for later use
+```{r Read_data}
+actdf <- read.csv("activity.csv",header = TRUE,sep = ",")
+actdfcopy <- actdf
+head(actdf)
+summary(actdf)
+str(actdf)
+```
+
+
+## What is mean total number of steps taken per day? 
+First get Mean and Median per day  
+```{r Mean_perDay}
+totperday <- ddply(actdf, .(date), summarize, 
+                    dailymean = round(mean(steps, na.rm=TRUE),2),
+                    dailymedian = median(steps),
+                    dailytotal = sum(steps, na.rm=TRUE)
+                    )
+head(totperday)        
+```
+###Date Transformations
+```{r DateTransforms}
+totperday$mydate <- strptime(totperday$date, "%Y-%m-%d")
+totperday$mymonth <- months(totperday$mydate, FALSE)
+head(totperday)
+str(totperday)
+```
+
+Total Mean & Median Calculation
+```{r MeanMedian}
+totmean = round(mean(totperday$dailytotal, na.rm=TRUE),0)
+totmedian = round(median(totperday$dailytotal, na.rm = TRUE),0)
+totmean
+totmedian
+```
+
+### Plot Steps Taken Per Day  
+Also draw a Horizontal Line for Mean and Median  
+```{r plot_totals}
+g1 <- ggplot(data = totperday, aes(x=date, y=dailytotal, fill = mymonth))+
+        geom_bar(stat="identity") +
+        geom_hline(aes(yintercept = totmean), size=1, color="blue", 
+                   linetype = "dashed") +
+        geom_hline(aes(yintercept = totmedian), size=1, color = "black",
+                   linetype = "dashed") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        labs(x = "Date", y="Total Number of Steps") +
+        ggtitle("Steps taken per day") +
+        scale_fill_discrete(name="Months",
+                      breaks= totperday$mymonth,
+                      labels= totperday$mymonth) +
+         annotate("text", x = 4, y = (totmean-500), label = "Mean") + 
+         annotate("text", x = 4, y = (totmedian+500), label = "Median")  
+g1  
+```    
+
+## What is the average daily activity pattern?  
+
+###Calculate interval averages and time at max. steps  
+```{r time_series}
+timeintavg <- aggregate(steps~interval, actdf, mean, na.action = na.omit)
+timeintavg$steps <- round(timeintavg$steps,2)
+maxsteps = max(timeintavg$steps, na.rm = TRUE)
+maxsteps
+timeatmaxsteps <- timeintavg[timeintavg$steps==maxsteps,]
+```    
+
+
+###Now Plot this  
+```{r plot_ts}
+ggplot(data = timeintavg, aes(x=interval, y=steps)) +
+        geom_line() +
+        ggtitle("Time Series Plot") +
+        labs(x = "Interval", y = "Average Steps taken") +
+        geom_vline(aes(xintercept = timeatmaxsteps$interval), size=1, 
+                   color = "red", linetype = "dashed") +
+         annotate("text", x = (timeatmaxsteps$interval-200), 
+                  y = (timeatmaxsteps$steps), label = "Max Steps")
+         
+```  
+
+## Imputing missing values  
+
+We can count missing NAs.    
+Then we can replace NA values in steps with corresponding time interval average
+for steps and if that is also NA, by the daily mean and then daily median. There may be cases where all the values are NA.   
+
+```{r missing_data}
+summary(actdf)
+sum(is.na(actdf["steps"]))
+
+for (i in 1:nrow(actdfcopy))
+{
+        if (is.na(actdfcopy[i,"steps"]) == TRUE)
+        {actdfcopy[i,"steps"] <- timeintavg[i,"steps"]}
+        if (is.na(actdfcopy[i,"steps"]) == TRUE)
+        {actdfcopy[i,"steps"] <- totperday[i,"dailymean"]}
+        if (is.na(actdfcopy[i,"steps"]) == TRUE)
+        {actdfcopy[i,"steps"] <- totperday[i,"dailymedian"]}
+        
+}
+```
+Total number of missing values in the original dataset is 
+`r sum(is.na(actdf["steps"]))`  
+Total number of missing values after replacing with timeinterval means is `r sum(is.na(actdfcopy["steps"]))`  
+
+###Calculcate totals for this new dataframe   
+```{r total_copy}
+totperdaycopy <- ddply(actdfcopy, .(date), summarize, 
+                    dailymean = round(mean(steps, na.rm=TRUE),2),
+                    dailymedian = median(steps),
+                    dailytotal = sum(steps, na.rm=TRUE)
+                    )
+head(totperdaycopy)
+```
+###Date transformations for this new dataframe
+```{r date_transform_copy}
+totperdaycopy$mydate <- strptime(totperdaycopy$date, "%Y-%m-%d")
+totperdaycopy$mymonth <- months(totperdaycopy$mydate, FALSE)
+head(totperdaycopy)
+str(totperdaycopy)
+```
+###Calculate the Total Mean and Medians for the new Dataframe
+```{r mean_median_copy}
+totmeancopy = round(mean(totperdaycopy$dailytotal, na.rm=TRUE),0)
+totmediancopy = round(median(totperdaycopy$dailytotal, na.rm = TRUE),0)
+totmeancopy
+totmediancopy
+```
+
+###Finally plot this info and compare with previous similar plot
+```{r plot_copy}
+g2 <- ggplot(data = totperdaycopy, aes(x=date, y=dailytotal, fill = mymonth))+
+        geom_bar(stat="identity") +
+        geom_hline(aes(yintercept = totmeancopy), size=1, color="blue", 
+                   linetype = "dashed") +
+        geom_hline(aes(yintercept = totmediancopy), size=1, color = "black",
+                   linetype = "dashed") +
+        theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+        labs(x = "Date", y="Total Number of Steps") +
+        ggtitle("Steps taken per day  with NAs replaced with Median") +
+        scale_fill_discrete(name="Months",
+                      breaks= totperdaycopy$mymonth,
+                      labels= totperdaycopy$mymonth) +
+         annotate("text", x = 4, y = (totmeancopy-500), label = "Mean") + 
+         annotate("text", x = 4, y = (totmediancopy+500), label = "Median") 
+
+g2
+
+grid.arrange(g1, g2, ncol=1, nrow =2) 
+```
+
+> We can see from the plots that there is no perceivable difference of replacing
+NA values with means for time value intervals. The total mean and median values also change very little:  
+1. From `r totmean` to `r totmeancopy` for Mean   
+2. From `r totmedian` to `r totmediancopy` for Median  
+
+## Are there differences in activity patterns between weekdays and weekends?      
+###Create a new column of type factor for weekday and weekend
+
+```{r weekday_weekend}
+actdfcopy$mydate <- strptime(actdfcopy$date, "%Y-%m-%d")
+actdfcopy$Day <- weekdays(actdfcopy$mydate,abbreviate = TRUE)
+actdfcopy$DayType = "X"
+        
+for (i in 1:nrow(actdfcopy))
+{
+        if ((actdfcopy[i, "Day"] == 'Sat')  | 
+                (actdfcopy[i, "Day"] == 'Sun'))
+                {actdfcopy[i, "DayType"] = "Weekend"} 
+        else {actdfcopy[i, "DayType"] = "Weekday"}      
+}
+str(actdfcopy)
+actdfcopy$DayType <- as.factor(actdfcopy$DayType)
+str(actdfcopy)
+```
+###Averaging per timeinterval seperately for weekend and weekday
+```{r time_series_weekday_weekend}
+timeintavgw <- aggregate(steps ~ DayType + interval, actdfcopy, mean, 
+                          na.action = na.omit)
+
+timeintavgw$steps <- round(timeintavgw$steps,0)
+
+```
+
+###Now Plot this for weekday and weekend data separately and then together in a grid
+```{r plot_ts_w}
+gwd <- ggplot(data = subset(timeintavgw, DayType == "Weekday"), aes(x=interval, 
+                                                             y=steps)) +
+        geom_line() +
+        ggtitle("weekday")
+
+gwd
+
+gwe <- ggplot(data = subset(timeintavgw, DayType == "Weekend"), aes(x=interval, 
+                                                             y=steps)) +
+        geom_line() +
+        ggtitle("weekend")
+
+gwe
+
+grid.arrange(gwd,gwe, ncol=1, nrow=2)
+
+```
+
+
+        
+
+
