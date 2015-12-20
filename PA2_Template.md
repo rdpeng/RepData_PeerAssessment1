@@ -184,8 +184,8 @@ Activitydata$steps[is.na(Activitydata$steps)] <- round(predict(MissingSteps,MisV
 ## Make a Histograme of total number of steps taken each day
 TotStepAllday <- Activitydata %>% group_by(date) %>% summarise(Total = sum(steps,na.rm=TRUE))
 
-MeanResAll <- as.integer(round(mean(TotStepday$Total),0))
-MedResAll <- as.integer(round(median(TotStepday$Total),0))
+MeanResAll <- as.integer(round(mean(TotStepAllday$Total),0))
+MedResAll <- as.integer(round(median(TotStepAllday$Total),0))
 
 ggplot(TotStepAllday,aes(Total)) + 
   geom_histogram(fill="Blue",alpha = .2,binwidth = max(TotStepday$Total)/12) + 
@@ -214,7 +214,7 @@ print(paste("Initial medium", MedRes, "New medium", MedResAll))
 ```
 
 ```
-## [1] "Initial medium 10765 New medium 10765"
+## [1] "Initial medium 10765 New medium 10762"
 ```
 
 
