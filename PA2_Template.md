@@ -1,11 +1,6 @@
----
-title: "PA2"
-author: "Donnchadh"
-date: "20 December 2015"
-output: 
-  html_document: 
-    keep_md: yes
----
+# PA2
+Donnchadh  
+20 December 2015  
 
 ## Loading and preprocessing the data
 
@@ -13,7 +8,8 @@ output:
 
 * Process/transform the data (if necessary) into a format suitable for your analysis  
 
-```{r,echo=TRUE,warning=FALSE,message=FALSE}
+
+```r
 library(stringr)
 library(dplyr)
 library(ggplot2)
@@ -25,8 +21,31 @@ download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.z
 Activitydata <- read.csv(unzip(temp))  
 
 summary(Activitydata)
-str(Activitydata)
+```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
+```
+
+```r
+str(Activitydata)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
+
+```r
 Activitydata$date <- as.Date(Activitydata$date,formate = "%Y-%m-%d")
 
 ## add Time of Day in 24 hour formate
@@ -34,7 +53,6 @@ Activitydata$date <- as.Date(Activitydata$date,formate = "%Y-%m-%d")
 Activitydata <- Activitydata %>% mutate(TimeofDay = str_pad(interval, 4, pad = "0"))
 
 Activitydata$TimeofDay <- as.POSIXct(strptime(gsub("([[:digit:]]{2,2})$", ":\\1", Activitydata$TimeofDay),format = "%R"))
-
 ```
 
 ## What is mean total number of steps taken per day?
@@ -45,11 +63,16 @@ Activitydata$TimeofDay <- as.POSIXct(strptime(gsub("([[:digit:]]{2,2})$", ":\\1"
 
 * Calculate and report the mean and median of the total number of steps taken per day
 
-```{r,echo=TRUE}
+
+```r
 ## Identfy if any full days having all missing values (These may affect the mean by providing 0 values for theses days)
 
 plot(Activitydata$date, !is.na(Activitydata$steps),type="l", xlab="date",ylab="Complete Data", main="Days with no activity")
+```
 
+![](PA2_Template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 ## remove these days
 Full_Days <- as.data.frame(table(Activitydata$date, is.na(Activitydata$steps)))
 DropData <- Activitydata$date %in% as.Date(Full_Days$Var1[Full_Days$Freq==288 & Full_Days$Var2=="TRUE"])
@@ -71,12 +94,13 @@ ggplot(TotStepday,aes(Total)) +
   geom_vline(aes(lty="Mean",xintercept=MeanRes),col="red",show_guide = TRUE) +
   geom_vline(aes(lty="Medium",xintercept=MedRes),col="black",show_guide = TRUE) +
   scale_linetype_manual(name="",values=c(1:2))
-
 ```
 
-The Average number of total steps per days is `r MeanRes`
+![](PA2_Template_files/figure-html/unnamed-chunk-2-2.png) 
 
-"The Medium number of total steps per days is `r MedRes`
+The Average number of total steps per days is 10766
+
+"The Medium number of total steps per days is 10765
 
 
 ## What is the average daily activity pattern?
@@ -85,7 +109,8 @@ The Average number of total steps per days is `r MeanRes`
 
 * Identfy the 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r,echo=TRUE}
+
+```r
 ## Calculate the mean steps per interval
 
 MeanStepday <- Activitydata %>%
@@ -99,13 +124,20 @@ ggplot(MeanStepday,aes(y=MeanDay,x=TimeofDay)) +
   labs(x="Time of Day", y = "Mean Activity") + 
   theme_classic() +
   ggtitle("Average daily activity pattern")
+```
 
+![](PA2_Template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 # Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 HighInterval <- MeanStepday[which(MeanStepday$MeanDay==max(MeanStepday$MeanDay)),]
 
 with(HighInterval,(paste0(format(TimeofDay,"%R")," (",interval,") ","has the highest average number of steps in the data set of ",round(MeanDay,2))))
+```
 
+```
+## [1] "08:35 (835) has the highest average number of steps in the data set of 206.17"
 ```
 
 ## Imputing missing values
@@ -119,16 +151,27 @@ with(HighInterval,(paste0(format(TimeofDay,"%R")," (",interval,") ","has the hig
 * Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
-```{r,echo=TRUE}
+
+```r
 ## Total Missing values
 AllMissing <- sapply(Activitydata$steps, function(x){
   is.na(x)
 })
 library(lattice)
 barchart(AllMissing, main = "Total Missing values" , xlab ="Observations")
+```
 
+![](PA2_Template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 print(paste("The total no of missing values is", sum(AllMissing)))
+```
 
+```
+## [1] "The total no of missing values is 2304"
+```
+
+```r
 ## Identfy strategy for imputing missing data 
 MissingSteps <- lm(steps ~  as.factor(interval)  , data = Activitydata )
 
@@ -154,11 +197,24 @@ ggplot(TotStepAllday,aes(Total)) +
   geom_vline(aes(lty="Mean_New",xintercept=MeanResAll),col="orange",show_guide = TRUE) +
   geom_vline(aes(lty="Medium_New",xintercept=MedResAll),col="blue",show_guide = TRUE) +
   scale_linetype_manual(name="",values=c(1:4))
+```
 
+![](PA2_Template_files/figure-html/unnamed-chunk-4-2.png) 
+
+```r
 print(paste("Initial mean", MeanRes, "New mean", MeanResAll))
+```
+
+```
+## [1] "Initial mean 10766 New mean 10766"
+```
+
+```r
 print(paste("Initial medium", MedRes, "New medium", MedResAll))
+```
 
-
+```
+## [1] "Initial medium 10765 New medium 10765"
 ```
 
 
@@ -168,8 +224,8 @@ print(paste("Initial medium", MedRes, "New medium", MedResAll))
 
 * Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r,echo=TRUE}
 
+```r
 # add weekdays
 Activitydata$Weekday <- as.numeric(format(Activitydata$date,"%w"))
 
@@ -188,6 +244,7 @@ ggplot(Week_Weekend,aes(y=Meanwd,x=TimeofDay)) +
   labs(x="Time of Day", y = "Mean Activity") + 
   theme_classic() +
   ggtitle("Average daily activity pattern")
-
 ```
+
+![](PA2_Template_files/figure-html/unnamed-chunk-5-1.png) 
 
