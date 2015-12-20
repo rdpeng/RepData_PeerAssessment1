@@ -5,7 +5,7 @@ output: html_document
 
 ## Introduction
 
-This assignment analyses the data from personal monitoring devices. 
+This assignment analyses the data from personal monitoring devices.
 
 The data source is https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip and has got 17568 observations. 
 
