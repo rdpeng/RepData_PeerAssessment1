@@ -2,8 +2,10 @@
 title: "PA2"
 author: "Donnchadh"
 date: "20 December 2015"
-output: 
-  html_document: 
+output:
+  pdf_document:
+    toc: yes
+  html_document:
     keep_md: yes
     toc: yes
 ---
