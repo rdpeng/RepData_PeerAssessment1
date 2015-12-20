@@ -1,6 +1,5 @@
 Reproducible Research: Peer Assessment 1
 ==========================================
-Created by Xiaodan Zhang on July 18, 2014
 
 ### Basic settings
 ```{r}
