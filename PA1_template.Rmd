@@ -14,7 +14,12 @@ library(plyr)
 library(ggplot2)
 library(gridExtra)
 library(Rmisc)
-```
+```  
+Do not use scientific notation unless needed
+```{r options}
+options(scipen=999)
+```   
+
 
 
 ## Loading and preprocessing the data
@@ -71,8 +76,10 @@ g1 <- ggplot(data = totperday, aes(x=date, y=dailytotal, fill = mymonth))+
         scale_fill_discrete(name="Months",
                       breaks= totperday$mymonth,
                       labels= totperday$mymonth) +
-         annotate("text", x = 4, y = (totmean-500), label = "Mean") + 
-         annotate("text", x = 4, y = (totmedian+500), label = "Median")  
+        geom_text(aes(label = paste('Mean', totmean), x=10, y=(totmean - 500))) +
+        geom_text(aes(label = paste('Median', totmedian), 
+                  x=10, y= (totmedian + 500))) 
+        
 g1  
 ```    
 
@@ -96,8 +103,8 @@ ggplot(data = timeintavg, aes(x=interval, y=steps)) +
         labs(x = "Interval", y = "Average Steps taken") +
         geom_vline(aes(xintercept = timeatmaxsteps$interval), size=1, 
                    color = "red", linetype = "dashed") +
-         annotate("text", x = (timeatmaxsteps$interval-200), 
-                  y = (timeatmaxsteps$steps), label = "Max Steps")
+        geom_text(aes(label = paste('Max Steps', timeatmaxsteps$steps), 
+                      x= (timeatmaxsteps$interval-200), y= timeatmaxsteps$steps))
          
 ```  
 
@@ -164,10 +171,15 @@ g2 <- ggplot(data = totperdaycopy, aes(x=date, y=dailytotal, fill = mymonth))+
         scale_fill_discrete(name="Months",
                       breaks= totperdaycopy$mymonth,
                       labels= totperdaycopy$mymonth) +
-         annotate("text", x = 4, y = (totmeancopy-500), label = "Mean") + 
-         annotate("text", x = 4, y = (totmediancopy+500), label = "Median") 
+        geom_text(aes(label = paste('Mean', totmeancopy), x=10, 
+                      y=(totmeancopy - 500))) +
+        geom_text(aes(label = paste('Median', totmediancopy), 
+                  x=10, y= (totmediancopy + 500))) 
 
 g2
+```  
+
+### Now plot the two graphs - the one not including NAs and the one with NAs replaced together to see the differences.
 
 grid.arrange(g1, g2, ncol=1, nrow =2) 
 ```
@@ -203,7 +215,7 @@ timeintavgw <- aggregate(steps ~ DayType + interval, actdfcopy, mean,
 
 timeintavgw$steps <- round(timeintavgw$steps,0)
 
-```
+```  
 
 ###Now Plot this for weekday and weekend data separately and then together in a grid
 ```{r plot_ts_w}
