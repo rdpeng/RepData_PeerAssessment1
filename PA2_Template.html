@@ -232,7 +232,7 @@ ggplot(TotStepAllday,aes(Total)) +
 <li><p>Create a new factor variable in the dataset with two levels – “weekday” and “weekend”.</p></li>
 <li><p>Make a panel plot containing a time series plot (i.e. type = “l”) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).</p></li>
 </ul>
-<pre class="r"><code># add weekdays
+<pre class="r"><code># add weekdays 
 Activitydata$Weekday &lt;- as.numeric(format(Activitydata$date,&quot;%w&quot;))
 
 # Week Days is coded as 1:5 satherday and Sundays coded as 6 &amp; 0

@@ -226,7 +226,7 @@ print(paste("Initial medium", MedRes, "New medium", MedResAll))
 
 
 ```r
-# add weekdays
+# add weekdays 
 Activitydata$Weekday <- as.numeric(format(Activitydata$date,"%w"))
 
 # Week Days is coded as 1:5 satherday and Sundays coded as 6 & 0
