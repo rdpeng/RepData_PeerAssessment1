@@ -8,18 +8,164 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r}
+getwd()
+setwd("C:\\Users\\admin\\Documents\\GitHub\\RepData_PeerAssessment1")
 
+
+df1 <- read.csv("activity.csv")
+str(df1)
+head(df1)
+tail(df1)
+summary(df1)
+
+
+
+```
 
 ## What is mean total number of steps taken per day?
+
+```{r error=FALSE, message=FALSE}
+library("ggplot2")
+library("dplyr")
+
+df2 <- na.omit(df1)
+totalStepsPerDay <- df2 %>% group_by(date) %>% summarize_each(funs(sum(steps))) %>% select(date,steps)
+
+head(totalStepsPerDay)
+tail(totalStepsPerDay)
+summary(totalStepsPerDay)
+
+hist(totalStepsPerDay$steps, main="Hist of total steps per day omitting NA", xlab="No of steps")
+
+```
+
+The mean total steps per day is 
+```{r} 
+mean(totalStepsPerDay$steps)
+```
+
+The median total steps per day is 
+```{r} 
+median(totalStepsPerDay$steps)
+```
 
 
 
 ## What is the average daily activity pattern?
 
+```{r}
+totalStepsPerInterval <- df2 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+
+totalStepsPerInterval <- na.omit(totalStepsPerInterval)
+head(totalStepsPerInterval)
+tail(totalStepsPerInterval)
+summary(totalStepsPerInterval)
+
+plot(totalStepsPerInterval,type="l",main="5 min time series", ylab="Average steps", xlab="5 min intervals")
+
+df3 <- totalStepsPerInterval[which.max(totalStepsPerInterval$steps), ]
+
+```
+
+The max happens at the interval
+```{r}
+df3$interval
+```
 
 
 ## Imputing missing values
 
+### Working on steps columns with missing values  
+```{r}
+sum(is.na(df1$steps))
+df1$steps[is.na(df1$steps)] = mean(df1$steps, na.rm=TRUE)
+sum(is.na(df1$steps))
+
+```
+
+### Working on interval columns with missing values  
+```{r}
+sum(is.na(df1$interval))
+df1$interval[is.na(df1$interval)] = mean(df1$interval, na.rm=TRUE)
+sum(is.na(df1$interval))
+
+df4 <- df1
+sum(is.na(df4))
+```
+
+###Histogram and summary with new dataframe df4
+```{r}
+
+totalStepsPerDay <- df4 %>% group_by(date) %>% summarize_each(funs(sum(steps))) %>% select(date,steps)
+
+head(totalStepsPerDay)
+tail(totalStepsPerDay)
+summary(totalStepsPerDay)
+
+hist(totalStepsPerDay$steps, main="Hist of total steps per day AFTER impute", xlab="No of steps")
+
+```
+
+The mean total steps per day is 
+```{r} 
+mean(totalStepsPerDay$steps)
+```
+
+The median total steps per day is 
+```{r} 
+median(totalStepsPerDay$steps)
+```
+
+###After imputing the median has changed. It is now same as mean (10766.19).
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+###Weekdays
+```{r}
+df4$date <- as.Date(df4$date)
+df4 <- df4 %>% mutate(weekdayOrWeekend=weekdays(date))
+head(df4)
+tail(df4)
+
+df5 <- df4 %>% filter(weekdayOrWeekend !="Saturday" & weekdayOrWeekend != "Sunday")
+
+totalStepsPerIntervalWeekdays <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+
+
+head(totalStepsPerIntervalWeekdays)
+tail(totalStepsPerIntervalWeekdays)
+summary(totalStepsPerIntervalWeekdays)
+
+
+
+```
+
+###Weekends
+```{r}
+df4$date <- as.Date(df4$date)
+df4 <- df4 %>% mutate(weekdayOrWeekend=weekdays(date))
+head(df4)
+tail(df4)
+
+df5 <- df4 %>% filter(weekdayOrWeekend =="Saturday" | weekdayOrWeekend == "Sunday")
+
+totalStepsPerIntervalWeekends <- df5 %>% group_by(interval) %>% summarize_each(funs(sum(steps))) %>% select(interval,steps)
+
+
+head(totalStepsPerIntervalWeekends)
+tail(totalStepsPerIntervalWeekends)
+summary(totalStepsPerIntervalWeekends)
+```
+
+###Plot panel
+```{r}
+
+par(mfrow=c(2,1)) 
+
+plot(totalStepsPerIntervalWeekdays,type="l",main="5 min time series  weekdays", ylab="Average steps", xlab="5 min intervals ")
+
+plot(totalStepsPerIntervalWeekends,type="l",main="5 min time series  weekends", ylab="Average steps", xlab="5 min intervals ")
+
+```
