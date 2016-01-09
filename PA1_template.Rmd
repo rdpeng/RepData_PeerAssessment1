@@ -1,25 +1,137 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Jackie Goor"
+date: "January 9, 2016"
+output: html_document
+keep_md: true
 ---
+echo=TRUE
+## Load required libraries
+library(dplyr)
+library(data.table)
+library(grid)
+library(ggplot2)
 
+## Set our working directory
+setwd("C:/Users/jackson/Documents/GitHub/ReproducibleResearch_Project1/RepData_PeerAssessment1")
+
+## Constants
+FIGURE_PATH = file.path(getwd(), "figures")
 
 ## Loading and preprocessing the data
+activityData <- read.table(unz("activity.zip", "activity.csv"), header=T, quote="\"", sep=",")
+## What is the total # of steps taken per day? [Ignore missing values]
+## sort then group data by date
+activityDataByDate <- arrange(activityData, date) %>% group_by(date)
 
-
-
-## What is mean total number of steps taken per day?
-
-
+## total steps for each date
+activityDataByDate <- summarize(activityDataByDate, totalSteps = sum(steps, na.rm = TRUE))
+## Make a histogram of the total # of steps taken per day
+png(
+        filename = file.path(FIGURE_PATH, "plot1.png"),
+        width     = 480,
+        height    = 480,
+        units     = "px"
+)
+barplot(activityDataByDate$totalSteps, names.arg = as.Date(activityDataByDate$date), 
+        col=rainbow(15), main="Total # of Steps Per Day", xlab="Date", ylab="Total Steps", las=1)
+dev.off()
+## Calculate and report the mean and median of the total # of steps taken per day
+## Output to console
+mean(activityDataByDate$totalSteps)
+median(activityDataByDate$totalSteps)
 
 ## What is the average daily activity pattern?
-
-
+## sort then group data by interval
+activityDataByInterval <- arrange(activityData, interval) %>% group_by(interval)
+## average steps for each interval
+activityDataByInterval <- summarize(activityDataByInterval, avgSteps = mean(steps, na.rm = TRUE))
+png(
+        filename = file.path(FIGURE_PATH, "plot2.png"),
+        width     = 480,
+        height    = 480,
+        units     = "px"
+)
+plot(activityDataByInterval$interval, activityDataByInterval$avgSteps, type="l", xlab="Interval",
+     ylab="Average Steps", main="Average Daily Activity Pattern (Average Steps Per Time Interval)")
+dev.off()
+## Which 5-minute interval, on average across all the days in the dataset, contains 
+## the maximum number of steps? --> interval = 835
+## Output to console
+max(activityDataByInterval$avgSteps)
+subset(activityDataByInterval, select=interval, 
+        activityDataByInterval$avgSteps==max(activityDataByInterval$avgSteps))
 
 ## Imputing missing values
+## Calculate and report the total number of missing values in the dataset (i.e. the 
+## total number of rows with NAs)
+NAs<-filter(activityData,is.na(activityData$steps))
+count(NAs)
+## Apply the mean for each interval to missing values for each interval.
+## Copy original activityData to activityDataWithMeanForMissing.
+activityDataWithMeanForMissing = copy(activityData)
+## Loop thru each activityDataByInterval record and apply its avgSteps to NA records in
+## activityDataWithMeanForMissing (for matching interval).
+for (i in 1:length(activityDataByInterval$interval)) {
+## Filter the activityDataWithMeanForMissing to this interval and NA records.
+## Set "steps" for these rows to avgSteps for the current (i) activityDataByInterval.
+        activityDataWithMeanForMissing$steps[activityDataWithMeanForMissing$interval==activityDataByInterval$interval[i] & is.na(activityDataWithMeanForMissing$steps)] <- activityDataByInterval$avgSteps[i]
+}
+## Make a histogram of the total number of steps taken each day and Calculate and report 
+## the mean and median total number of steps taken per day. Do these values differ from 
+## the estimates from the first part of the assignment? What is the impact of imputing 
+## missing data on the estimates of the total daily number of steps?
+## sort then group data by date
+activityDataWithMeanForMissingByDate <- arrange(activityDataWithMeanForMissing, date) %>% group_by(date)
 
+## total steps for each date
+activityDataWithMeanForMissingByDate <- summarize(activityDataWithMeanForMissingByDate, totalSteps = sum(steps, na.rm = TRUE))
 
+png(
+        filename = file.path(FIGURE_PATH, "plot3.png"),
+        width     = 480,
+        height    = 480,
+        units     = "px"
+)
+barplot(activityDataWithMeanForMissingByDate$totalSteps, names.arg = as.Date(activityDataWithMeanForMissingByDate$date), 
+        col=rainbow(15), main="Total # of Steps Per Day (NA Replaced by Interval Means)", xlab="Date", ylab="Total Steps", las=1) #, width=10) #, space=10)
+dev.off()
+## Calculate and report the mean and median of the total # of steps taken per day
+## Output to console
+mean(activityDataWithMeanForMissingByDate$totalSteps)
+median(activityDataWithMeanForMissingByDate$totalSteps)
 
 ## Are there differences in activity patterns between weekdays and weekends?
+## Create a new factor variable in the dataset with two levels - "weekday" and "weekend" 
+## indicating whether a given date is a weekday or weekend day.
+## First identify the day-of-week (e.g. "Monday")
+activityDataWithMeanForMissing$dayOfWeek <- weekdays(as.Date(activityDataWithMeanForMissing$date))
+## If dayOfWeek is Saturday or Sunday, create and set dayOfWeekType="weekend"
+activityDataWithMeanForMissing$dayOfWeekType[activityDataWithMeanForMissing$dayOfWeek=="Saturday" | activityDataWithMeanForMissing$dayOfWeek=="Sunday"] <- "weekend"
+## Now set the rest to "weekday"
+activityDataWithMeanForMissing$dayOfWeekType[is.na(activityDataWithMeanForMissing$dayOfWeekType)] <- "weekday"
+## Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute 
+## interval (x-axis) and the average number of steps taken, averaged across all weekday 
+## days or weekend days (y-axis).
+## sort then group data by interval
+activityDataWithMeanForMissingByIntervalDayOfWeekType <- arrange(activityDataWithMeanForMissing, interval, dayOfWeekType) %>% group_by(interval, dayOfWeekType)
+## average steps for each interval by dayOfWeekType
+activityDataWithMeanForMissingByIntervalDayOfWeekType <- summarize(activityDataWithMeanForMissingByIntervalDayOfWeekType, avgSteps = mean(steps, na.rm = TRUE))
+
+## Use ggplot2 qplot()
+png(
+        filename = file.path(FIGURE_PATH, "plot4.png"),
+        width     = 480,
+        height    = 480,
+        units     = "px"
+)
+plot1 <- qplot(interval, avgSteps, 
+      data = activityDataWithMeanForMissingByIntervalDayOfWeekType, 
+      facets = dayOfWeekType ~ .,
+      geom="path",
+      main="Average Steps By Interval (Weekend vs Weekday)",
+      xlab="Interval",
+      ylab="Number of Steps")
+## Below statement puts panel titles on the top of each panel instead of on the side.
+plot1 + facet_grid(. ~ dayOfWeekType)
+dev.off()
