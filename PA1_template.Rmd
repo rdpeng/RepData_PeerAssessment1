@@ -1,14 +1,11 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: 'Reproducible Research: Peer Assessment 1'
 ---
 
 
 ## Loading and preprocessing the data
 ```{r Loading_preprocessing_data}
-# Installing and loading necessary libraries
+# 0. Installing and loading necessary libraries
 packs <- c("ggplot2", "dplyr", "lubridate", "scales", "timeDate")
 InstIfNec<-function (pack) {   # function for library installation if necessary
     if (!do.call(require,as.list(pack))) {
@@ -17,74 +14,108 @@ InstIfNec<-function (pack) {   # function for library installation if necessary
         } else { do.call(require,as.list(pack)) } }
 lapply(packs, InstIfNec)
 
-# Unzipping the file
-unzip("./RepData_PeerAssessment1/activity.zip")
 
-# Reading the file
+# 1. Load the data
+unzip("./activity.zip",exdir="./RepData_PeerAssessment1") # Unzipping the file
 df <- read.csv2 ("./activity.csv", header=TRUE, sep=",")
 
-# Converting date variable from factor to date class
+# 2. Process/transform the data into a suitable format  
+## Converting date variable from factor to date class
 df$date<-as.Date(as.character(df$date), "%Y-%m-%d")
-
-#??? Converting intervals into day hours
+##??? Converting intervals into day hours
 df$hour <- sprintf("%04d", df$interval)
 df$hour <- format(strptime(df$hour, format="%H%M"), format = "%H:%M")
 ```
 
 
+
+
 ## What is mean total number of steps taken per day?
 ```{r mean_step}
-# Summarizing the total number of steps per day
+# 1. Calculate the total number of steps taken per day
 dfsd<-dplyr::summarize(group_by(df, date), totSteps_day=sum(steps, na.rm=T))
 
-# Plotting the histogram of the total number of steps taken each day
+# 2. Make a histogram of the total number of steps taken each day
 ggplot(dfsd, aes(totSteps_day))+
     geom_histogram()+
     theme_bw()+
     ylab("Count")+ xlab("Total Steps Per Day")+
     ggtitle("Histogram of total number of steps per day")
 
-# Calculating and printing the mean number of steps per day
-meanSteps_day<-mean(mean(dfs$totSteps_day, na.rm=T))
-medianSteps_day<-mean(median(dfs$totSteps_day, na.rm=T))
+# 3. Calculate and report the mean and median of the total number of steps taken per day
+meanSteps_day<-mean(mean(dfsd$totSteps_day, na.rm=T))
+medianSteps_day<-mean(median(dfsd$totSteps_day, na.rm=T))
 print(paste("The mean and the median number of steps per day are respectively:", 
             round(meanSteps_day, 0), "and", round(medianSteps_day, 0), sep=" "))
 ```
 
 
+
+
 ## What is the average daily activity pattern?
 ```{r daily_activity_pattern}
-#??? Sumarizing data by interval
+#??? 1.Make a time series plot of the 5-minute interval and the average number of steps taken
+## Sumarizing data by interval
 dfsi<-dplyr::summarize(group_by(df, hour), meanSteps_5=mean(steps, na.rm=T)) 
 dfsi$hour<-as.integer(as.duration((hm(dfsi$hour))))/3600
-
-# Plotting the results
+## Plotting the results
 ggplot(data=dfsi, aes(x=hour, y=meanSteps_5))+
     geom_line()+
     theme_bw()+xlim(0,24)+
     labs(x="Hour of the day", y="Daily activity (steps number in 5 minutes")+
     ggtitle("Daily activity pattern")
+
+# 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+time_max<-dfsi[which.max(dfsi$meanSteps_5),"hour"]
+hm_max<- paste(floor(time_max), round((time_max-floor(time_max))*60), sep=":")
+print(paste("The 5-minute interval which on average contains the maximum number of steps start at", hm_max))
 ```
+
+
 
 
 ## Imputing missing values
 ```{r}
-# Imputing mean steps value by interval to missing value
-df$steps<-ifelse(is.na(df$steps),dfsi$meanSteps_5,df$steps)
+# 1. Calculate and report the total number of missing values in the dataset 
+missings<-sum(complete.cases(df))
+print(paste("There is", missings, "missing values in the dataset"))
+
+# 2. Devise a strategy for filling in all of the missing values in the dataset
+## The easiest way to impute missing value is to fill missing value with the mean number of steps for that interval averaged over all days available
+
+# 3. Create a new dataset that is equal to the original dataset but with the missing data filled in
+df2<-df
+df2$steps<-ifelse(is.na(df2$steps),dfsi$meanSteps_5,df2$steps)
+
+# 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day
+dfsd2<-dplyr::summarize(group_by(df2, date), totSteps_day=sum(steps, na.rm=T))
+ggplot(dfsd2, aes(totSteps_day))+
+    geom_histogram()+
+    theme_bw()+
+    ylab("Count")+ xlab("Total Steps Per Day")+
+    ggtitle("Histogram of total number of steps per day with missing values imputation")
+meanSteps_day2<-mean(mean(dfsd2$totSteps_day, na.rm=T))
+medianSteps_day2<-mean(median(dfsd2$totSteps_day, na.rm=T))
+print(paste("The mean and the median number of steps per day with missing values imputation are respectively:", round(meanSteps_day2, 0), "and", 
+            round(medianSteps_day2, 0), "which corresponds respectively to",
+            round(meanSteps_day2-meanSteps_day,0), "and",
+            round(medianSteps_day2-medianSteps_day,0),
+            "steps of difference between the two dataset", sep=" "))
+
 ```
+
+
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r activity_pattern_dif}
-# Creating a new variable for weekday type
+# 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend"
 df$daytype<-ifelse(isWeekday(df$date, wday=1:5)=="TRUE","Weekday","Weekend")
 
-#??? Sumarizing data by interval
+#??? 2.Make a panel plot containing a time series plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days
 dfsi<-dplyr::summarize(group_by(df, daytype, hour), 
                        meanSteps_5=mean(steps, na.rm=T)) 
 dfsi$hour<-as.integer(as.duration((hm(dfsi$hour))))/3600
-
-# Plotting the results
 ggplot(data=dfsi, aes(x=hour, y=meanSteps_5))+
     geom_line()+
     theme_bw()+xlim(0,24)+
