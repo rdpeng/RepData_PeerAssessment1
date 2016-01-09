@@ -108,8 +108,10 @@ lapply(packs, InstIfNec)</code></pre>
 ## [[5]]
 ## [1] TRUE</code></pre>
 <pre class="r"><code># 1. Load the data
-unzip(&quot;./activity.zip&quot;,exdir=&quot;./RepData_PeerAssessment1&quot;) # Unzipping the file
-df &lt;- read.csv2 (&quot;./activity.csv&quot;, header=TRUE, sep=&quot;,&quot;)
+unzip(&quot;./RepData_PeerAssessment1/activity.zip&quot;) # Unzipping the file</code></pre>
+<pre><code>## Warning in unzip(&quot;./RepData_PeerAssessment1/activity.zip&quot;): error 1 in
+## extracting from zip file</code></pre>
+<pre class="r"><code>df &lt;- read.csv2 (&quot;./activity.csv&quot;, header=TRUE, sep=&quot;,&quot;)
 
 # 2. Process/transform the data into a suitable format  
 ## Converting date variable from factor to date class
