@@ -48,7 +48,7 @@ unzip("./RepData_PeerAssessment1/activity.zip") # Unzipping the file
 ```r
 df <- read.csv2 ("./activity.csv", header=TRUE, sep=",")
 
-# 2. Process/transform the data into a suitable format  
+# 2. Process the data into a suitable format  
 ## Converting date variable from factor to date class
 df$date<-as.Date(as.character(df$date), "%Y-%m-%d")
 ##??? Converting intervals into day hours

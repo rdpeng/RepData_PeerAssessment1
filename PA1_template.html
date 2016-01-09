@@ -239,7 +239,7 @@ unzip(&quot;./RepData_PeerAssessment1/activity.zip&quot;) # Unzipping the file
 
 <pre><code class="r">df &lt;- read.csv2 (&quot;./activity.csv&quot;, header=TRUE, sep=&quot;,&quot;)
 
-# 2. Process/transform the data into a suitable format  
+# 2. Process the data into a suitable format  
 ## Converting date variable from factor to date class
 df$date&lt;-as.Date(as.character(df$date), &quot;%Y-%m-%d&quot;)
 ##??? Converting intervals into day hours
