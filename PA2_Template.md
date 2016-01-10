@@ -1,6 +1,6 @@
-# PA2
+# Project Part 1
 Donnchadh  
-20 December 2015  
+19 January 2016  
 
 ## Loading and preprocessing the data
 
@@ -10,48 +10,17 @@ Donnchadh
 
 
 ```r
-library(stringr)
+#Loading and preprocessing the data
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",destfile = "Factivity", mode="wb")
+Activitydata <- read.csv(unzip("Factivity"))
+## Convert Time of Day to POSIXct
+library(lubridate)
+Activitydata$date <- ymd(Activitydata$date)
+
+## add Time of Day by using interval, HHMM time formate
 library(dplyr)
-library(ggplot2)
-library(scales)
-
-temp <- tempfile()
-
-download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp, mode="wb")
-Activitydata <- read.csv(unzip(temp))  
-
-summary(Activitydata)
-```
-
-```
-##      steps                date          interval     
-##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
-##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
-##  Median :  0.00   2012-10-03:  288   Median :1177.5  
-##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
-##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
-##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
-##  NA's   :2304     (Other)   :15840
-```
-
-```r
-str(Activitydata)
-```
-
-```
-## 'data.frame':	17568 obs. of  3 variables:
-##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-```
-
-```r
-Activitydata$date <- as.Date(Activitydata$date,formate = "%Y-%m-%d")
-
-## add Time of Day in 24 hour formate
-
+library(stringr)
 Activitydata <- Activitydata %>% mutate(TimeofDay = str_pad(interval, 4, pad = "0"))
-
 Activitydata$TimeofDay <- as.POSIXct(strptime(gsub("([[:digit:]]{2,2})$", ":\\1", Activitydata$TimeofDay),format = "%R"))
 ```
 
@@ -65,42 +34,42 @@ Activitydata$TimeofDay <- as.POSIXct(strptime(gsub("([[:digit:]]{2,2})$", ":\\1"
 
 
 ```r
-## Identfy if any full days having all missing values (These may affect the mean by providing 0 values for theses days)
+## Calculate the total number of steps taken per day
+Total_Step <- tapply(Activitydata$steps, Activitydata$date, function(x){
+  sum(x, na.rm = T)
+})
 
-plot(Activitydata$date, !is.na(Activitydata$steps),type="l", xlab="date",ylab="Complete Data", main="Days with no activity")
+barplot(Total_Step, main = "Total Steps per Day")
 ```
 
 ![](PA2_Template_files/figure-html/unnamed-chunk-2-1.png) 
 
 ```r
-## remove these days
-Full_Days <- as.data.frame(table(Activitydata$date, is.na(Activitydata$steps)))
-DropData <- Activitydata$date %in% as.Date(Full_Days$Var1[Full_Days$Freq==288 & Full_Days$Var2=="TRUE"])
-
-## Calculate the total number of steps taken per day
-
-TotStepday <- Activitydata[!DropData,] %>% group_by(date) %>% summarise(Total = sum(steps, na.rm = TRUE))
-
+## Some days have no activity which will effect the mean and median. These should probably be removed??
+Full_Days <- Total_Step[Total_Step > 0]
+  
 ## Calculate and report the mean and median of the total number of steps taken per day
+MeanRes_T <- round(mean(Total_Step), 0)
+MedRes_T <- round(median(Total_Step), 0)
 
-MeanRes <- as.integer(round( mean(TotStepday$Total), 0))
-MedRes <- as.integer(round( median(TotStepday$Total), 0))
+MeanRes <- round(mean(Full_Days), 0)
+MedRes <- round(median(Full_Days), 0)
 
-ggplot(TotStepday,aes(Total)) + 
-  geom_histogram(fill="Blue",alpha = .2,binwidth = max(TotStepday$Total)/12) + 
-  theme_classic() +
-  ggtitle("Frequency distribution of the total steps taken each day") +
-  labs(x="Total Steps", y="Frequency") +
-  geom_vline(aes(lty="Mean",xintercept=MeanRes),col="red",show_guide = TRUE) +
-  geom_vline(aes(lty="Medium",xintercept=MedRes),col="black",show_guide = TRUE) +
-  scale_linetype_manual(name="",values=c(1:2))
+par(mfrow=c(1,2))
+hist(Total_Step, breaks = 15,main = "Distribution of the steps taken each day (inc Missing)",col="orange")
+abline(v=MeanRes_T, col="Red")
+abline(v=MedRes_T, col="black")
+
+hist(Full_Days, breaks = 15,main = "Distribution of steps taken each day",col="blue")
+abline(v=MeanRes, col="Red")
+abline(v=MedRes, col="green")
 ```
 
 ![](PA2_Template_files/figure-html/unnamed-chunk-2-2.png) 
 
-The Average number of total steps per days is 10766
+The Average number of total steps per days is 9354
 
-"The Medium number of total steps per days is 10765
+"The Medium number of total steps per days is 1.0395\times 10^{4}
 
 
 ## What is the average daily activity pattern?
@@ -118,6 +87,15 @@ MeanStepday <- Activitydata %>%
   summarise(MeanDay = mean(steps,na.rm=TRUE))
 
 ## Plot the mean steps 
+library(scales)
+library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.3
+```
+
+```r
 ggplot(MeanStepday,aes(y=MeanDay,x=TimeofDay)) + 
   geom_line() + 
   scale_x_datetime(breaks = date_breaks("2 hour"), labels = date_format("%H:%M")) + 
@@ -154,67 +132,82 @@ with(HighInterval,(paste0(format(TimeofDay,"%R")," (",interval,") ","has the hig
 
 ```r
 ## Total Missing values
-AllMissing <- sapply(Activitydata$steps, function(x){
-  is.na(x)
-})
-library(lattice)
-barchart(AllMissing, main = "Total Missing values" , xlab ="Observations")
-```
+AllMissing <- sum(is.na(Activitydata$steps))
 
-![](PA2_Template_files/figure-html/unnamed-chunk-4-1.png) 
-
-```r
-print(paste("The total no of missing values is", sum(AllMissing)))
+print(paste("The total no of missing values in the data set is", AllMissing))
 ```
 
 ```
-## [1] "The total no of missing values is 2304"
+## [1] "The total no of missing values in the data set is 2304"
 ```
 
 ```r
 ## Identfy strategy for imputing missing data 
-MissingSteps <- lm(steps ~  as.factor(interval)  , data = Activitydata )
 
-## Identfy Missing values
-MisVal <- Activitydata[is.na(Activitydata$steps),]
+MeanStepday <- Activitydata %>%
+  group_by(TimeofDay,Day = strftime(date,format = "%a"), Week= strftime(Activitydata$date,format = "%U") ) %>% 
+  summarise(MeanDay = mean(steps,na.rm=TRUE))
 
-## Impute Missing value (Whole Numbers)
-Activitydata$steps[is.na(Activitydata$steps)] <- round(predict(MissingSteps,MisVal),0)
-
-## Make a Histograme of total number of steps taken each day
-TotStepAllday <- Activitydata %>% group_by(date) %>% summarise(Total = sum(steps,na.rm=TRUE))
-
-MeanResAll <- as.integer(round(mean(TotStepAllday$Total),0))
-MedResAll <- as.integer(round(median(TotStepAllday$Total),0))
-
-ggplot(TotStepAllday,aes(Total)) + 
-  geom_histogram(fill="Blue",alpha = .2,binwidth = max(TotStepday$Total)/12) + 
-  theme_classic() +
-  ggtitle("Frequency distribution of the total steps taken each day") +
-  labs(x="Total Steps", y="Frequency") +
-  geom_vline(aes(lty="Mean",xintercept=MeanRes),col="red",show_guide = TRUE) +
-  geom_vline(aes(lty="Medium",xintercept=MedRes),col="black",show_guide = TRUE) +
-  geom_vline(aes(lty="Mean_New",xintercept=MeanResAll),col="orange",show_guide = TRUE) +
-  geom_vline(aes(lty="Medium_New",xintercept=MedResAll),col="blue",show_guide = TRUE) +
-  scale_linetype_manual(name="",values=c(1:4))
+## Plot the mean steps 
+library(scales)
+library(ggplot2)
+ggplot(MeanStepday,aes(y=MeanDay,x=TimeofDay)) + 
+  geom_line() + 
+  scale_x_datetime(breaks = date_breaks("2 hour"), labels = date_format("%H:%M")) + 
+  labs(x="Time of Day", y = "Mean Activity", title="Average daily activity by weekday") + 
+  theme_classic() + facet_grid(Week~Day)
 ```
 
-![](PA2_Template_files/figure-html/unnamed-chunk-4-2.png) 
+![](PA2_Template_files/figure-html/unnamed-chunk-4-1.png) 
+
+
+## Evidence of interval and time effect (eg day, week etc on number of steps).
+
+
 
 ```r
-print(paste("Initial mean", MeanRes, "New mean", MeanResAll))
+## Make a copy of the data set and imput the missing values.
+Activitydata_New <- Activitydata
+Activitydata_New$interval <- as.factor(Activitydata_New$interval)
+Activitydata_New$Week <- as.factor(strftime(Activitydata_New$date,format = "%U"))
+Activitydata_New$Day <- as.factor(strftime(Activitydata_New$date,format = "%a"))
+
+## use a simple general linear model to imput missing count values, using day interval and week id.
+Mod.Miss <- glm(steps ~  interval + Day + Week,family= "poisson", na.action= "na.omit",data = Activitydata_New )
+
+## Impute Missing value (Whole Numbers) using model
+Activitydata_New$steps[is.na(Activitydata_New$steps)] <- round(predict(Mod.Miss, newdata = Activitydata_New[is.na(Activitydata_New$steps),], type = "response"),0)
+
+## Make a Histograme of total number of steps taken each day on new data set
+Total_Step_new <- tapply(Activitydata_New$steps, Activitydata_New$date, function(x){
+  sum(x, na.rm = T)
+})
+
+MeanRes_new <- round(mean(Total_Step_new), 0)
+MedRes_new <- round(median(Total_Step_new), 0)
+
+par(mfrow=c(1,1))
+hist(Total_Step_new, breaks = 15,main = "Distribution of the steps taken each day (No Missing)",col="Green")
+abline(v=MeanRes_new, col="Red")
+abline(v=MedRes_new, col="black")
+```
+
+![](PA2_Template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
+print(paste("Initial mean", MeanRes_T, "New mean", MeanRes_new))
 ```
 
 ```
-## [1] "Initial mean 10766 New mean 10766"
+## [1] "Initial mean 9354 New mean 10735"
 ```
 
 ```r
-print(paste("Initial medium", MedRes, "New medium", MedResAll))
+print(paste("Initial medium", MedRes_T, "New medium", MedRes_new))
 ```
 
 ```
-## [1] "Initial medium 10765 New medium 10762"
+## [1] "Initial medium 10395 New medium 10875"
 ```
 
 
@@ -227,15 +220,15 @@ print(paste("Initial medium", MedRes, "New medium", MedResAll))
 
 ```r
 # add weekdays 
-Activitydata$Weekday <- as.numeric(format(Activitydata$date,"%w"))
+Activitydata_New$Weekday <- as.numeric(format(Activitydata_New$date,"%w"))
 
 # Week Days is coded as 1:5 satherday and Sundays coded as 6 & 0
 # Code for weekdays and weekends
 
-Activitydata$Week_End <- as.factor(ifelse(Activitydata$Weekday >=1 & Activitydata$Weekday <= 5, "WeekDay","Weekend" ))
+Activitydata_New$Week_End <- as.factor(ifelse(Activitydata_New$Weekday >=1 & Activitydata_New$Weekday <= 5, "WeekDay","Weekend" ))
 
 ## Compare Week day to Weekend
-Week_Weekend <- Activitydata %>% group_by(TimeofDay,Week_End) %>% summarise(Meanwd = mean(steps,na.rm=TRUE))
+Week_Weekend <- Activitydata_New %>% group_by(TimeofDay,Week_End) %>% summarise(Meanwd = mean(steps,na.rm=TRUE))
 
 ## Plot the mean steps 
 ggplot(Week_Weekend,aes(y=Meanwd,x=TimeofDay)) + 
@@ -246,5 +239,5 @@ ggplot(Week_Weekend,aes(y=Meanwd,x=TimeofDay)) +
   ggtitle("Average daily activity pattern")
 ```
 
-![](PA2_Template_files/figure-html/unnamed-chunk-5-1.png) 
+![](PA2_Template_files/figure-html/unnamed-chunk-6-1.png) 
 
