@@ -2,7 +2,10 @@
 title: "RepData_PeerAssessment1"
 author: "Mostafa Alaa"
 date: "10 Jan 2016"
-output: html_document
+output: 
+  html_document: 
+    fig_caption: yes
+    toc: yes
 ---
 
 ```{r, echo=FALSE,results='hide'}
