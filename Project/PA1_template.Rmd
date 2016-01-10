@@ -1,0 +1,72 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+```{r,echo=TRUE}
+#Read csv file
+
+activity<-read.csv("activity.csv")
+
+#convert date from a factor to a date object
+
+activity$date<-strptime(as.character(activity$date),
+                        format = "%Y-%m-%d")
+
+```
+
+
+
+## What is mean total number of steps taken per day?
+```{r,echo=TRUE}
+library(data.table)
+
+#reading data using data.table package
+activitydt<-fread("activity.csv")
+
+#Creating histogram using qplot and data.table "by" grouping
+library(ggplot2)
+
+qplot(V1,data=activitydt[,sum(steps),by=date],
+      xlab = "Daily sum")
+
+#mean calculation using data.table "by" grouping
+
+mean(activitydt[,sum(steps),by=date]$V1,
+     na.rm = T)
+
+#median calculation using data.table "by" grouping
+
+median(activitydt[,sum(steps),by=date]$V1,
+     na.rm = T)
+
+```
+
+
+
+## What is the average daily activity pattern?
+```{r,echo=T}
+#Creating a timeserie variable containig steps mean by interval
+
+timeserie<-activitydt[,mean(steps,na.rm = T),
+                      .(interval)]
+#plotting the time serie
+qplot(interval,V1,
+      data = timeserie,
+      geom = "line")
+
+#For the last question we will get the max ave # of steps
+
+timeserie[V1==max(timeserie$V1)]
+```
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
