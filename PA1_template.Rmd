@@ -4,31 +4,10 @@ output:
   html_document:
     keep_md: true
 ---
-```{r include=FALSE}
-setwd("~/GitHub/RepData_PeerAssessment1")
-library(knitr)
-library(ggplot2)
-library(plyr)
-library(dplyr)
-library(lubridate)
-```
 
 
 ## Loading and preprocessing the data
 
-```{r}
-
-activitydata <- read.csv("activity.csv")
-
-
-# check the data
-head(activitydata)
-str(activitydata)
-
-#Changing the data into dateformat using lubridate
-activitydata$date <- ymd(activitydata$date)
-
-```
 
 
 ## What is mean total number of steps taken per day?
