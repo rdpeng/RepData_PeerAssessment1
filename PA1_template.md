@@ -1,13 +1,8 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-For this example, it is assumed that  ***activity.zip*** or  ***activity.csv***  is located in the working directory. In case that the CSV file wasn´t unzipped, the code will load it from the zip file. 
+For this example, it is assumed that  ***activity.zip*** or  ***activity.csv***  is located in the working directory. In case that the CSV file wasnÂ´t unzipped, the code will load it from the zip file. 
 
 One additional improvement for this code would be to include a logic statement to check if  the **activity.zip** file is in the directory, if not the code could download it from the repository.
 
@@ -31,6 +26,19 @@ Load the libraries needed for the project.
 library(dplyr)
 ```
 
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
 Now there are two datasets, one with the original data and the other one skipping missing values. For this case the dplyr library is used to group the data by day. 
 
 
@@ -39,14 +47,14 @@ a <- dataClean %>% group_by(date) %>% summarise(TotalSum = sum(steps), Mean = me
 barplot(a$TotalSum , names.arg = a$date , xlab = "Day" , ylab = "Total number of steps per day")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 ```r
-MeanStepsPerDay <- mean(a$Mean , na.rm = TRUE)
-MedianStepsPerDay <- median(a$Median , na.rm = TRUE)
+MeanStepsPerDay <- mean(a$TotalSum , na.rm = TRUE)
+MedianStepsPerDay <- median(a$TotalSum , na.rm = TRUE)
 ```
 
-The mean number of steps per day are 37.3825996 and the median number of steps per day 0
+The mean number of steps per day are 10766.18868 and the Median 10765.
 
 ## What is the average daily activity pattern?
 As first step, the clean data will be summarize by interval calculating the mean, total sum and the median for each interval for all the days. 
@@ -59,17 +67,17 @@ The code that generates the graph is :
 ```r
 b <- dataClean %>% group_by(interval) %>% summarise(TotalSum = sum(steps), Mean = mean(steps), Median = median(steps))
 
-plot(b$interval, b$TotalSum , type = "l", xlab = "Interval" , ylab = "Average Steps per day")
+plot(b$interval, b$Mean , type = "l", xlab = "Interval" , ylab = "Average Steps per day")
 ```
 
-![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 ```r
-Interval <- b$interval[grep(max(b$TotalSum),b$TotalSum)]
-ValueMax <- max(b$TotalSum)
+Interval <- b$interval[grep(max(b$Mean),b$Mean)]
+ValueMax <- max(b$Mean)
 ```
 
-The interval with higher average steps in the day is 835 with an average value of 10927 steps in that interval.
+The interval with higher average steps in the day is 835 with an average value of 206.1698113 steps in that interval.
 
 ## Imputing missing values
 
@@ -87,7 +95,7 @@ The interval with higher average steps in the day is 835 with an average value o
 
 
 ```r
-head(data ,5 ) # See the errors in the first 5 line. 
+head(data ,5 ) # See the errors in the first 5 line.
 ```
 
 ```
@@ -119,8 +127,16 @@ head(b , 5) # mean values for the first 5 intervals
 
 
 ```r
-DataReplace <- mutate(data, steps = ifelse(is.na(steps), b$Mean[b$interval == data$interval[row_number()]], steps)) # mutate goes row by row, replace by the appropiate value in case of step value is NA
+DataReplace <- mutate(data, steps = ifelse(is.na(steps), b$Mean[which(b[,1] == data$interval[row_number()])], steps)) # mutate goes row by row, replace by the appropiate value in case of step value is NA
 
+nrow(data[(is.na(DataReplace$steps)),])  ## Verify there is no missing values 
+```
+
+```
+## [1] 0
+```
+
+```r
 head(DataReplace, 5 )
 ```
 
@@ -141,16 +157,54 @@ a2 <- DataReplace %>% group_by(date) %>% summarise(TotalSum = sum(steps), Mean =
 barplot(a2$TotalSum , names.arg = a2$date , xlab = "Day" , ylab = "Total number of steps per day")
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
 
 ```r
-MeanStepsPerDay2 <- mean(a2$Mean , na.rm = TRUE)
-MedianStepsPerDay2 <- median(a2$Median , na.rm = TRUE)
+MeanStepsPerDay2 <- mean(a2$TotalSum )
+MedianStepsPerDay2 <- median(a2$TotalSum )
 ```
 
- -  Mean37.3825996 and Median 0 *** without*** the missing values
- - Mean37.3825996 and Median 0 *** replacing*** the missing values
+ -  Mean 10766.18868 and Median 10765 *** without*** the missing values
+ - Mean 10766.18868 and Median 10766.18868 *** replacing*** the missing values
 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+Create a new function to determine if a date is a weekday or a weekend and then vectorize it.
+
+
+```r
+isweekend <- function(date) {
+    # use a date that are Saturday and Sunday. Weekday() give different the day name in different languages depending on the computer settings in my case is Spanish
+        if (weekdays(date) == weekdays(as.Date("2016-01-09")) | weekdays(date) == weekdays(as.Date("2016-01-10")))
+        return("weekend")
+    else
+        return("weekday")
+}
+
+visweekend <- Vectorize(isweekend, "date") 
+```
+Now mutate the new data set and add a new factor variable to it
+
+
+```r
+newdata <- mutate(dataClean, DayType = visweekend(as.Date(date)))
+newdata$DayType <- as.factor(newdata$DayType)
+```
+Aggregate the data by interval for weekdays and weekends.
+
+```r
+newdailyav <- aggregate(steps ~ interval + DayType, newdata, mean)
+```
+
+Use lattice to plot the data:
+
+```r
+library(lattice)
+xyplot(steps ~ interval | DayType, newdailyav, type = "l", layout = c(1,2),
+    main = "Average number of steps taken by interval for weekdays and Weekends",
+    xlab = "Interval (time of day)", ylab = "Steps" )
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+
