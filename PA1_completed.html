@@ -68,28 +68,28 @@ img {
 
 
 <p>echo=TRUE ## Load required libraries library(dplyr) library(data.table) library(grid) library(ggplot2)</p>
+<div id="set-our-working-directory" class="section level2">
+<h2>Set our working directory</h2>
+<p>setwd(“C:/Users/jackson/Documents/GitHub/ReproducibleResearch_Project1/RepData_PeerAssessment1”)</p>
+</div>
+<div id="constants" class="section level2">
+<h2>Constants</h2>
+<p>FIGURE_PATH = file.path(getwd(), “figures”)</p>
+</div>
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
-<p>setwd(“D:/Diversions/CourseraCourses/DataScientist/Course5_ReproducibleResearch”) activityData &lt;- read.table(unz(“repdata-data-activity.zip”, “activity.csv”), header=T, quote=“&quot;”, sep=“,”) ## What is the total # of steps taken per day? [Ignore missing values] ## sort then group data by date activityDataByDate &lt;- arrange(activityData, date) %&gt;% group_by(date)</p>
+<p>activityData &lt;- read.table(unz(“activity.zip”, “activity.csv”), header=T, quote=“&quot;”, sep=“,”) ## What is the total # of steps taken per day? [Ignore missing values] ## sort then group data by date activityDataByDate &lt;- arrange(activityData, date) %&gt;% group_by(date)</p>
 </div>
 <div id="total-steps-for-each-date" class="section level2">
 <h2>total steps for each date</h2>
-<p>activityDataByDate &lt;- summarize(activityDataByDate, totalSteps = sum(steps, na.rm = TRUE)) ## Make a histogram of the total # of steps taken per day barplot(activityDataByDate<span class="math">\(totalSteps, names.arg = as.Date(activityDataByDate\)</span>date), col=rainbow(15), main=“Total # of Steps Per Day”, xlab=“Date”, ylab=“Total Steps”, las=1)</p>
-</div>
-<div id="calculate-and-report-the-mean-and-median-of-the-total-of-steps-taken-per-day" class="section level2">
-<h2>Calculate and report the mean and median of the total # of steps taken per day</h2>
-</div>
-<div id="output-to-console" class="section level2">
-<h2>Output to console</h2>
-<p>mean(activityDataByDate<span class="math">\(totalSteps) median(activityDataByDate\)</span>totalSteps)</p>
+<p>activityDataByDate &lt;- summarize(activityDataByDate, totalSteps = sum(steps, na.rm = TRUE)) ## Make a histogram of the total # of steps taken per day png( filename = file.path(FIGURE_PATH, “plot1.png”), width = 480, height = 480, units = “px” ) barplot(activityDataByDate<span class="math">\(totalSteps, names.arg = as.Date(activityDataByDate\)</span>date), col=rainbow(15), main=“Total # of Steps Per Day”, xlab=“Date”, ylab=“Total Steps”, las=1) dev.off() ## Calculate and report the mean and median of the total # of steps taken per day ## Output to console ### –&gt; mean = 9354.23 ### –&gt; median = 10395 mean(activityDataByDate<span class="math">\(totalSteps) median(activityDataByDate\)</span>totalSteps)</p>
 </div>
 <div id="what-is-the-average-daily-activity-pattern" class="section level2">
 <h2>What is the average daily activity pattern?</h2>
 </div>
 <div id="sort-then-group-data-by-interval" class="section level2">
 <h2>sort then group data by interval</h2>
-<p>activityDataByInterval &lt;- arrange(activityData, interval) %&gt;% group_by(interval) ## average steps for each interval activityDataByInterval &lt;- summarize(activityDataByInterval, avgSteps = mean(steps, na.rm = TRUE))</p>
-<p>plot(activityDataByInterval<span class="math">\(interval, activityDataByInterval\)</span>avgSteps, type=“l”, xlab=“Interval”, ylab=“Average Steps”, main=“Average Daily Activity Pattern (Average Steps Per Time Interval)”) ## Which 5-minute interval, on average across all the days in the dataset, contains ## the maximum number of steps? –&gt; interval = 835 ## Output to console max(activityDataByInterval<span class="math">\(avgSteps) subset(activityDataByInterval, select=interval,  activityDataByInterval\)</span>avgSteps==max(activityDataByInterval$avgSteps))</p>
+<p>activityDataByInterval &lt;- arrange(activityData, interval) %&gt;% group_by(interval) ## average steps for each interval activityDataByInterval &lt;- summarize(activityDataByInterval, avgSteps = mean(steps, na.rm = TRUE)) png( filename = file.path(FIGURE_PATH, “plot2.png”), width = 480, height = 480, units = “px” ) plot(activityDataByInterval<span class="math">\(interval, activityDataByInterval\)</span>avgSteps, type=“l”, xlab=“Interval”, ylab=“Average Steps”, main=“Average Daily Activity Pattern (Average Steps Per Time Interval)”) dev.off() ## Which 5-minute interval, on average across all the days in the dataset, contains ## the maximum number of steps? ### –&gt; 206 steps for interval = 835 ## Output to console max(activityDataByInterval<span class="math">\(avgSteps) subset(activityDataByInterval, select=interval,  activityDataByInterval\)</span>avgSteps==max(activityDataByInterval$avgSteps))</p>
 </div>
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
@@ -99,12 +99,12 @@ img {
 </div>
 <div id="total-number-of-rows-with-nas" class="section level2">
 <h2>total number of rows with NAs)</h2>
-<p>NAs&lt;-filter(activityData,is.na(activityData<span class="math">\(steps)) count(NAs) ## Apply the mean for each interval to missing values for each interval. ## Copy original activityData to activityDataWithMeanForMissing. activityDataWithMeanForMissing = copy(activityData) ## Loop thru each activityDataByInterval record and apply its avgSteps to NA records in ## activityDataWithMeanForMissing (for matching interval). for (i in 1:length(activityDataByInterval\)</span>interval)) { ## Filter the activityDataWithMeanForMissing to this interval and NA records. ## Set “steps” for these rows to avgSteps for the current (i) activityDataByInterval. activityDataWithMeanForMissing<span class="math">\(steps[activityDataWithMeanForMissing\)</span>interval==activityDataByInterval<span class="math">\(interval[i] &amp; is.na(activityDataWithMeanForMissing\)</span>steps)] &lt;- activityDataByInterval$avgSteps[i] } ## Make a histogram of the total number of steps taken each day and Calculate and report ## the mean and median total number of steps taken per day. Do these values differ from ## the estimates from the first part of the assignment? What is the impact of imputing ## missing data on the estimates of the total daily number of steps? ## sort then group data by date activityDataWithMeanForMissingByDate &lt;- arrange(activityDataWithMeanForMissing, date) %&gt;% group_by(date)</p>
+<p>NAs&lt;-filter(activityData,is.na(activityData<span class="math">\(steps)) ### --&gt; Total # of NAs = 2304 count(NAs) ## Apply the mean for each interval to missing values for each interval. ## Copy original activityData to activityDataWithMeanForMissing. activityDataWithMeanForMissing = copy(activityData) ## Loop thru each activityDataByInterval record and apply its avgSteps to NA records in ## activityDataWithMeanForMissing (for matching interval). for (i in 1:length(activityDataByInterval\)</span>interval)) { ## Filter the activityDataWithMeanForMissing to this interval and NA records. ## Set “steps” for these rows to avgSteps for the current (i) activityDataByInterval. activityDataWithMeanForMissing<span class="math">\(steps[activityDataWithMeanForMissing\)</span>interval==activityDataByInterval<span class="math">\(interval[i] &amp; is.na(activityDataWithMeanForMissing\)</span>steps)] &lt;- activityDataByInterval$avgSteps[i] } ## Make a histogram of the total number of steps taken each day and Calculate and report ## the mean and median total number of steps taken per day. Do these values differ from ## the estimates from the first part of the assignment? What is the impact of imputing ## missing data on the estimates of the total daily number of steps? ## sort then group data by date activityDataWithMeanForMissingByDate &lt;- arrange(activityDataWithMeanForMissing, date) %&gt;% group_by(date)</p>
 </div>
 <div id="total-steps-for-each-date-1" class="section level2">
 <h2>total steps for each date</h2>
 <p>activityDataWithMeanForMissingByDate &lt;- summarize(activityDataWithMeanForMissingByDate, totalSteps = sum(steps, na.rm = TRUE))</p>
-<p>barplot(activityDataWithMeanForMissingByDate<span class="math">\(totalSteps, names.arg = as.Date(activityDataWithMeanForMissingByDate\)</span>date), col=rainbow(15), main=“Total # of Steps Per Day (Missing Values Replaced by Interval Means)”, xlab=“Date”, ylab=“Total Steps”, las=1) #, width=10) #, space=10) ## Calculate and report the mean and median of the total # of steps taken per day ## Output to console mean(activityDataWithMeanForMissingByDate<span class="math">\(totalSteps) median(activityDataWithMeanForMissingByDate\)</span>totalSteps)</p>
+<p>png( filename = file.path(FIGURE_PATH, “plot3.png”), width = 480, height = 480, units = “px” ) barplot(activityDataWithMeanForMissingByDate<span class="math">\(totalSteps, names.arg = as.Date(activityDataWithMeanForMissingByDate\)</span>date), col=rainbow(15), main=“Total # of Steps Per Day (NA Replaced by Interval Means)”, xlab=“Date”, ylab=“Total Steps”, las=1) #, width=10) #, space=10) dev.off() ## Calculate and report the mean and median of the total # of steps taken per day ## Output to console ### –&gt; mean and median are both 10766.19. mean(activityDataWithMeanForMissingByDate<span class="math">\(totalSteps) median(activityDataWithMeanForMissingByDate\)</span>totalSteps)</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
@@ -121,7 +121,7 @@ img {
 </div>
 <div id="use-ggplot2-qplot" class="section level2">
 <h2>Use ggplot2 qplot()</h2>
-<p>plot1 &lt;- qplot(interval, avgSteps, data = activityDataWithMeanForMissingByIntervalDayOfWeekType, facets = dayOfWeekType ~ ., geom=“path”, main=“Average Steps By Interval (Weekend vs Weekday)”, xlab=“Interval”, ylab=“Number of Steps”) ## Below statement puts panel titles on the top of each panel instead of on the side. plot1 + facet_grid(. ~ dayOfWeekType)</p>
+<p>png( filename = file.path(FIGURE_PATH, “plot4.png”), width = 480, height = 480, units = “px” ) plot1 &lt;- qplot(interval, avgSteps, data = activityDataWithMeanForMissingByIntervalDayOfWeekType, facets = dayOfWeekType ~ ., geom=“path”, main=“Average Steps By Interval (Weekend vs Weekday)”, xlab=“Interval”, ylab=“Number of Steps”) ## Below statement puts panel titles on the top of each panel instead of on the side. plot1 + facet_grid(. ~ dayOfWeekType) dev.off()</p>
 </div>
 
 

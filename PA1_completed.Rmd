@@ -38,6 +38,8 @@ barplot(activityDataByDate$totalSteps, names.arg = as.Date(activityDataByDate$da
 dev.off()
 ## Calculate and report the mean and median of the total # of steps taken per day
 ## Output to console
+### --> mean = 9354.23
+### --> median = 10395
 mean(activityDataByDate$totalSteps)
 median(activityDataByDate$totalSteps)
 
@@ -56,7 +58,8 @@ plot(activityDataByInterval$interval, activityDataByInterval$avgSteps, type="l",
      ylab="Average Steps", main="Average Daily Activity Pattern (Average Steps Per Time Interval)")
 dev.off()
 ## Which 5-minute interval, on average across all the days in the dataset, contains 
-## the maximum number of steps? --> interval = 835
+## the maximum number of steps? 
+### --> 206 steps for interval = 835
 ## Output to console
 max(activityDataByInterval$avgSteps)
 subset(activityDataByInterval, select=interval, 
@@ -66,6 +69,7 @@ subset(activityDataByInterval, select=interval,
 ## Calculate and report the total number of missing values in the dataset (i.e. the 
 ## total number of rows with NAs)
 NAs<-filter(activityData,is.na(activityData$steps))
+### --> Total # of NAs = 2304
 count(NAs)
 ## Apply the mean for each interval to missing values for each interval.
 ## Copy original activityData to activityDataWithMeanForMissing.
@@ -98,6 +102,7 @@ barplot(activityDataWithMeanForMissingByDate$totalSteps, names.arg = as.Date(act
 dev.off()
 ## Calculate and report the mean and median of the total # of steps taken per day
 ## Output to console
+### --> mean and median are both 10766.19.
 mean(activityDataWithMeanForMissingByDate$totalSteps)
 median(activityDataWithMeanForMissingByDate$totalSteps)
 
