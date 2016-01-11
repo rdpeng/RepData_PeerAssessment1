@@ -2,7 +2,9 @@
 title: "RepData - Peer Assesment 1"
 author: "Michael Addonisio"
 date: "January 10, 2016"
-output: html_document
+output: 
+  html_document: 
+    fig_caption: yes
 ---
 
 ### Loading and preprocessing the data

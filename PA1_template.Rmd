@@ -70,7 +70,7 @@ names(steps) = steps.per.interval$interval
 df$steps[nas] = steps[as.character(df$interval[nas])]
 ```
 
-#check if any nas
+Check to see if there are any NA's
 ```{r}
 sum(is.na(df$steps))
 ```
