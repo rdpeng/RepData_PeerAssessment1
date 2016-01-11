@@ -4,9 +4,22 @@ output:
   html_document:
     keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
+library(knitr)
+
+opts_chunk$set(echo = TRUE)
+
+Load packages
+
+library(dplyr)
+
+library(lubridate)
+
+library(ggplot2)
+
+
+
+ 
 
 
 
