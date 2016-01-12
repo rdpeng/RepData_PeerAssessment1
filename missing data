@@ -1,0 +1,213 @@
+# 1.) Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+# NA's :2304 
+summary(active)
+##      steps            date               interval         Weekday    
+##  Min.   :  0.0   Min.   :2012-10-01   Min.   :   0   Sunday   :2304  
+##  1st Qu.:  0.0   1st Qu.:2012-10-16   1st Qu.: 589   Monday   :2592  
+##  Median :  0.0   Median :2012-10-31   Median :1178   Tuesday  :2592  
+##  Mean   : 37.4   Mean   :2012-10-31   Mean   :1178   Wednesday:2592  
+##  3rd Qu.: 12.0   3rd Qu.:2012-11-15   3rd Qu.:1766   Thursday :2592  
+##  Max.   :806.0   Max.   :2012-11-30   Max.   :2355   Friday   :2592  
+##  NA's   :2304                                        Saturday :2304  
+##     Interval                  
+##  Min.   :2014-07-18 00:00:00  
+##  1st Qu.:2014-07-18 05:58:45  
+##  Median :2014-07-18 11:57:30  
+##  Mean   :2014-07-18 11:57:30  
+##  3rd Qu.:2014-07-18 17:56:15  
+##  Max.   :2014-07-18 23:55:00  
+## 
+# Subset out all rows with an NA value, 2304 rows
+NA.active <- subset(active, !complete.cases(active))
+# All NAs are contained in 8 days, which have all steps missing in each day 
+table(NA.active$date)
+## 
+## 2012-10-01 2012-10-08 2012-11-01 2012-11-04 2012-11-09 2012-11-10 
+##        288        288        288        288        288        288 
+## 2012-11-14 2012-11-30 
+##        288        288
+# 2.) We will impute the values by filling in the mean of the steps in each interval. 
+
+# For example, to fill in NA's on Monday's at 12:00, all "12:00 - 12:05" intervals for all Monday's will be used to get the imputed value.
+
+# The same will be done for Tuesday's in this time period, etc. So that each unique day has different means in each time interval.
+
+#Initial step:
+# Create function that gets breakdown of an interval, by Weekday
+
+
+interval.summary <- function(active_frame, interval_string = "all"){
+    # '''
+    # Takes dataframe with Interval, Weekday, and steps data.
+    # Takes optional string value specifying which interval means to return.
+    # If no interval data is supplied, or "all" is entered, all intervals will be returned.
+    #   
+    # Returns a dataframe containing Interval (all if none specified), Weekday, and Average. 
+    # '''
+  
+  active_frame$temp_time <- format(active_frame$Interval, "%H:%M")
+  
+  if (class(interval_string) != "character") {stop("Please enter an interval as a string.")}
+  if (!(interval_string %in% c( active_frame$temp_time, "all" ) ) ) {stop("Please enter a 5 minute interval in the form of 00:00")}
+  
+  output <- active_frame %>% 
+    group_by(temp_time, Weekday) %>%
+    summarise(Average = mean(steps, na.rm = TRUE))
+  if (interval_string == "all") {
+    return(output)
+    } else {
+      output<- output %>%
+        filter(temp_time == interval_string)
+      return(output)
+      }
+  }
+
+# Here we show the averages for max interval, 8:35, on each different day.
+interval.summary(active, "08:35")
+## Source: local data frame [7 x 3]
+## Groups: temp_time
+## 
+##   temp_time   Weekday Average
+## 1     08:35    Sunday   101.1
+## 2     08:35    Monday   225.9
+## 3     08:35   Tuesday   154.9
+## 4     08:35 Wednesday   273.0
+## 5     08:35  Thursday   252.1
+## 6     08:35    Friday   279.1
+## 7     08:35  Saturday   155.6
+# To impute, we subgroup the data by Weekday and Interval and fill in any missing values with the average for that particular Interval/Weekday combination using the dplyr package.
+
+imputed <- active %>%
+  mutate(steps = as.numeric(steps)) %>%
+  group_by(Interval, Weekday) %>%
+  mutate(steps = ifelse(is.na(steps), mean(steps, na.rm = TRUE), steps)) %>%
+  mutate(steps = round(steps, 2))
+# Calling our previous function, the means, min and max, don't change, and now NA's are filled in.
+
+#interval.summary(imputed, 835) #Not called in RMarkdown for brevity
+
+#interval.summary(active, 835) #Not called in RMarkdown for brevity
+
+## Needs docstring: Accepts (df, df, int, string) type combination
+
+# Integrity check function to make sure imputation went as planned.
+imputed.check<- function(original.df, imputed.df, check.interval, check.Weekday) {
+  print ("Original interval/day combination")
+  print (subset(original.df, original.df$interval == check.interval & Weekday == check.Weekday))
+  # Mean without the NAs for this interval/day combination is 225.8571
+  temp.mean <- mean(subset(original.df, original.df$interval == check.interval & Weekday == check.Weekday)$steps, na.rm = TRUE)
+  print ("")
+  print (paste("Mean for original dataset (with na.rm = TRUE) NAs is:", round(temp.mean, 2)))
+  print ("")
+  # This mean is filled into the NA slots, while the remaining values remain unchanged.
+  print ("Imputed interval/day combination")
+  print (subset(imputed.df, imputed.df$interval == check.interval & Weekday == check.Weekday))
+}
+
+
+# Integrity Check #1:
+imputed.check(active, imputed, 835, "Monday")
+## [1] "Original interval/day combination"
+##       steps       date interval Weekday            Interval
+## 104      NA 2012-10-01      835  Monday 2014-07-18 08:35:00
+## 2120     NA 2012-10-08      835  Monday 2014-07-18 08:35:00
+## 4136    786 2012-10-15      835  Monday 2014-07-18 08:35:00
+## 6152     25 2012-10-22      835  Monday 2014-07-18 08:35:00
+## 8168     56 2012-10-29      835  Monday 2014-07-18 08:35:00
+## 10184   131 2012-11-05      835  Monday 2014-07-18 08:35:00
+## 12200   534 2012-11-12      835  Monday 2014-07-18 08:35:00
+## 14216    44 2012-11-19      835  Monday 2014-07-18 08:35:00
+## 16232     5 2012-11-26      835  Monday 2014-07-18 08:35:00
+## [1] ""
+## [1] "Mean for original dataset (with na.rm = TRUE) NAs is: 225.86"
+## [1] ""
+## [1] "Imputed interval/day combination"
+## Source: local data frame [9 x 5]
+## Groups: 
+## 
+##       steps       date interval Weekday            Interval
+## 104   225.9 2012-10-01      835  Monday 2014-07-18 08:35:00
+## 2120  225.9 2012-10-08      835  Monday 2014-07-18 08:35:00
+## 4136  786.0 2012-10-15      835  Monday 2014-07-18 08:35:00
+## 6152   25.0 2012-10-22      835  Monday 2014-07-18 08:35:00
+## 8168   56.0 2012-10-29      835  Monday 2014-07-18 08:35:00
+## 10184 131.0 2012-11-05      835  Monday 2014-07-18 08:35:00
+## 12200 534.0 2012-11-12      835  Monday 2014-07-18 08:35:00
+## 14216  44.0 2012-11-19      835  Monday 2014-07-18 08:35:00
+## 16232   5.0 2012-11-26      835  Monday 2014-07-18 08:35:00
+# Quick check on the rows of all Mondays in interval 835 in the original set vs. the imputed set
+
+# Mean without the NAs for this interval/day combination is 225.86
+
+# This mean is filled into the NA slots, while the remaining values remain unchanged.
+
+
+# Integrity Check #2:
+imputed.check(active, imputed, 1005, "Thursday")
+## [1] "Original interval/day combination"
+##       steps       date interval  Weekday            Interval
+## 986       0 2012-10-04     1005 Thursday 2014-07-18 10:05:00
+## 3002      0 2012-10-11     1005 Thursday 2014-07-18 10:05:00
+## 5018      0 2012-10-18     1005 Thursday 2014-07-18 10:05:00
+## 7034      0 2012-10-25     1005 Thursday 2014-07-18 10:05:00
+## 9050     NA 2012-11-01     1005 Thursday 2014-07-18 10:05:00
+## 11066     0 2012-11-08     1005 Thursday 2014-07-18 10:05:00
+## 13082     0 2012-11-15     1005 Thursday 2014-07-18 10:05:00
+## 15098     0 2012-11-22     1005 Thursday 2014-07-18 10:05:00
+## 17114     0 2012-11-29     1005 Thursday 2014-07-18 10:05:00
+## [1] ""
+## [1] "Mean for original dataset (with na.rm = TRUE) NAs is: 0"
+## [1] ""
+## [1] "Imputed interval/day combination"
+## Source: local data frame [9 x 5]
+## Groups: 
+## 
+##       steps       date interval  Weekday            Interval
+## 986       0 2012-10-04     1005 Thursday 2014-07-18 10:05:00
+## 3002      0 2012-10-11     1005 Thursday 2014-07-18 10:05:00
+## 5018      0 2012-10-18     1005 Thursday 2014-07-18 10:05:00
+## 7034      0 2012-10-25     1005 Thursday 2014-07-18 10:05:00
+## 9050      0 2012-11-01     1005 Thursday 2014-07-18 10:05:00
+## 11066     0 2012-11-08     1005 Thursday 2014-07-18 10:05:00
+## 13082     0 2012-11-15     1005 Thursday 2014-07-18 10:05:00
+## 15098     0 2012-11-22     1005 Thursday 2014-07-18 10:05:00
+## 17114     0 2012-11-29     1005 Thursday 2014-07-18 10:05:00
+# Quick check on the rows of all Thursday in interval 1005 in the original set vs. the imputed set. Zero is filled into this interval/day combination since it is all zeros.
+
+
+# Integrity Check #3:
+imputed.check(active, imputed, 1600, "Saturday")
+## [1] "Original interval/day combination"
+##       steps       date interval  Weekday            Interval
+## 1633     27 2012-10-06     1600 Saturday 2014-07-18 16:00:00
+## 3649      0 2012-10-13     1600 Saturday 2014-07-18 16:00:00
+## 5665     53 2012-10-20     1600 Saturday 2014-07-18 16:00:00
+## 7681      0 2012-10-27     1600 Saturday 2014-07-18 16:00:00
+## 9697      0 2012-11-03     1600 Saturday 2014-07-18 16:00:00
+## 11713    NA 2012-11-10     1600 Saturday 2014-07-18 16:00:00
+## 13729     0 2012-11-17     1600 Saturday 2014-07-18 16:00:00
+## 15745   785 2012-11-24     1600 Saturday 2014-07-18 16:00:00
+## [1] ""
+## [1] "Mean for original dataset (with na.rm = TRUE) NAs is: 123.57"
+## [1] ""
+## [1] "Imputed interval/day combination"
+## Source: local data frame [8 x 5]
+## Groups: 
+## 
+##       steps       date interval  Weekday            Interval
+## 1633   27.0 2012-10-06     1600 Saturday 2014-07-18 16:00:00
+## 3649    0.0 2012-10-13     1600 Saturday 2014-07-18 16:00:00
+## 5665   53.0 2012-10-20     1600 Saturday 2014-07-18 16:00:00
+## 7681    0.0 2012-10-27     1600 Saturday 2014-07-18 16:00:00
+## 9697    0.0 2012-11-03     1600 Saturday 2014-07-18 16:00:00
+## 11713 123.6 2012-11-10     1600 Saturday 2014-07-18 16:00:00
+## 13729   0.0 2012-11-17     1600 Saturday 2014-07-18 16:00:00
+## 15745 785.0 2012-11-24     1600 Saturday 2014-07-18 16:00:00
+# Quick check on the rows of all Thursday in interval 1600 in the original set vs. the imputed set. This value is filled in correctly as well.
+#4.) Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.  
+
+# Call our make.sums.ggplot to make a new plot with the imputed dataset
+
+# The mean and median changed slightly since the missing/imputed days were fairly busy days in general in the dataset.
+make.sums.ggplot(imputed, "Blues")
