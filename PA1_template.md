@@ -77,4 +77,8 @@ patterns <- cbind(combo_fix, wkday)
 library(lattice)
 plotdata <- aggregate(steps ~ interval + wkday, patterns, mean)
 xyplot(steps ~ interval | factor(wkday), data=plotdata, aspect=1/3, type="l")
+<<<<<<< HEAD
 ```
+=======
+```
+>>>>>>> 9550fc2ee782aed6878e053d5b3a905a53883dca
