@@ -1,0 +1,41 @@
+# 1.) Add Weekend column
+
+imputed<- imputed %>% 
+  mutate(Weekend = ifelse(Weekday %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+
+# Make sure function worked with table()
+table(imputed$Weekend, imputed$Weekday)
+##          
+##           Sunday Monday Tuesday Wednesday Thursday Friday Saturday
+##   Weekday      0   2592    2592      2592     2592   2592        0
+##   Weekend   2304      0       0         0        0      0     2304
+# 2.) Makes a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all Weekday days or Weekend days (y-axis). 
+
+make.Weekend.ggplot<- function(active.dataframe){
+    
+  #Transmform the data and get averages.
+    
+  active.intervals <- active.dataframe %>%
+    group_by(Weekend, Interval) %>%
+    summarise(Average = mean(steps, na.rm = TRUE))
+  
+  #active.intervals<- cbind(active.intervals)
+  ggplot(active.intervals, aes(x = Interval, 
+                               y = Average, 
+                               group = Weekend, 
+                               color = Weekend)) +
+    theme_solarized(light = FALSE) +
+    geom_line() +
+    facet_grid(Weekend~.) +
+    theme(axis.text.x=element_text(angle=270,hjust=1,vjust=0.5, size = 10)) + 
+    scale_x_datetime(breaks = date_breaks("30 mins"),
+                     labels = date_format("%H:%M"),
+                     limits = c(active.intervals$Interval[12], active.intervals$Interval[286-10])) +
+    ylab("Average steps") + 
+    xlab("5-minute Time Intervals (Labeled in chunks of 30-minutes)") +
+    theme(legend.position="none")
+    #scale_x_discrete(breaks = active.intervals$Interval, labels=rep(times,2)) +
+   # theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5, size = 0.5))
+}
+
+make.Weekend.ggplot(imputed)
