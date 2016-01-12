@@ -81,3 +81,6 @@ make.sums.ggplot<- function(active.dataframe, RBrewers.colors = "Greens"){
 }
 
 make.sums.ggplot(active, "Greens")
+
+## Warning: Removed 8 rows containing missing values (position_stack).
+## Warning: Removed 8 rows containing missing values (geom_text).
