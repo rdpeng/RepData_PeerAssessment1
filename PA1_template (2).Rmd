@@ -1,0 +1,140 @@
+---
+<<<<<<< HEAD
+title: "PA1_template.Rmd"
+author: "Kim Hollis"
+date: "January 11, 2016"
+output: html_document
+---
+
+##Load R Packages
+
+```{r}
+library(plyr)
+library(ggplot2)
+library(lattice)
+```
+
+##Process/Tranform Data
+```{r}
+setwd("C:/Users/khollis/Documents/R/data/repdata_data_activity")
+data_activity <- read.table("c:activity.csv", header=TRUE, sep=",")
+sum_steps <- tapply(data_activity$steps, data_activity$date, sum)
+notna <- data_activity[!is.na(data_activity['steps']),]
+dailysteps <- ddply(notna, .(date), summarize, totalsteps=sum(steps))
+```
+
+##Histogram of Total Steps
+```{r}
+hist(sum_steps, breaks = 5, col="green", main="Daily Steps Taken", xlab = "Daily Steps", ylab="Frequency")
+```
+
+##Mean & Median Total Number of Steps Taken Per Day
+```{r}
+mean(dailysteps$totalsteps)
+median(dailysteps$totalsteps)
+```
+
+##The Average Daily Acitivity Pattern
+```{r}
+avg_interval <- tapply(data_activity$steps, data_activity$interval, mean, na.rm = TRUE)
+```
+
+##Plot
+```{r}
+plot(row.names(avg_interval), avg_interval, type = "l", xlab = "5-min interval", ylab = "Average across all Days", main = "Average number of steps taken", col = "blue")
+```
+
+```{r}
+max_steps <- which.max(avg_interval)
+names(max_steps)
+
+total_nas <- sum(is.na(data_activity))
+total_nas
+```
+
+##Replace all NAs with the mean of the 5 minute interval
+```{r}
+average_steps <- aggregate(steps ~ interval, data = data_activity, FUN = mean)
+
+replace_na <- numeric()
+for (i in 1:nrow(data_activity)) {
+  obs <- data_activity[i, ]
+  if (is.na(obs$steps)) {
+    steps <- subset(average_steps, interval == obs$interval)$steps
+  } else {
+    steps <- obs$steps
+  }
+  replace_na <- c(replace_na, steps)
+}
+```
+
+##Create a dataset that has all NAs filled in
+```{r}
+all_activity <- data_activity
+all_activity$steps <- replace_na
+```
+
+##Histogram of total steps (NAs have been filled in with the mean of 5 minute interval)
+```{r}
+total_steps <- aggregate(steps ~ date, data = all_activity, sum, na.rm = TRUE)
+hist(total_steps$steps, main = "Total steps by day", xlab = "day", col = "green")
+```
+
+##Mean & Median
+```{r}
+mean(total_steps$steps)
+median(total_steps$steps)
+```
+
+##Differences in Activity Patterns between weekdays and weekends
+```{r}
+data_activity$date <- as.Date(data_activity$date, "%Y-%m-%d")
+
+# add a new column indicating day of the week 
+data_activity$day <- weekdays(data_activity$date)
+
+# add a new column called day type and initialize to weekday
+data_activity$day_type <- c("weekday")
+
+# If day is Saturday or Sunday, make day_type as weekend
+for (i in 1:nrow(data_activity)){
+    if (data_activity$day[i] == "Saturday" || data_activity$day[i] == "Sunday"){
+        data_activity$day_type[i] <- "weekend"
+      }
+    }
+
+# convert day_time from character to factor
+data_activity$day_type <- as.factor(data_activity$day_type)
+
+# aggregate steps as interval to get average number of steps in an interval across all days
+interval_steps <- aggregate(steps ~ interval+day_type, data_activity, mean)
+
+qplot(interval, steps, data=interval_steps, geom=c("line"), xlab="Interval", ylab="Number of steps", main="") + facet_wrap(~ day_type, ncol=1)
+```
+
+=======
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+
+
+## What is mean total number of steps taken per day?
+
+
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+>>>>>>> 80edf39c3bb508fee88e3394542f967dd3fd3270
