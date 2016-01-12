@@ -1,0 +1,40 @@
+require(ggplot2)
+require(lubridate)
+require(RColorBrewer)
+require(dplyr)
+require(ggthemes)
+library(scales)
+loadData <- function(dataURL="", destF="default.csv", method = NULL){
+  if(!file.exists(destF)){
+            temp <- tempfile()
+            download.file(dataURL, temp, method = method)
+            unzip(temp, destF)
+            unlink(temp)
+        }else{
+            message("Data already downloaded.")
+        }
+}
+
+dataURL <-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+
+
+## Windows Users:
+loadData(dataURL, "activity.csv")
+
+active <- read.csv("activity.csv")
+
+active$date<-as.Date(active$date)
+
+# Lubridate's wday function can fill in the Weekday's full names as ordered factor variables. Sun to Sat.
+# Create a column of these days of the week for each date for subsetting.
+active$Weekday<-wday(active$date, label = TRUE, abbr = FALSE)
+#Quick look at the data
+head(active)
+
+##   steps       date interval Weekday
+## 1    NA 2012-10-01        0  Monday
+## 2    NA 2012-10-01        5  Monday
+## 3    NA 2012-10-01       10  Monday
+## 4    NA 2012-10-01       15  Monday
+## 5    NA 2012-10-01       20  Monday
+## 6    NA 2012-10-01       25  Monday
