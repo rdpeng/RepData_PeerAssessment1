@@ -1,0 +1,58 @@
+# Create a function which:
+
+# 1.) Makes a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) This plotted in 5 minute intervals but labeled in 30 minute intervals to reduce labeling clutter.
+
+# 2.) Reports the 5-minute interval, on average across all the days in the dataset, which contains the maximum number of steps
+
+
+# 5 interval column data is from 0-60, then 100-160, etc.
+# Converts 5 minute interval data to POSIXct format (60 minutes in an hour)
+
+active$Interval <- as.POSIXct(strptime(sprintf("%04d", active$interval), "%H%M")) 
+
+
+make.max.interval.ggplot<- function(active.dataframe){
+
+    # Use dplyr's piping functions to transform data 
+    # then pass that transformed data to the next transform function.
+  active.intervals <- active.dataframe %>%
+    group_by(Interval) %>%
+    summarise(Average = mean(steps, na.rm = TRUE)) %>%
+    arrange(Interval)
+
+    # Pulls out the row which had the max average into a one row data.frame
+  max.active <- active.intervals[which.max(active.intervals$Average),]
+    # Grab the max interval for plotting. 
+    # Assign to global environment since ggplot can't find it when called from within a function.
+  max.interval <<- max.active$Interval[1]
+    # Grab the average steps for plotting.
+  max.average <<- round(max.active$Average[1], 2)
+
+  
+  ggplot(active.intervals, aes(x = Interval, y = Average)) +
+    geom_line() +
+    theme_economist() +
+    geom_text(aes(label = paste("Max Interval =", format(max.interval, "%H:%M")),
+                  x = max.interval,
+                  y = max.average + 12),
+              color = "black",
+              size = 4) +
+    geom_text(aes(label = paste("Average Steps in the max interval =", max.average ),
+                  x = max.interval,
+                  y = max.average + 4),
+              color = "black",
+              size = 4) + 
+    theme(axis.text.x=element_text(angle=270,
+                                   hjust=1,
+                                   vjust=0.5,
+                                   size = 10)) + 
+    scale_x_datetime(breaks = date_breaks("30 mins"),
+                     labels = date_format("%H:%M"),
+                     limits = c(active.intervals$Interval[12], active.intervals$Interval[286-10])) +
+    ylab("Average steps") + 
+    xlab("5-minute Time Intervals (Labeled in chunks of 30-minutes)")
+}
+
+make.max.interval.ggplot(active)
+
+
