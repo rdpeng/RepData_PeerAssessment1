@@ -1,0 +1,86 @@
+# Create function which takes the active dataframe, and an RBrewers color scheme for customization. 
+
+# Color scheme defaults to "Greens"
+
+# Weekend are colored the same dark color to identify better. 
+
+# Weekdays start light on Monday and gradually get darker as they approach the Weekend.
+
+# Creates a plot which:
+
+# 1.) Makes a histogram of the total number of steps taken each day
+
+# 2.) Calculates and reports the mean and median total number of steps taken per day
+
+
+
+make.sums.ggplot<- function(active.dataframe, RBrewers.colors = "Greens"){
+  
+  #Transmform the data and get averages.
+
+  #Sum up steps of the data.frame, grouped by date
+  active.sums <- active.dataframe %>%
+    group_by(date, Weekday) %>%
+    summarise(total_steps = sum(steps))
+  
+  # Create a vector of brewer greens for representing the ordinal change from Monday to Sunday.
+  # Brewer.pal takes an integer (n) and an RBrewer color set. 
+  # It then creates (n) gradients of color that cover the passed in color set. 
+  # 7 is passed in because there are 7 factors: each day of the week.
+  my.cols <- brewer.pal(7, RBrewers.colors)
+  # Ordered factors start on Sunday. Rather than reordering the date factor variables, we can just reassign the color for Saturday to Sunday as well. This will make the Weekends stand out.
+  my.cols[1] <- my.cols[7]
+  # Get max number of steps for largest interval for extending y-axis to fit labels.
+  max.sum <- max(active.sums$total_steps, na.rm = TRUE)
+  
+  
+  ggplot(active.sums, aes(x = date, y = total_steps, fill = Weekday)) + geom_bar(stat = "identity") +
+    scale_x_date(breaks="1 day", 
+                 limits = as.Date(c('2012-10-03','2012-11-28'))) +
+    theme_wsj() +    
+    theme(axis.text.x  = element_text(size=10,
+                                      angle=45,
+                                      colour="black",
+                                      vjust=1,
+                                      hjust=1)) + 
+    scale_fill_manual(values = my.cols) + 
+    geom_text(aes(x = date, 
+                  y = total_steps, 
+                  label = total_steps, 
+                  angle  = 90, 
+                  size = 5, 
+                  hjust = -0.1), 
+              color = "brown", 
+              show_guide  = F) + 
+
+    #theme(panel.grid.minor = element_blank(), 
+    #      panel.grid.major = element_blank()) +
+    #theme(panel.background = element_rect(fill="darkgrey")) + 
+      # Adjust the y axis. Start from 0. 
+      # Continue to 15% beyond the max y-value so that the labels don't get cut off.
+    coord_cartesian(ylim=c(0,max.sum*1.15)) +
+    geom_hline(aes ( yintercept = mean(total_steps, na.rm = TRUE)), 
+               color = "chocolate3", 
+               size = 1.5, 
+               alpha = .50) + 
+    geom_hline(aes ( yintercept = median(total_steps, na.rm = TRUE)), 
+               color = "darkred", 
+               alpha = .50) +
+    geom_text(aes(label = paste("Overall Mean =", round(mean(total_steps, na.rm = TRUE), 2) ),
+                  x = as.Date('2012-10-05'),
+                  y = 20200), 
+              color = "chocolate3", 
+              size = 4) +
+    geom_text(aes(label = paste("Overall Median = ", round(median(total_steps, na.rm = TRUE), 2) ),
+                  x = as.Date('2012-10-05'),
+                  y = 19700),
+              color = "darkred",
+              size = 4) +
+    ylab("Total Steps taken per day") +
+    xlab(NULL)
+}
+
+make.sums.ggplot(active, "Greens")
+
+## Warning: Removed 8 rows containing missing values (position_stack).
+## Warning: Removed 8 rows containing missing values (geom_text).
