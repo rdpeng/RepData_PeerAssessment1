@@ -1,5 +1,5 @@
 # Reproducible Research: Peer Assessment 1
-### Installing from library
+### Installing from (your) library
 
 ```r
 library(ggplot2)
