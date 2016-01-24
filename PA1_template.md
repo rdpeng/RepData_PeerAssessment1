@@ -1,5 +1,5 @@
 # Reproducible Research: Peer Assessment 1
-### Installing from (your) library
+### Installing from library
 
 ```r
 library(ggplot2)
@@ -40,7 +40,7 @@ sd1 + geom_histogram(binwidth = 2500) +
       ggtitle("The total number of steps taken each day")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
 
 ####3. Calculate and report the mean and median of the total number of steps taken per day
 - mean
@@ -75,7 +75,7 @@ sd2 <- ggplot(stepdata2_O, aes(x = interval, y = steps))
 sd2 + geom_line() + ggtitle("The average number of steps across all days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)
 
 ####2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -126,7 +126,7 @@ sd3 + geom_histogram(binwidth = 2500) +
       ggtitle("The total number of steps taken each day (filled)")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png)
 * We can see only the middle bar is extended.
 * Because the value witch are filled in NA are close to the average value. 
 
@@ -181,4 +181,4 @@ g + geom_line() + facet_grid(weekday ~.) +
     ggtitle("The average number of steps across all days")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-16-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-16-1.png)
