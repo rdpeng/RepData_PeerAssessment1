@@ -24,6 +24,7 @@ Sum steps by day, create Histogram, and calculate mean and median
 > colnames(sumTable)<- c("Date", "Steps")
 > ## Creating the historgram of total steps per day
 > hist(sumTable$Steps, breaks=5, xlab="Steps", main = "Total Steps per Day")
+
 > ## Mean of Steps
 > as.integer(mean(sumTable$Steps))
 [1] 10766
@@ -53,6 +54,9 @@ The 5-minute interval, on average across all the days in the data set, containin
 
 
 ## Imputing missing values
+My strategy for filling in NAs will be to substitute the missing steps with the average 5-minute interval based on the day of the week.
+
+
 ##Number of NAs in original data set
 > nrow(activity[is.na(activity$steps),])
 [1] 2304
