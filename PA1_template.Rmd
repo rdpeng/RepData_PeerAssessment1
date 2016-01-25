@@ -18,6 +18,7 @@ setwd("~/Reproducible Data Project 1")
 
 
 ## What is mean total number of steps taken per day?
+Sum steps by day, create Histogram, and calculate mean and median
 ## summarizing total steps per date
 > sumTable <- aggregate(activity$steps ~ activity$date, FUN=sum, )
 > colnames(sumTable)<- c("Date", "Steps")
@@ -29,7 +30,7 @@ setwd("~/Reproducible Data Project 1")
 ## Median of Steps
 > as.integer(median(sumTable$Steps))
 [1] 10765
-
+The Mean is 10766 and the Median is 10765.
 ## Average Daily Pattern
 ##pulling data without nas
 clean <- activity[!is.na(activity$steps),]
@@ -47,7 +48,7 @@ clean <- activity[!is.na(activity$steps),]
 [1] 835
 
 
-
+The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is 835.
 
 
 
@@ -86,6 +87,9 @@ clean <- activity[!is.na(activity$steps),]
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+The new mean of the imputed data is 10821 steps compared to the old mean of 10766 steps. That creates a difference of 55 steps on average per day.
+The new median of the imputed data is 11015 steps compared to the old median of 10765 steps. That creates a difference of 250 steps for the median. However, the overall shape of the distribution has not changed.
+
 ## Summarize data by interval and type of day
 > intervalTable2 <- ddply(mergeData, .(interval, DayCategory), summarize, Avg = mean(steps))
 > ##Plot data in a panel plot
