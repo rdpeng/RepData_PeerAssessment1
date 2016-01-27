@@ -5,167 +5,148 @@ date: "January 24, 2016"
 output: html_document
 ---
 
-This is a markdown file to explain the process by which we import, process, analyze, and report on the dataset, "activity.csv."
+In this markdown document we will walk through the process by which we import, manipulate, analyze and report our findings on the dataset, "activity.csv."
 
-We need the following packages to complete our task. 
+First, load the packages that will be used to complete the task.
 
+##  Utilities
 ```{r}
-library(ggplot2)
 library(dplyr)
 library(lubridate)
+library(ggplot2)
 ```
 
-We first import our data frame to a variable df_raw...
-```{r}
-##  Import "activity.csv" 
-df_raw <- read.csv("activity.csv", header = TRUE, stringsAsFactors = FALSE)
-
-#'data.frame':	17568 obs. of  3 variables:
-#   $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
-#   $ date    : Factor w/ 61 levels "10/1/12","10/10/12",..: 1 1 1 1 1 1 1 1 1 1 ...
-#   $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
-```
-
-Now lets handle the NA values in out steps column...
+##  Data Import 
 
 ```{r}
-##  Create working df of df_raw
-df_data <- df_raw
-
-##  HANDLE NA VALUES
-##  For loop through all intervals with steps == NA and replace with 0. 
-for (i in 1:length(df_data$steps)) 
-  if (is.na(df_data$steps[i])) {
-    df_data$steps[i] <- 0
-  } 
-
-DATA <<- df_data
+##  Import "activity.csv" to df.raw
+df.raw <- read.csv("activity.csv", header = TRUE, stringsAsFactors = FALSE)
+str(df.raw)
 ```
 
-Now we will create some data frames that will provide our answers...
 
-##  GROUP BY DAYS 
-    ##  Initialize catch variables
-    total_steps <- NULL
-    DAILY <- NULL
-    
-    ##  Get Unique Days from DATA$date
-    days <- unique(DATA$date)
+##  Processing Data
+
+Loop through DATA.NA and take the sum() of the total steps for each day. 
+Since this process will be completed again later to group DATA by day as well we should create a function to do this for us. 
+
+This function groupBYday() takes two parameters and returns a dataframe. 
+The first parameter, data, defaults to our dataset, df.raw. 
+The second parameter, remove_NA, is set to FALSE. 
+When set to TRUE, the function will first remove the NA values from df.raw, then group by day. 
+
+```{r}
+groupBYday <- function(data = df.data, remove_NA = FALSE) {
+  #  Initialize catch variable
+  daily.steps <- c()
+  
+  ##  Get Unique Days from DATA$date
+  days <- unique(data$date)
+
+  ##  For loop through days
+  for (i in 1:length(days)) {
+      ##  Create Total Steps for day
+      daily.steps[i] <- sum(data[data$date == days[i],1], na.rm = remove_NA)
+  }
+  # Create Data Frame
+  df <- data.frame(days = days, steps = daily.steps)
+  
+  return(df)
+}
+```
+
+Using the function groupBYday() Sum the numbers of Daily Steps, with and without NA...
+```{r}
+  #DAILY.NA will include NA values.
+  DAILY.NA <- groupBYday(df.raw)
+  #DAILY will exclude NA values.
+  DAILY <- groupBYday(df.raw, remove_NA = TRUE)
+```
+
+We can now use the DAILY.NA to make a histogram of Total Steps per Day...
+```{r}
+hist(DAILY.NA$steps, breaks = 25, main= "Total Steps per Day")
+```
+
+Using this data we can also answer our questions about the sample statistics...
+```{r, echo =FALSE}
+mean.steps <- mean(DAILY$steps) 
+print(paste0("The Mean Number of steps taken each day is...", mean.steps, " steps."))
+median.steps <<- median(DAILY$steps)
+print(paste0("The Median Number of steps taken each day is...", median.steps, " steps."))
+```    
+
+Like the above problem we need to now group the data but this time by interval...
+```{r}
+#  GROUP BY INTERVAL
+groupBYint <- function (data = df.raw) {
+    ##  Get Unique Intervals from df.int$interval
+    int <- unique(data$interval)
+    int.steps <- c()
     
     ##  For loop through days; Sum total Steps
-    for (i in 1:length(days)) {
-        day <- days[i]
-        ##  Subset df for all rows by each unique day
-        tmp_day <- DATA[DATA$date == day,]
-        ##  Create Total Steps for day
-        total_steps <- append(total_steps, sum(tmp_day$steps))
-        ##  Fill Data Frame
-        DAILY$date <- days
-        DAILY$total_steps <- total_steps
-    }
-    
-    ##  Convert List to data.frame
-    DAILY <<- as.data.frame(DAILY)
-    
-##  GROUP BY INTERVAL
-    ##  Initialize catch variables
-    avg_steps <- NULL
-    INTERVAL <- NULL
-    
-    ##  Copy DATA
-    df_int <- DATA
-    
-    ##  Get Unique Intervals from df_int$interval
-    intervals <- unique(df_int$interval)
-    
-    ##  For loop through days; Sum total Steps
-    for (i in 1:length(intervals)) {
-      int <- intervals[i]
-      ##  Subset df for all rows by each unique day
-      tmp_int <- df_int[df_int$interval == int,]
+    for (i in 1:length(int)) {
       ##  Create Average Steps for Intervals
-      avg_steps <- append(avg_steps, mean(tmp_int$steps))
-      ##  Fill Data Frame
-      INTERVAL$Interval <- intervals
-      INTERVAL$avg_steps <- avg_steps
-    }
-    
-    ##  Convert List to data.frame
-    INTERVAL <<- as.data.frame(INTERVAL)
-    
-##  GROUP BY WEEKDAY vs WEEKEND; AVERAGE 5 MIN/DAY
-    ##  Initialize catch variables
-    days <- NULL
-    df_wday <- NULL
-    df_wend <- NULL
-    WDAY_INT <- NULL
-    WEND_INT <- NULL
-    
-    ##  Create new df from DATA
-    df_day <- DATA
-    df_day$date <- mdy(df_day$date)
-    
-    ##  Add new column weekday to df_wday
-    df_day <- mutate(df_day, weekday = wday(df_day$date, label = T))
-    
-    ##  GET Day names
-    days <- unique(df_day$weekday)
-    
-    ##  Get Unique Intervals from df_day$interval
-    intervals <- unique(df_day$interval)
-    
-    ##  Create df fr weekday and weekend
-    df_wday <- df_day[df_day$weekday == days[1:5],]
-    df_wend <- df_day[df_day$weekday == days[6:7],]
-    
-    avg_int <- function(df) {
-      int_avg <- NULL
-      for(i in 1:length(intervals)){
-        int <- intervals[i]
-        tmp <- df[df$interval == intervals[i],]
-        avg <- mean(tmp$steps)
-        int_avg <- rbind(int_avg, cbind(int, avg))
+      int.steps[i] <- mean(data[data$interval == int[i],1], na.rm = TRUE)
       }
-      int_avg
-    } 
+      ##  Fill Data Frame
+      df <- data.frame(interval = int, steps = int.steps)
+      return(df)
+}
     
-    ##  Convert List to data.frame
-    WDAY_INT <<- as.data.frame(avg_int(df_wday))
-    WEND_INT <<- as.data.frame(avg_int(df_wend))
+##  Call groupByint to Average Steps per Interval
+    INTERVAL <<- groupBYint()
+    str(INTERVAL)
+```
 
-Using these tables we can now create our output plots...
+Now we can use this Data to plot a Time Series of these Interval Averages
+```{r}
+plot(x=INTERVAL$interval,INTERVAL$steps, type = "l", main = "Average Steps per Interval")
+```
+
+We can also now answer another question...
+```{r}
+highstep <- max(INTERVAL$steps)
+max.int <- INTERVAL[INTERVAL$steps == highstep, ]
+```
+```{r, echo = FALSE}
+print(paste0("The interval with the highest average steps across all days is interval ", max.int$interval))
+print(paste0("On average this interval has a step count of ", max.int$steps, " steps."))
+```    
+
+Now lets take a look at a histogram of the grouped by Day Data without the NA values.
+Remember we created a function called groupBYday() and used it to create DAILY
+Lets look at DAILY as the dataset and a historgram to observe our daily step total without the NA values. 
+```{r}
+str(DAILY)
+hist(DAILY$steps, breaks = 25, main= "Total Steps per Day - (NAs removed)")
+```
+
+Looking at the difference here we can see that our subject may be much lazier that we orginally assumed!
+Look at the spike in frequency of days with 0 activity!
 
 
-##  Histogram of the total number of steps taken each day
-    print(c("#2 - Histogram of the total number of steps taken each day"))
-    hist(DAILY$total_steps)
+Lastly, lets see us we can detect any differences in activity patterns between weekdays and weekends?!
+```{r}
+WEEK <- df.raw
+##  Make Dates 
+WEEK$date <- mdy(WEEK$date)
+
+##  Add new column weekday to df.wday
+WEEK <- mutate(WEEK, weekday = wday(WEEK$date))
+
+WEEKDAY <- WEEK[WEEK$weekday < 6,]
+WEEKEND <- WEEK[WEEK$weekday > 5,]
     
-##  Mean number of steps taken each day
-    mean_steps <<- mean(DAILY$total_steps)
-    print("#3 - Mean number of steps taken each day")
-    print(mean_steps)
-    
-##  Median number of steps taken each day
-    median_steps <<- median(DAILY$total_steps)
-    print("#3 - Median number of steps taken each day")
-    print(median_steps)
-    
-##  Time Series, average number of steps taken (ggplot2)
-    print("#4 - Time Series, average number of steps taken (ggplot2)")
-    plot(DAILY$date,DAILY$total_steps, type = "l")
-    
-##  Five Minute Interval with Highest average (max) steps
-    max_interval <<- INTERVAL[INTERVAL$avg_steps == max(INTERVAL$avg_steps),]
-    print("#5 - Five Minute Interval with Highest average (max) steps")
-    print(max_interval)
-    
-##  Histogram of the total number of steps taken each day after missing values are imputed
-    
-    print("#7 - Histogram of the total number of steps taken each day after missing values are imputed")
-    
-##  Panel plot comparing the average number of steps taken per 5-minute interval,
-##  ...across weekdays and weekends
-    print("#8 - Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends")
-    plot(WDAY_INT)
-    plot(WDAY_INT)
+#  Use groupBYint to calculate interval average for weekdays and weekends
+WDAY.INT <- groupBYint(WEEKDAY)
+WEND.INT <- groupBYint(WEEKEND)
+
+```  
+
+Using these data frames we can now take a look at a panel plot of these averages comparing the average steps taken per interval for weekdays vs. weekends...
+```{r}
+ggplot(WDAY.INT, aes(interval, steps)) + geom_line() + ylim(1, 250) + xlim(0,2360)
+ggplot(WEND.INT, aes(interval, steps)) + geom_line() + ylim(1, 250) + xlim(0,2360)
+```
 knit
