@@ -19,7 +19,8 @@ library(ggplot2)
 ##  Data Import 
 
 ```{r}
-##  Import "activity.csv" to df.raw
+#  Import "activity.csv" to df.raw
+
 df.raw <- read.csv("activity.csv", header = TRUE, stringsAsFactors = FALSE)
 str(df.raw)
 ```
@@ -79,7 +80,7 @@ print(paste0("The Median Number of steps taken each day is...", median.steps, " 
 Like the above problem we need to now group the data but this time by interval...
 ```{r}
 #  GROUP BY INTERVAL
-groupBYint <- function (data = df.raw) {
+groupBYint <- function (data) {
     ##  Get Unique Intervals from df.int$interval
     int <- unique(data$interval)
     int.steps <- c()
@@ -95,7 +96,7 @@ groupBYint <- function (data = df.raw) {
 }
     
 ##  Call groupByint to Average Steps per Interval
-    INTERVAL <<- groupBYint()
+    INTERVAL <<- groupBYint(df.raw)
     str(INTERVAL)
 ```
 
@@ -130,7 +131,7 @@ Lastly, lets see us we can detect any differences in activity patterns between w
 ```{r}
 WEEK <- df.raw
 ##  Make Dates 
-WEEK$date <- mdy(WEEK$date)
+WEEK$date <- ymd(WEEK$date)
 
 ##  Add new column weekday to df.wday
 WEEK <- mutate(WEEK, weekday = wday(WEEK$date))
@@ -146,7 +147,9 @@ WEND.INT <- groupBYint(WEEKEND)
 
 Using these data frames we can now take a look at a panel plot of these averages comparing the average steps taken per interval for weekdays vs. weekends...
 ```{r}
-ggplot(WDAY.INT, aes(interval, steps)) + geom_line() + ylim(1, 250) + xlim(0,2360)
-ggplot(WEND.INT, aes(interval, steps)) + geom_line() + ylim(1, 250) + xlim(0,2360)
+par(mfrow=c(2,1))
+plot(WDAY.INT$interval, WDAY.INT$steps, type = "l", main = "Weekday", xlab = "Interval", ylab = "Steps")
+plot(WEND.INT$interval, WEND.INT$steps, type = "l", main = "Weekend", xlab = "Interval", ylab = "Steps")
 ```
+
 knit
