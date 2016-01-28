@@ -1,25 +1,105 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA_Template"
+author: "Scott Semel"
+date: "October 17, 2015"
+output: html_document
 ---
-
 
 ## Loading and preprocessing the data
 
+```{r}
+
+library(dplyr)
+library(knitr)
+
+dat = read.csv("activity.csv")
 
 
-## What is mean total number of steps taken per day?
-
+by_date = group_by(dat, date)
+a = summarize(by_date, sum(steps))
+names(a) = c("date", "totalSteps")
+#x =  a$date
+#y =  as.numeric(a$totalSteps)
+#b = cbind(x,y)
+#names(b) = c("date", "totalSteps")
+totalStepsPerDay = as.numeric(a$totalSteps[!is.na(a$totalSteps)])
+hist(totalStepsPerDay, col ="green")
+```
+##What is mean total number of steps taken per day?
+```{r}
+mean(totalStepsPerDay)
+median(totalStepsPerDay)
+```
 
 
 ## What is the average daily activity pattern?
+```{r}
 
+mat = matrix(data = dat[,1], ncol = 288, byrow = TRUE)
+av = colMeans(mat,na.rm=TRUE)
+plot(av, type="l", xlab="5 minute intervals of the day", ylab = "Average number of steps per interval", col=2) 
+lines(av, col="blue")
+```
+## Highest average is 206 steps at interval 104 around 8:40am.
 
+## Find the number of rows with NA. 
 
-## Imputing missing values
+```{r}
+numOfNAs = sum(is.na(dat$steps))
+```
+## [1] 2304
 
+## Imputing missing values. 
+## Replace each NA with the average of that 5 minute interval for the whole set.
 
+```{r}
+allavs = rep(av,length.out = 17568)
 
+newTotalStepsPerDay = pmax(dat$steps, allavs, na.rm = TRUE)
+dat$steps = newTotalStepsPerDay
+
+by_date = group_by(dat, date)
+a = summarize(by_date, sum(steps))
+names(a) = c("date", "totalSteps")
+#x =  a$date
+#y =  as.numeric(a$totalSteps)
+#b = cbind(x,y)
+#names(b) = c("date", "totalSteps")
+totalStepsPerDay = as.numeric(a$totalSteps[!is.na(a$totalSteps)])
+hist(totalStepsPerDay, col ="green")
+
+mean(totalStepsPerDay)
+median(totalStepsPerDay)
+```
+
+## It increased the average number of steps per day from 10000 to 17000
+```{r}
+
+theday = weekdays(as.Date(dat$date,'%Y-%m-%d'))
+ind = which(theday =="Saturday" |theday =="Sunday")
+typeday = rep("weekday", 17568)
+typeday[ind] = "weekend"
+dat = cbind(dat,typeday)
+names(dat) = c("steps", "date", "interval", "typeday")
+by_type = group_by(dat, typeday)
+
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+## Find the average number of steps per 5 min interval per day for weekdays vs weekends.
+```{r, echo=FALSE}
+
+
+newdat = dat[dat$typeday=="weekday",]
+mat = matrix(data = newdat[,1], ncol = 288, byrow = TRUE)
+av = colMeans(mat)
+plot(av, type="l", xlab="5 minute intervals of the day", ylab = "Average number of steps per day", col=2) 
+lines(av, col="blue")
+
+newdat2 = dat[dat$typeday=="weekend",]
+mat2 = matrix(data = newdat2[,1], ncol = 288, byrow = TRUE)
+av2 = colMeans(mat2)
+lines(av2, col="red")
+legend("topright","(x,y)", c("Weekday", "Weekend"), cex=0.8, col= c("blue", "red"), lty=1)
+```
+## There's less activity in the morning but more at night on the weekends.
+
