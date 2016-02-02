@@ -1,0 +1,123 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+
+## Loading and preprocessing the data
+
+As per project guidelines, please make sure to open the .md file for the evaluation instead of the .Rmd file. Do not expect to see plots in the .Rmd file! They will appear in the .md or html. I clarify due to observed mistakes in previous evaluations.
+
+
+```{r,echo=TRUE}
+#Read csv file
+
+activity<-read.csv("activity.csv")
+
+#convert date from a factor to a date object
+
+activity$date<-strptime(as.character(activity$date),
+                        format = "%Y-%m-%d")
+
+```
+
+
+
+## What is mean total number of steps taken per day?
+```{r,echo=TRUE}
+library(data.table)
+
+#reading data using data.table package
+activitydt<-fread("activity.csv")
+
+#Creating histogram using qplot and data.table "by" grouping
+library(ggplot2)
+
+qplot(V1,data=activitydt[,sum(steps),by=date],
+      xlab = "Daily sum")
+
+```
+
+Below is the code and the evaluation of the code to calculate the mean and median of the total number of steps taken per day.
+```{r,echo=TRUE}
+#mean calculation using data.table "by" grouping
+
+mean(activitydt[,sum(steps),by=date]$V1,
+     na.rm = T)
+
+#median calculation using data.table "by" grouping
+
+median(activitydt[,sum(steps),by=date]$V1,
+     na.rm = T)
+```
+
+
+
+## What is the average daily activity pattern?
+The pattern is found using the following code (Plot should be visible is you are reading the .md file).
+```{r,echo=T}
+#Creating a timeserie variable containig steps mean by interval
+
+timeserie<-activitydt[,mean(steps,na.rm = T),
+                      .(interval)]
+#plotting the time serie
+qplot(interval,V1,
+      data = timeserie,
+      geom = "line")
+```
+
+The code used to calcule the interval that contains the maximum number of steps is as follows:
+```{r,echo=TRUE}
+#For the last question we will get the max ave # of steps
+
+timeserie[V1==max(timeserie$V1)]
+```
+
+
+## Imputing missing values
+The total number of missing values is calculated as follows:
+```{r,echo=TRUE}
+sum(is.na(activitydt$steps))
+```
+
+
+```{r,echo=TRUE}
+means<-activitydt[,mean(steps,na.rm = T),
+                  .(date)]$V1
+activitydt2<-as.data.frame(activitydt)
+k<-0
+for(i in 1:61){
+  if(i==1){
+    activitydt2[(i+k):(i*288),"steps"][is.na(activitydt2[(i+k):(i*288),"steps"])]<-means[i+1]  
+  }
+  if(i==61){
+    activitydt2[(i+k):(i*288),"steps"][is.na(activitydt2[(i+k):(i*288),"steps"])]<-means[i-1]
+  }
+  k<-k+288
+}
+```
+Now, the new dataset is called activitydt2.
+
+The plots are shown below.
+```{r,echo=TRUE}
+activitydt2<-as.data.table(activitydt2)
+qplot(V1,data=activitydt2[,sum(steps),by=date],
+      xlab = "Daily Sum")
+```
+
+Below is the code and the evaluation of the code to calculate the mean and median of the total number of steps taken per day.
+```{r,echo=TRUE}
+#mean calculation using data.table "by" grouping
+
+mean(activitydt2[,sum(steps),by=date]$V1,
+     na.rm = T)
+
+#median calculation using data.table "by" grouping
+
+median(activitydt2[,sum(steps),by=date]$V1,
+     na.rm = T)
+```
+
+## Are there differences in activity patterns between weekdays and weekends?

@@ -1,3 +1,8 @@
+#ATTENTION FELLOW STUDENTS!!!!
+
+My project data programs and stuff are in the file named project
+
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
