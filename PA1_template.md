@@ -1,22 +1,17 @@
----
-title: 'Reproducible Research: Peer Assessment 1'
-output:
-  html_document:
-    keep_md: yes
----
+# Reproducible Research: Peer Assessment 1
 
 ## Loading and preprocessing the data
 
-```{r}
 
+```r
 data <- read.csv(unz("activity.zip", "activity.csv"))
-
 ```
 
 
 ## What is mean total number of steps taken per day?
 
-``` {r histogram1, warning = FALSE, fig.width = 10, fig.path = "figure/"}
+
+```r
 library(ggplot2)
 sums <- tapply(data$steps, data$date, sum)
 
@@ -26,26 +21,34 @@ g <- qplot(sums, color = "red") +
      theme(legend.position = "none")
 
 print(g)
-
 ```
 
+![](figure/histogram1-1.png)
+
 ### Mean of the total number of steps taken per day
-``` {r}
 
+```r
 median(sums, na.rm = TRUE)
+```
 
+```
+## [1] 10765
 ```
 
 ### Median of the total number of steps taken per day
-``` {r}
 
+```r
 mean(sums, na.rm = TRUE)
+```
 
+```
+## [1] 10766.19
 ```
 
 ## What is the average daily activity pattern?
 
-``` {r daily_activity, warning = FALSE, fig.width = 10, fig.path = "figure/"}
+
+```r
 library(ggplot2)
 means <- tapply(data$steps, data$interval, mean, na.rm = TRUE)
 
@@ -55,25 +58,36 @@ g <- qplot(x = unique(data$interval), y = means, geom = "line", color = "red") +
      theme(legend.position = "none")
 
 print(g)
-
 ```
 
+![](figure/daily_activity-1.png)
+
 ### Which 5-minute interval, contains the maximum number of steps?
-``` {r}
+
+```r
 means[which.max(means)]
+```
+
+```
+##      835 
+## 206.1698
 ```
 
 ## Imputing missing values
 
 1. Number of missing values
-``` {r}
 
+```r
 sum(is.na(data$steps))
+```
 
+```
+## [1] 2304
 ```
 2. Imput missing values
 
-``` {r}
+
+```r
 data_full <- data
 
 for(i in 1:nrow(data_full))
@@ -87,7 +101,8 @@ for(i in 1:nrow(data_full))
 ```
 
 3. Make histogram
-``` {r histogram2, warning = FALSE, fig.width = 10, fig.path = "figure/"}
+
+```r
 library(ggplot2)
 sums <- tapply(data_full$steps, data_full$date, sum)
 
@@ -97,30 +112,44 @@ g <- qplot(sums, color = 1) +
      theme(legend.position = "none")
 
 print(g)
-
 ```
+
+![](figure/histogram2-1.png)
 
 4. Calculate median and mean of updated data
 
 ### Mean of the total number of steps taken per day
-``` {r}
 
+```r
 median(sums)
+```
 
+```
+## [1] 10766.19
 ```
 
 ### Median of the total number of steps taken per day
-``` {r}
 
+```r
 mean(sums)
+```
 
+```
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-``` {r differences, warning = FALSE, fig.height = 10, fig.width = 8, fig.path = "figure/"}
+
+```r
 library(lattice)
 Sys.setlocale("LC_TIME", "English")
+```
 
+```
+## [1] "English_United States.1252"
+```
+
+```r
 # Add new factor variable to data_frame
 data_full$date <- as.Date(data$date)
 weekdays1 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
@@ -140,3 +169,5 @@ xyplot(means ~ interval | wDay, data = buf2, type = "l",
        main = "Differences in activity patterns between weekdays and weekends",
        xlab = "5-minute intervals", ylab = "Means across 5-minute intervals")
 ```
+
+![](figure/differences-1.png)
