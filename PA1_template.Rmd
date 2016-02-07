@@ -3,6 +3,9 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+name: Ali Alarafat
+date: 07 Feb 2015
+
 ---
 
 
