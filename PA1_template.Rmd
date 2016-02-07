@@ -83,6 +83,7 @@ filled.data$steps <- mapply(fill.value, filled.data$steps, filled.data$interval)
 ```
 
 We can start calucating the steps, average, median, etc without being afraid of biases due to NA values.
+See figure1 and figure3 for visual explanation of this point.
 
 ```{r}
 total.steps <- tapply(filled.data$steps, filled.data$date, FUN=sum)

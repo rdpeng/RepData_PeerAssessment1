@@ -122,6 +122,7 @@ median(total.steps)
 
 
 The values of mean and median are higher due to eliminating NA values and replacing them. Days with NA values have 0 steps by default, and we replaced all the NA values, thus we also eliminated the 0 column/row of the histogram.
+See figure1 and figure3 for visual explanation of this point.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 To answer this question we need to separate the measurements into two subsets, weekday and weekend. By doing so we can plot both the subsets and recognize the differences if any.
