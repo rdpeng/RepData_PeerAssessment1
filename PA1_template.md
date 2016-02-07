@@ -1,5 +1,6 @@
 # Reproducible Research: Peer Assessment 1
-
+## Name: Ali Alarafat
+## Date: 07 Feb 2015
 ## Loading and preprocessing the data
 
 ```r
@@ -102,7 +103,7 @@ total.steps <- tapply(filled.data$steps, filled.data$date, FUN = sum)
 qplot(total.steps, binwidth = 1000, xlab = "total number of steps taken each day")
 ```
 
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
+![plot45](figure/figure4.png) 
 
 ```r
 mean(total.steps)
