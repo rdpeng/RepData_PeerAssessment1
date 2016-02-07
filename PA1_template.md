@@ -1,5 +1,3 @@
-Ali Alarafat
-07 Feb 2016
 Assignment Course Project 1
 ============================
 **Loading and preprocessing the data**  
