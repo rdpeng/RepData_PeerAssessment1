@@ -62,7 +62,7 @@ averages[which.max(averages$steps), ]
 ```
 
 
-## Imputing missing values
+## Imputting Data ( NA values )
 
 NA values are present in the dataset. These need to be changed to avoid biases in the calculations.
 
