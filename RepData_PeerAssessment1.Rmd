@@ -1,0 +1,37 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+## Loading and preprocessing the data
+
+```{r, echo=TRUE}
+ activityunzip <- unz("activity.zip","activity.csv")
+ activity <- read.table(file = activityunzip,header = TRUE,sep = ",")
+```
+Convert the columns in their correct class to allow their analysis.
+
+```{r, echo=TRUE}
+  activity$date<-as.Date( activity$date, format = "%Y-%m-%d")
+  activity$interval <- factor(activity$interval )  
+```
+Load the libraries
+
+```{r, echo=TRUE}
+library(ggplot2)
+```  
+
+## What is mean total number of steps taken per day?
+
+```{r, echo=TRUE}
+Total_steps_day <- aggregate(steps ~ date, activity,sum, na.rm=TRUE)
+hist1 <- ggplot(Total_steps_day,aes(x=date,y=steps)) + 
+  geom_bar(stat="identity") + 
+  ggtitle("Total number of steps per day ")  
+print(hist1)
+```
+
+
+
+
