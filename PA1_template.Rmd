@@ -7,7 +7,7 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r loadingpackages, echo=FALSE}
+```{r loadingpackages}
 library(dplyr)
 library(ggplot2)
 setwd("D:/zhengcl/Datascience/reproducible1")
