@@ -3,6 +3,10 @@
 
 ## Loading and preprocessing the data
 
+```r
+library(dplyr)
+```
+
 ```
 ## 
 ## Attaching package: 'dplyr'
@@ -18,6 +22,12 @@
 ## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union
+```
+
+```r
+library(ggplot2)
+setwd("D:/zhengcl/Datascience/reproducible1")
+rawdata <- read.csv("activity.csv")
 ```
 
 ## What is mean total number of steps taken per day?
