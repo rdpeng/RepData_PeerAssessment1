@@ -1,26 +1,82 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
-## Loading and preprocessing the data
+#### Loading and preprocessing the data
 
+Load required libraries quietly
 
 ```r
-# Loading the required libraries
 library(dplyr,quietly = T) 
+```
+
+```
+## Warning: package 'dplyr' was built under R version 3.1.3
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(tidyr,quietly = T)
+```
+
+```
+## Warning: package 'tidyr' was built under R version 3.1.3
+```
+
+```r
 library(lubridate,quietly = T)
+```
+
+```
+## Warning: package 'lubridate' was built under R version 3.1.3
+```
+
+```r
 library(ggplot2,quietly = T)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.1.3
+```
+
+```r
 library(lattice,quietly = T)
-# Unziping the 'activity.zip' file
+```
+
+```
+## Warning: package 'lattice' was built under R version 3.1.3
+```
+
+Unziping the 'activity.zip' file
+
+```r
 unzip("activity.zip")
-# Reading the unziped file in a file variable 'activity'
+```
+
+Reading the unziped file in a file variable 'activity'
+
+```r
 activity <- read.csv("activity.csv")
-# A quick look at the structure of the data file 'activity'
+```
+
+A quick look at the structure of the data file 'activity'
+
+```r
 str(activity)
 ```
 
@@ -31,8 +87,9 @@ str(activity)
 ##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
+Summary of the data file 'activity'
+
 ```r
-# Summary of the data file 'activity'
 summary(activity)
 ```
 
@@ -47,8 +104,9 @@ summary(activity)
 ##  NA's   :2304     (Other)   :15840
 ```
 
+Looking at the first few rows of the data file 'activity'
+
 ```r
-# Looking at the first few rows of the data file 'activity'
 head(activity)
 ```
 
@@ -62,13 +120,18 @@ head(activity)
 ## 6    NA 2012-10-01       25
 ```
 
+Transforming the data file by removing all the 'NAs', and converting the 'date' 
+variable into a date format
+
 ```r
-# Transforming the data file by removing all the 'NAs', and converting the 'date' 
-# variable into a date format
 activity2 <- activity %>%
         filter(steps != is.na(steps)) %>%
         mutate(date = ymd(date))
-# Look at the summary of the transformed dataframe 'activity2'
+```
+
+Look at the summary of the transformed dataframe 'activity2'
+
+```r
 summary(activity2)
 ```
 
@@ -82,8 +145,9 @@ summary(activity2)
 ##  Max.   :806.0   Max.   :2012-11-29 00:00:00   Max.   :2355
 ```
 
+Look at the first few rows in the transformed dataframe 'activity2'
+
 ```r
-# Look at the first few rows in the transformed dataframe 'activity2'
 head(activity2)
 ```
 
@@ -97,8 +161,9 @@ head(activity2)
 ## 6    90 2012-10-03      550
 ```
 
+Look at the structure of the transformed dataframe 'activity2'
+
 ```r
-# Look at the structure of the transformed dataframe 'activity2'
 str(activity2)
 ```
 
@@ -110,17 +175,21 @@ str(activity2)
 ```
 
 
-## What is mean total number of steps taken per day?
+#### What is mean total number of steps taken per day?
 
+Transforming dataframe 'activity2' by selecting only the 'date', and 'steps' variables
+then group by 'date' to get the total number of steps taken per day
 
 ```r
-# Transforming dataframe 'activity2' by selecting only the 'date', and 'steps' variables
-# then group by 'date' to get the total number of steps taken per day
 activity3 <- activity2 %>%
         select(steps,date) %>%
         group_by(date) %>%  
         summarise(steps = sum(steps))
-# Look at the first few rows in the transformed dataframe 'activity3'
+```
+
+Look at the first few rows in the transformed dataframe 'activity3'
+
+```r
 head(activity3)
 ```
 
@@ -128,6 +197,7 @@ head(activity3)
 ## Source: local data frame [6 x 2]
 ## 
 ##         date steps
+##       (time) (int)
 ## 1 2012-10-02   126
 ## 2 2012-10-03 11352
 ## 3 2012-10-04 12116
@@ -136,37 +206,61 @@ head(activity3)
 ## 6 2012-10-07 11015
 ```
 
+A histogram of the total number of steps taken per day using the 'Lattice' package
+
 ```r
-# A histogram of the total number of steps taken per day using the 'Lattice' package
-histogram(activity3$steps, xlab = 'Total number of steps', main ="Histogram of total number of steps taken each day", col = 'grey')
+histogram(activity3$steps, xlab = 'Total number of steps', main = "Histogram of total number of steps taken each day", col = 'grey')
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)
+
+The mean of the total number of steps taken per day
 
 ```r
-# The mean of the total number of steps taken per day
-mean <- activity3 %>%
-        summarise(mean = mean(steps)) 
-# The median of the total number of steps taken per day        
-median <- activity3 %>%
-        summarise(median = median(steps))
+activity3 %>%
+  summarise(mean = mean(steps)) %>%
+  print()
 ```
 
-The mean of the total number of steps taken per day is 1.0766189 &times; 10<sup>4</sup>
-
-The median of the total number of steps taken per day is 10765
-
-## What is the average daily activity pattern?
-
+```
+## Source: local data frame [1 x 1]
+## 
+##       mean
+##      (dbl)
+## 1 10766.19
+```
+        
+The median of the total number of steps taken per day 
 
 ```r
-# Transforming the dataframe 'activity' by converting the 'interval' variable to a factor
-# then grouping by the dataframe by the 'interval' variable, and getting taking the mean
+activity3 %>%
+  summarise(median = median(steps)) %>%
+  print()
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##   median
+##    (int)
+## 1  10765
+```
+
+#### What is the average daily activity pattern?
+
+Transforming the dataframe 'activity' by converting the 'interval' variable to a factor
+then grouping the dataframe by the 'interval' variable, and taking the mean
+
+```r
 activity4 <- activity %>%
         mutate(interval = as.factor(interval)) %>%
         group_by(interval) %>%
-        summarise(Avesteps = mean(steps,na.rm=T))
-# Look at the first few rows of the transformed dataframe 'activity4'
+        summarise(Avesteps = mean(steps,na.rm = T))
+```
+
+Look at the first few rows of the transformed dataframe 'activity4'
+
+```r
 head(activity4)
 ```
 
@@ -174,6 +268,7 @@ head(activity4)
 ## Source: local data frame [6 x 2]
 ## 
 ##   interval  Avesteps
+##     (fctr)     (dbl)
 ## 1        0 1.7169811
 ## 2        5 0.3396226
 ## 3       10 0.1320755
@@ -182,22 +277,26 @@ head(activity4)
 ## 6       25 2.0943396
 ```
 
+Use the xyplot() function from the lattice package to graph
+
 ```r
-# Use the xyplot() function from the lattice package to graph
-xyplot(activity4$Avesteps ~ activity4$interval,type = "l",xlab = "5-minute interval",ylab = "average number of steps taken",main="Average daily activity pattern",scales=list(x=list(tick.number = 6, at = seq(1, 288, 48), labels = levels(activity4$interval)[seq(1,288,48)])))
+xyplot(activity4$Avesteps ~ activity4$interval,type = "l",xlab = "5-minute interval",
+ylab = "average number of steps taken",main ="Average daily activity pattern",scales=list(x=list(tick.number = 6, at = seq(1, 288, 48), 
+labels = levels(activity4$interval)[seq(1,288,48)])))
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)
+
+5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps
 
 ```r
-# 5-minute interval, on average across all the days in the dataset, that contains
-# the maximum number of steps
 Interval <- activity4$interval[which(activity4$Avesteps == max(activity4$Avesteps))]
 ```
+
 The 5-minute interval, on average across all the days in the dataset, that contains the 
 maximum number of steps is 835
 
-## Imputing missing values
+#### Imputing missing values
 
 The total number of rows with ```NA```s 
 
@@ -210,7 +309,6 @@ sum(!complete.cases(activity))
 ```
 
 I will use the mean for the 5-minute interval, for filling in all the missing values in the dataset.
-
 
 ```r
 activity5 <- activity %>%
@@ -231,6 +329,7 @@ activity5
 ## Source: local data frame [288 x 2]
 ## 
 ##    interval      mean
+##       (int)     (dbl)
 ## 1         0 1.7169811
 ## 2         5 0.3396226
 ## 3        10 0.1320755
@@ -243,6 +342,8 @@ activity5
 ## 10       45 1.4716981
 ## ..      ...       ...
 ```
+
+A new dataset that is equal to the original dataset but with the missing data filled in.
 
 ```r
 NAindx <- which(is.na(activity$steps) == T)
@@ -262,6 +363,9 @@ summary(activity6)
 ##                   (Other)   :15840
 ```
 
+Transforming the new dataset activity6 by selecting variables  'steps' and 'date', 
+then group by date and get the sums of steps.
+
 ```r
 activity7 <- activity6 %>%
         select(steps,date) %>%
@@ -274,6 +378,7 @@ head(activity7)
 ## Source: local data frame [6 x 2]
 ## 
 ##         date    steps
+##       (fctr)    (dbl)
 ## 1 2012-10-01 10766.19
 ## 2 2012-10-02   126.00
 ## 3 2012-10-03 11352.00
@@ -282,25 +387,47 @@ head(activity7)
 ## 6 2012-10-06 15420.00
 ```
 
-```r
-# Plot a histogram
-histogram(activity7$steps, xlab = "Number of steps", main ="Histogram of total number of steps taken each day", col = 'gray')
-```
-
-![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
+#### Plot a histogram
 
 ```r
-mean2 <- activity7 %>%
-        summarise(mean = mean(steps))
-median2 <- activity7 %>%
-        summarise(median = median(steps))
+histogram(activity7$steps, xlab = "Number of steps", main = "Histogram of total number of steps taken each day", col = 'gray')
 ```
-The mean of the total number of steps taken per day is 1.0766189 &times; 10<sup>4</sup>
-The median of the total number of steps taken per day is 1.0766189 &times; 10<sup>4</sup>
+
+![](PA1_template_files/figure-html/unnamed-chunk-24-1.png)
+
+Calculate and report the mean and median total number of steps taken per day
+
+```r
+activity7 %>%
+  summarise(mean = mean(steps)) %>%
+  print()
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##       mean
+##      (dbl)
+## 1 10766.19
+```
+
+```r
+activity7 %>%
+  summarise(median = median(steps)) %>%
+  print()
+```
+
+```
+## Source: local data frame [1 x 1]
+## 
+##     median
+##      (dbl)
+## 1 10766.19
+```
 
 These values differ from the estimates from the first part of the assignment, the median changed from 10765 to 10766.19 which is the mean. The mean did not change, this is because I used the mean values of the 5-minute interval accross all days for the missing values in the daily 5-minute intervals.
 
-## Are there differences in activity patterns between weekdays and weekends?
+#### Are there differences in activity patterns between weekdays and weekends?
 
 ```r
 activity8 <- mutate(activity6,day = weekdays(ymd(date)))
@@ -359,9 +486,10 @@ activity9
 
 ```
 ## Source: local data frame [576 x 3]
-## Groups: interval
+## Groups: interval [?]
 ## 
 ##    interval     day        mean
+##       (int)  (fctr)       (dbl)
 ## 1         0 weekday 2.251153040
 ## 2         0 weekend 0.214622642
 ## 3         5 weekday 0.445283019
@@ -379,4 +507,4 @@ activity9
 xyplot(activity9$mean ~ activity9$interval | activity9$day,type = "l",layout = c(1,2),xlab = "interval",ylab = 'steps')
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-26-1.png)
