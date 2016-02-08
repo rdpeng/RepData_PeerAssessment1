@@ -10,7 +10,7 @@ output:
 ```{r loadingpackages}
 library(dplyr)
 library(ggplot2)
-setwd("D:/zhengcl/Datascience/reproducible1")
+setwd("D:/zhengcl/Datascience/reproducible3")
 rawdata <- read.csv("activity.csv")
 ```
 
