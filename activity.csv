@@ -1,0 +1,97 @@
+##Set the default of echo to be true throughout the document:
+library(knitr)
+opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+
+data <- read.csv("activity.csv", header = TRUE, sep = ',', colClasses = c("numeric", "character",
+                                                                          "integer"))
+Change the data into dateformating using lubridate                                                                        
+data$date <- ymd(data$date)
+
+str(data)
+
+ata.frame':    17568 obs. of  3 variables:
+$ steps   : num  NA NA NA NA NA NA NA NA NA NA ...
+$ date    : POSIXct, format: "2012-10-01" "2012-10-01" ...
+$ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+
+What is mean total number of steps taken per day?
+
+steps <- data %>%
+  filter(!is.na(steps)) %>%
+  group_by(date) %>%
+  summarize(steps = sum(steps)) %>%
+  print
+  ggplot(steps, aes(x = steps)) +
+  geom_histogram(fill = "firebrick", binwidth = 1000) +
+  labs(title = "Histogram of Steps per day", x = "Steps per day", y = "Frequency")
+  
+Calculate the mean and median of the total number of steps taken per day:
+mean_steps <- mean(steps$steps, na.rm = TRUE)
+median_steps <- median(steps$steps, na.rm = TRUE)
+mean_steps
+[1] 10766.19
+median_steps
+[1] 10765
+
+
+
+
+What is the average daily activity pattern?
+
+
+interval <- data %>%
+  filter(!is.na(steps)) %>%
+  group_by(interval) %>%
+  summarize(steps = mean(steps))
+  
+  ##Use ggplot for making the time series of the 5-minute interval and average steps taken:
+  ggplot(interval, aes(x=interval, y=steps)) +
+  geom_line(color = "firebrick")
+  
+  
+  
+  
+  Imputing missing values
+  
+  
+ data_full <- data
+nas <- is.na(data_full$steps)
+avg_interval <- tapply(data_full$steps, data_full$interval, mean, na.rm=TRUE, simplify=TRUE)
+data_full$steps[nas] <- avg_interval[as.character(data_full$interval[nas])]
+Check that there are no missing values:
+
+sum(is.na(data_full$steps))
+ [1] 0
+
+
+Calculate the number of steps taken in each 5-minute interval per day using dplyr and group by interval. Use ggplot for making the histogram:
+steps_full <- data_full %>%
+filter(!is.na(steps)) %>%
+group_by(date) %>%
+summarize(steps = sum(steps)) %>%
+  
+  
+ggplot(steps_full, aes(x = steps)) +
+geom_histogram(fill = "firebrick", binwidth = 1000) +
+labs(title = "Histogram of Steps per day, including missing values", x = "Steps per day", y = "Frequency")
+  
+  
+  
+   Are there differences in activity patterns between weekdays and weekends?
+  
+   Use dplyr and mutate to create a new column, weektype, and apply whether the day is weekend or weekday:
+data_full <- mutate(data_full, weektype = ifelse(weekdays(data_full$date) == "Saturday" | weekdays(data_full$date) == "Sunday", "weekend", "weekday"))
+data_full$weektype <- as.factor(data_full$weektype)
+head(data_full)
+
+
+interval_full <- data_full %>%
+  group_by(interval, weektype) %>%
+  summarise(steps = mean(steps))
+s <- ggplot(interval_full, aes(x=interval, y=steps, color = weektype)) +
+  geom_line() +
+  facet_wrap(~weektype, ncol = 1, nrow=2)
+print(s)
+print
