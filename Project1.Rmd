@@ -13,7 +13,7 @@ setwd("/Users/macbookpro/Documents/Data Science/Reproducible Research")
 data <- read.csv(file="./RepData_PeerAssessment1/activity.csv")
 ```
 
-Aparentemente el github esta bien enlazado.
+Aparentemente el github esta bien enlazado pero no sincroniza bien.
 
 Loading and preprocessing the data
 
