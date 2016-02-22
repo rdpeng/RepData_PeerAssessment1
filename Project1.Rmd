@@ -1,12 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research
+
+==========================================================
 
 
-## Loading and preprocessing the data
+## Loading and Preprocessing
 
 
 First we read the data from the cloned local repository. 
@@ -19,7 +16,7 @@ data <- read.csv(file="activity.csv")
 ```
 
 
-## What is mean total number of steps taken per day?
+## Mean Daily Steps
 
 We will use the the `dplyr` library to group and summarize the data.
 
@@ -87,7 +84,7 @@ mediansteps <- median(Daily$Total,na.rm=TRUE)
 
 The computed values are `meansteps=``r meansteps` and `mediansteps=``r mediansteps`.
 
-## What is the average daily activity pattern?
+## Daily Activity Pattern
 
 
 Now we need to group by `interval` and summarize accordingly. In `Intervaly` we collect the average number of steps taken on each interval across all days, taking care to remove any missing values with `na.rm=TRUE`.
@@ -128,7 +125,7 @@ maxtimestart <- sprintf("%02d:%02d",hours,minutes)
 
 Since the time interval already encodes the time the step measurement is taken, we can say that the 5-minute where the maximum activity occurs is the one begining at `r maxtimestart`.
 
-## Imputing missing values
+## Missing values
 
 
 We need to know the number of NAs in the dataset. We will store that number in `numnas` and the total number of registers in `totrow`
@@ -232,7 +229,7 @@ par(op)
 ```
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+## Weekday and Weekend patterns
 
 First, we add the day of the week as a column to the `newdata` data frame, which has all the missing values from the original data filled in with the mean number of steps for the interval. Then, we determine which days of the week correspond to the weekend and create a new data frame; `finaldata` which has all that information.
 
