@@ -3,46 +3,277 @@
 ==========================================================
 
 
-## Project 1
+## Loading and Preprocessing
 
-Loading the data
 
-```{rdata, echo=TRUE}
+First we read the data from the cloned local repository. 
+
+
+```{r data, echo=TRUE}
 rm(list=ls())
-setwd("/Users/macbookpro/Documents/Data Science/Reproducible Research")
-data <- read.csv(file="./RepData_PeerAssessment1/activity.csv")
+setwd("/Users/macbookpro/Documents/Data Science/Reproducible Research/RepData_PeerAssessment1")
+data <- read.csv(file="activity.csv")
 ```
 
-Aparentemente el github esta bien enlazado pero no sincroniza bien.
 
-Loading and preprocessing the data
+## Mean Daily Steps
 
-Show any code that is needed to
+We will use the the `dplyr` library to group and summarize the data.
 
-Load the data (i.e. 𝚛𝚎𝚊𝚍.𝚌𝚜𝚟())
-Process/transform the data (if necessary) into a format suitable for your analysis
-What is mean total number of steps taken per day?
 
-For this part of the assignment, you can ignore the missing values in the dataset.
+```{r}
+library(dplyr)
 
-Calculate the total number of steps taken per day
-If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
-Calculate and report the mean and median of the total number of steps taken per day
-What is the average daily activity pattern?
+```
 
-Make a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-Imputing missing values
 
-Note that there are a number of days/intervals where there are missing values (coded as 𝙽𝙰). The presence of missing days may introduce bias into some calculations or summaries of the data.
+We group the data into the `ByDay` dataframe. We sumarize the `ByDate` dataframe to obtain the `Daily` dataframe where we include the `Avg` and `Total` columns, containing the mean number of steps per interval on each day and the total number of steps per day, respectively. In all cases we ignore missing values with `na.rm = TRUE`.
 
-Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with 𝙽𝙰s)
-Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-Create a new dataset that is equal to the original dataset but with the missing data filled in.
-Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-Are there differences in activity patterns between weekdays and weekends?
 
-For this part the 𝚠𝚎𝚎𝚔𝚍𝚊𝚢𝚜() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+```{r processing data}
+ByDay <- group_by(data,date)
+Daily <-summarize(ByDay, Avg=mean(steps,na.rm=TRUE), Total=sum(steps,na.rm = TRUE))
 
-Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-Make a panel plot containing a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+```
+
+
+Now we can compute the average daily number of steps, taking care to remove the missing values.
+
+
+```{r}
+avgdailysteps <- mean(Daily$Total, na.rm = TRUE)
+
+```
+
+
+We load the `xtable` package to be able to show the daily number of steps as a nice *html* table.
+
+
+```{r}
+library(xtable)
+
+```
+
+
+We put the table into `TT` to display it later. We change the names in `TT` so that the column names of the table are *human readable*.
+
+
+```{r showtable, results="asis"}
+TT <- xtable(Daily,align="ccrr",digits=c(3,12,2,0),display=c("d","s","f","d"))
+names(TT) <- c("Date","Average", "Total")
+print(TT,type="html")
+
+```
+
+
+Now, we can show a histogram of the total number of steps take daily, we adjust the number of breaks and anotate it apropiately. 
+
+
+```{r}
+hist(Daily$Total,breaks=8,col="lightgreen",main="Total Number of Steps", xlab="Daily Steps")
+```
+
+
+We compute the mean and median of the total number of steps taken daily, taking care to remove any missing values.
+
+
+```{r}
+meansteps <- mean(Daily$Total,na.rm=TRUE)
+mediansteps <- median(Daily$Total,na.rm=TRUE)
+```
+
+The computed values are `meansteps=``r meansteps` and `mediansteps=``r mediansteps`.
+
+## Daily Activity Pattern
+
+
+Now we need to group by `interval` and summarize accordingly. In `Intervaly` we collect the average number of steps taken on each interval across all days, taking care to remove any missing values with `na.rm=TRUE`.
+
+
+```{r}
+ByInterval <- group_by(data,interval)
+Intervaly <-summarize(ByInterval, Avg=mean(steps,na.rm=TRUE))
+
+```
+
+
+Now we can plot the average number of steps from `Intervaly` to show how it varies along the 5-minute intervals. Note that the hour is encoded in the interval in such a way that interval corresponding to 800 is really 8:00.
+
+```{r}
+plot(Intervaly$interval,Intervaly$Avg,type="l",main="Daily Activity Pattern",xlab="Interval",cex.axis=0.8,xaxp=c(0,2400,12),ylab="Interval Average",col="blue")
+```
+
+
+We compute which interval has the maximum average of steps, as follows: 
+
+
+```{r} 
+m <- which(Intervaly$Avg==max(Intervaly$Avg))
+print(m)
+```
+
+The interval where the maximum average number of steps occurs is the `r m`th, corresponding to time `r Intervaly$interval[m]`. 
+
+In *human readable* terms the interval corresponds to:
+
+
+```{r}
+hours <- Intervaly$interval[m] %/% 100
+minutes <- Intervaly$interval[m] %% 100
+maxtimestart <- sprintf("%02d:%02d",hours,minutes)
+```
+
+Since the time interval already encodes the time the step measurement is taken, we can say that the 5-minute where the maximum activity occurs is the one begining at `r maxtimestart`.
+
+## Missing values
+
+
+We need to know the number of NAs in the dataset. We will store that number in `numnas` and the total number of registers in `totrow`
+
+```{r}
+numnas <- sum(is.na(data$step))
+totrow <- length(data$step) 
+
+numnas
+totrow
+```
+
+
+We will use the mean number of steps for each interval to fill in any missing data. To that effect, we need an array that shows where the NAs are and we will substitute those NAs by the corresponding values.
+
+
+```{r}
+
+wherenas <- is.na(data$step)
+newdata <- cbind(data,Avg=Intervaly$Avg)
+newdata$steps[wherenas] <- newdata$Avg[wherenas]
+
+```
+
+
+Now we repeat the previous analysis to try to understand the effect of filling in the NAs.
+
+
+```{r}
+NewByDay <- group_by(newdata,date)
+NewDaily <-summarize(NewByDay, Avg=mean(steps,na.rm=TRUE), Total=sum(steps,na.rm = TRUE))
+
+```
+
+
+We now compute the mean and median of the total number of daily steps taken.
+
+
+```{r}
+newmeansteps <- mean(NewDaily$Total)
+newmediansteps <- median(NewDaily$Total)
+
+```
+
+Since we need to compare with the previous results, we will use a table.
+
+```{r, results="asis"}
+DF <- data.frame(NAs_Removed=c(meansteps,mediansteps),NAs_FilledIn=c(newmeansteps,newmediansteps),row.names=c("Mean","Median"))
+
+print(xtable(DF), type="html")
+
+```
+
+
+Clearly, filling in the NAs has an effect on both the mean and median number of daily steps, increasing both.
+
+
+We will now repeat the histogram, and determine what changes ocurr when we fill in the NAs.
+
+```{r}
+
+hist(NewDaily$Total,breaks=8,col="lightblue",main="Total Number of Steps", xlab="Daily Steps")
+
+```
+
+Some changes are apparent, but we will see them more clearly if we place both histograms 
+side by side and use the same scales.
+
+First we need to make sure that we can capture the maximum of the frecuency in each histogram while keeping the `breaks` the same. To do this we will capture the `counts` in each histogram.
+
+```{r}
+oldhist <- hist(Daily$Total,breaks=8, plot=FALSE)
+newhist <- hist(NewDaily$Total,breaks=8, plot=FALSE)
+
+maxcount <- max(max(oldhist$counts),max(newhist$counts))
+```
+
+Now we can show the histograms with the correct vertical scale using the `ylim` parameter.
+
+```{r}
+
+op <- par(mfrow=c(1,2))
+
+hist(Daily$Total, breaks=8, col="lightgreen", 
+     main="Total Number of Steps\nNAs removed", 
+     xlab="Daily Steps", 
+     ylim=c(0,maxcount)
+     )
+
+
+hist(NewDaily$Total, breaks=8, col="lightblue",
+     main="Total Number of Steps\nNAs filled in", 
+     xlab="Daily Steps", 
+     ylim=c(0,maxcount)
+     )
+
+
+par(op)
+
+
+```
+
+
+## Weekday and Weekend patterns
+
+First, we add the day of the week as a column to the `newdata` data frame, which has all the missing values from the original data filled in with the mean number of steps for the interval. Then, we determine which days of the week correspond to the weekend and create a new data frame; `finaldata` which has all that information.
+
+The column `kind` is a factor with two levels `weekend` and `weekday`.
+
+
+```{r}
+
+newdataWd <- cbind(newdata, day=weekdays(as.Date(newdata$date), abbreviate=TRUE))
+weekend <- (newdataWd$day == "Sat") | ((newdataWd$day == "Sun"))
+finaldata <- cbind(newdataWd,kind=as.factor(c("weekday","weekend")[weekend+1]))
+```
+
+
+Now we need to group, first by kind and then by interval. The data frame `KindIntervaly` will summarize the mean number of steps by interval and kind of day of the week.
+
+
+```{r}
+
+ByKindInterval <- group_by(group_by(finaldata,kind), interval, add=TRUE)
+groups(ByKindInterval)
+
+KindIntervaly <-summarize(ByKindInterval, Avg=mean(steps))
+
+
+```
+
+
+Now we use the `lattice` package to create a panel plot where we can see the weekend and weekday activity pattern. 
+
+
+```{r}
+library(lattice)
+xyplot(Avg~interval|kind,data=KindIntervaly, layout=c(1,2),type="l",
+       xaxp=c(0,2400,12),
+       xlab="Interval",ylab="Mean number of steps",
+       main="Weekend vs. Weekday Activity Pattern",
+       scales = list(x=list(tick.number=12, axs="i")),
+       col="blue"
+       )
+
+```
+
+
+We can clearly see that the weekend activity pattern is different from the weekday activity pattern. The weekend has high variation of activity across the day and lower overall values while the weekday activity pattern has a sharp increase very early in the morning arond 5:30 and a large spike near 8:30.
+
+The graph is quite possibly showing that people get up early during weekdays and stay in bed longer during weekends. The large spike possibly reflects a morning workout during the weekdays.
