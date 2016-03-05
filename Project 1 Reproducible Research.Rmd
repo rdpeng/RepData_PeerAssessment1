@@ -1,0 +1,9 @@
+---
+title: "Project 1 Reproducible Research"
+author: "Maira Kagohara"
+date: "March 5, 2016"
+output: html_document
+---
+
+```{r}
+s
