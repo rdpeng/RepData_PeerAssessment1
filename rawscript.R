@@ -3,7 +3,7 @@ library(lubridate)
 data<-read.csv("activity.csv")
 data$date<-ymd(data$date)
 
-##What is mean total number of steps taken per day?
+##What is the mean total number of steps taken per day?
 data2<-data[complete.cases(data),]
 stepsday<-tapply(data2$steps,data2$date,sum)
 hist(stepsday,breaks=10,main="Frequency of Steps per Day",xlab="Steps per Day")
