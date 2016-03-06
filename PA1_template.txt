@@ -1,0 +1,100 @@
+---
+title: "Project 1 Reproducible Research"
+author: "Maira Kagohara"
+date: "March 5, 2016"
+output: html_document
+---
+
+
+## Part 1 - Reading the Data
+The first thing we have to do is to clone the github repository into my computer, then to read the data we should follow these steps
+```{r, echo=TRUE}
+  setwd("/Users/mairakagohara/datasciencecoursera/Reproducible Research/RepData_PeerAssessment1")
+  unzip("activity.zip")
+  actvity_tab <- read.csv("activity.csv")
+  classes <- list ("numeric", "Date", "numeric")
+  activity_tab <- read.csv("activity.csv", colClasses = classes)
+```
+
+## Part 2 - What's the mean number total steps taken per day
+### Part 2.1 - Histogram of Total Number Steps taken per day
+``` {r, echo=TRUE}
+  library(ggplot2)
+  library(dplyr)
+  good <- complete.cases(activity_tab)
+  act_noNA <- activity_tab[good, ]
+  day <- group_by(act_noNA, date)
+  day_sum <- summarize(day, sum_steps = sum (steps))
+  hist (day_sum$sum_steps, xlab = "Total number steps per day")
+```
+  
+### Part 2.2 - Mean and Median of Total Number Steps per day
+```{r, echo = TRUE}
+  mean (day_sum$sum_steps)
+  median (day_sum$sum_steps)
+```
+
+## Part 3 - What is tha average daily activity pattern
+### Part 3.1 - Time series plot
+```{r, echo = TRUE}
+  interval <- group_by(act_noNA, interval)
+  interval_average <- summarize(interval, average = mean(steps))
+  plot(interval_average$interval, interval_average$average, type = "l",xlab ="5 min intervals", ylab = "average number of steps")
+```
+### Part 3.2 - Maximum number of steps
+```{r,echo = TRUE}
+  interval_average[which.max(interval_average$average), ]
+```
+
+## Part 4 - Inputing Missing Values
+
+### Part 4.1 - Total Number of Missing Values
+```{r, echo = TRUE}
+  nrow(subset(good, good == FALSE))
+```
+
+### Part 4.2 - Filling the Missing Values
+  Decided to use the average of the interval to fill in the missing values. The "activity_tab2" is the new dataframe with the missing values replaced. 
+```{r, echo = TRUE}
+    activity_tab2 <- activity_tab
+    for (i in 1:17568){  
+        if (is.na(activity_tab[i,1 ])==TRUE){
+          interval <- activity_tab[i, 3]
+            for(u in 1:288){ 
+              if(interval_average[u,1] == interval){
+                activity_tab2 [i,1] <-interval_average[u,2]
+              }  
+            }  
+        }           
+    }
+```
+
+### Part 4.3 - New histogram
+```{r, echo= TRUE}
+  day2 <- group_by(activity_tab2, date)
+  day_sum2 <- summarize(day2, sum_steps = sum (steps))
+  hist (day_sum2$sum_steps, xlab = "Total number steps per day")
+```
+We can see that the histogram is more concentrated in the middle then before.
+
+### Part 4.4 - Mean and Median
+```{r, echo = TRUE}
+  mean (day_sum2$sum_steps)
+  median (day_sum2$sum_steps)
+```  
+Now the mean and the median coincide because we input the missing data as the averages we already had for each interval.
+
+## Part 5 - Differences in activity patterns between Weekdays and Weekends
+```{r,echo = TRUE}
+  activity_week <- mutate (activity_tab2, weekday = weekdays(date))
+  activity_week$weekday [ activity_week$weekday == "Monday"] <- "Weekday"
+  activity_week$weekday [ activity_week$weekday == "Tuesday"] <- "Weekday"
+  activity_week$weekday [ activity_week$weekday == "Wednesday"] <- "Weekday"
+  activity_week$weekday [ activity_week$weekday == "Thursday"] <- "Weekday"
+  activity_week$weekday [ activity_week$weekday == "Friday"] <- "Weekday"
+  activity_week$weekday [ activity_week$weekday == "Saturday"] <- "Weekdend"
+  activity_week$weekday [ activity_week$weekday == "Sunday"] <- "Weekdend"
+  week <- group_by (activity_week, weekday)
+  week_interval <- group_by(week, interval)
+  library(lattice)
+  xyplot(steps ~ interval | weekday, data = week_interval, layout = c(1,2), type = "l")
