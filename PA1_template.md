@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 ## Introduction
 
@@ -15,20 +10,31 @@ This assignment makes use of data from a personal activity monitoring device. Th
 
 ### 1. Load the data (i.e. read.csv())
 
-```{r, echo=FALSE}
-# Packages used
-library(ggplot2)
+
+```
+## Warning: package 'ggplot2' was built under R version 3.2.3
 ```
 
 After unzipping the file, the dataset is stored in a comma-separated-value (CSV) file named **activity.csv** and there are a total of 17,568 observations in this dataset. If it has not already been loaded, it is loaded into memory.
 
 
-```{r}
+
+```r
 unzip("activity.zip")
 if (!exists("rawdata")){
     rawdata <- read.csv("activity.csv")
 }
 head(rawdata)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 As can be seen above, the variables included in this dataset are:
@@ -41,7 +47,8 @@ As can be seen above, the variables included in this dataset are:
 
 For a further analysis, the initial dataset will need to be processed/transformed, since it will be required to aggregate number of steps by date. Additionally we also get rid of rows containing missing values by obtaining a subset and saving it to a new data frame:
 
-```{r}
+
+```r
 df_day <- aggregate(steps ~ date, rawdata, sum, na.rm = TRUE)
 ```
 
@@ -49,21 +56,38 @@ df_day <- aggregate(steps ~ date, rawdata, sum, na.rm = TRUE)
 
 ### 1. Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 ggplot(df_day,aes(steps)) + geom_histogram(bins=ceiling(max(df_day$steps)/1000),col="white") + 
     xlim(0,ceiling(max(df_day$steps)/1000)*1000) + 
     xlab("Steps") + ylab("Frequency") +
     ggtitle("Histogram of Total Steps per Day\n(Bin width = 1000 steps)")
 ```
 
+```
+## Warning: Removed 2 rows containing missing values (geom_bar).
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)\
+
 ### 2. Calculate and report the mean and median of the total number of steps taken per day
 
-```{r}
+
+```r
 mean(df_day$steps)
 ```
 
-```{r}
+```
+## [1] 10766.19
+```
+
+
+```r
 median(df_day$steps)
+```
+
+```
+## [1] 10765
 ```
 
 So that the **mean** is **10766** steps and the **median** is **10765** steps.
@@ -74,7 +98,8 @@ So that the **mean** is **10766** steps and the **median** is **10765** steps.
 
 To make this new time series plot, we must go back to the initial dataset and aggregate but this time by the interval variable and using mean() function instead of sum() one:
 
-```{r}
+
+```r
 df_int_mean <- aggregate(steps ~ interval, rawdata, mean, na.rm = TRUE)
 
 ggplot(df_int_mean,aes(x=interval,y=steps)) + geom_line() +
@@ -82,14 +107,29 @@ ggplot(df_int_mean,aes(x=interval,y=steps)) + geom_line() +
     ggtitle("Average Steps per Five Minutes Interval across all days")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)\
+
 ### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 max_steps   <- max(df_int_mean$steps)
 df_int_mean[df_int_mean$steps == max_steps,]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
+```
+
+```r
 print(paste("The 5-minute interval containing the max number of steps is the",
             df_int_mean[df_int_mean$steps == max_steps,1], "with a total of",
             round(df_int_mean[df_int_mean$steps == max_steps,2],2), "steps"))
+```
+
+```
+## [1] "The 5-minute interval containing the max number of steps is the 835 with a total of 206.17 steps"
 ```
 
 ## Imputing missing values
@@ -98,9 +138,14 @@ Note that there are a number of days/intervals where there are missing values (c
 
 ### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 missingValues <- sum(is.na(rawdata$steps))
 print(paste("There are", missingValues, "missing values in the dataset" ))
+```
+
+```
+## [1] "There are 2304 missing values in the dataset"
 ```
 
 ### 2. Devise a strategy for filling in all of the missing values in the dataset.
@@ -109,7 +154,8 @@ One of the most simple strategies can consist on replacing NA values by the mean
 
 ### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in
 
-```{r}
+
+```r
 df_wo_na <- rawdata
 na_index <- is.na(df_wo_na$steps)
 int_mean <- tapply(rawdata$steps, rawdata$interval, mean, 
@@ -119,9 +165,14 @@ df_wo_na$steps[na_index] <- int_mean[as.character(df_wo_na$interval[na_index])]
 print(paste("The amount of NA entries for Steps variable is now", sum(is.na(df_wo_na$steps))))
 ```
 
+```
+## [1] "The amount of NA entries for Steps variable is now 0"
+```
+
 ### 4. Make a histogram of the total number of steps taken each day and calculate and report the mean and median total number of steps taken per day. 
 
-```{r}
+
+```r
 df_wo_na_day <- aggregate(steps ~ date, df_wo_na, sum, na.rm = TRUE) 
 ggplot(df_wo_na_day,aes(steps)) + geom_histogram(bins=ceiling(max(df_day$steps)/1000),col="white") + 
     xlim(0,ceiling(max(df_day$steps)/1000)*1000) + 
@@ -129,12 +180,28 @@ ggplot(df_wo_na_day,aes(steps)) + geom_histogram(bins=ceiling(max(df_day$steps)/
     ggtitle("Histogram of Total Steps per Day (with missing data imputed)\n(Bin width = 1000 steps)")
 ```
 
-```{r}
+```
+## Warning: Removed 2 rows containing missing values (geom_bar).
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)\
+
+
+```r
 mean(df_wo_na_day$steps)
 ```
 
-```{r}
+```
+## [1] 10766.19
+```
+
+
+```r
 median(df_wo_na_day$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 The new **mean** and **median** values are now the same, **10766.19**. Compared to initial values the mean does not change, while the median varies a little, becoming identical to the mean. 
@@ -143,7 +210,8 @@ The new **mean** and **median** values are now the same, **10766.19**. Compared 
 
 ### 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r}
+
+```r
 #function to decide if a given day is a week day or not
 isWeekDay <- function(date){
     wd <- weekdays(date)
@@ -155,15 +223,28 @@ df_wo_na$day_type   <- as.factor(day_type)
 head(df_wo_na)
 ```
 
+```
+##       steps       date interval day_type
+## 1 1.7169811 2012-10-01        0  weekday
+## 2 0.3396226 2012-10-01        5  weekday
+## 3 0.1320755 2012-10-01       10  weekday
+## 4 0.1509434 2012-10-01       15  weekday
+## 5 0.0754717 2012-10-01       20  weekday
+## 6 2.0943396 2012-10-01       25  weekday
+```
+
 ### 2. Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r}
+
+```r
 df_final <- aggregate(steps ~ interval + day_type, df_wo_na, mean, na.rm = TRUE)
 
 ggplot(df_final,aes(x=interval,y=steps)) + geom_line() + facet_grid(day_type ~ .) +
     xlab("Interval No.") + ylab("Steps") +
     ggtitle("Average Steps per Five Minutes Interval across all days")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-15-1.png)\
 
 From above panel plot the following findings are observed:
 
