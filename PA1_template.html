@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+<title>Part 1 - Reading the Data</title>
+
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
+
+
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
+</style>
+
+
+
+</head>
+
+<body>
+<h2>Part 1 - Reading the Data</h2>
+
+<p>The first thing we have to do is to clone the github repository into my computer, then to read the data we should follow these steps</p>
+
+<pre><code class="r, echo=TRUE">  setwd(&quot;/Users/mairakagohara/datasciencecoursera/Reproducible Research/RepData_PeerAssessment1&quot;)
+  unzip(&quot;activity.zip&quot;)
+  actvity_tab &lt;- read.csv(&quot;activity.csv&quot;)
+  classes &lt;- list (&quot;numeric&quot;, &quot;Date&quot;, &quot;numeric&quot;)
+  activity_tab &lt;- read.csv(&quot;activity.csv&quot;, colClasses = classes)
+</code></pre>
+
+<h2>Part 2 - What&#39;s the mean number total steps taken per day</h2>
+
+<h3>Part 2.1 - Histogram of Total Number Steps taken per day</h3>
+
+<pre><code class="r, echo=TRUE">  library(ggplot2)
+  library(dplyr)
+  good &lt;- complete.cases(activity_tab)
+  act_noNA &lt;- activity_tab[good, ]
+  day &lt;- group_by(act_noNA, date)
+  day_sum &lt;- summarize(day, sum_steps = sum (steps))
+  hist (day_sum$sum_steps, xlab = &quot;Total number steps per day&quot;)
+</code></pre>
+
+<h3>Part 2.2 - Mean and Median of Total Number Steps per day</h3>
+
+<pre><code class="r, echo = TRUE">  mean (day_sum$sum_steps)
+  median (day_sum$sum_steps)
+</code></pre>
+
+<h2>Part 3 - What is tha average daily activity pattern</h2>
+
+<h3>Part 3.1 - Time series plot</h3>
+
+<pre><code class="r, echo = TRUE">  interval &lt;- group_by(act_noNA, interval)
+  interval_average &lt;- summarize(interval, average = mean(steps))
+  plot(interval_average$interval, interval_average$average, type = &quot;l&quot;,xlab =&quot;5 min intervals&quot;, ylab = &quot;average number of steps&quot;)
+</code></pre>
+
+<h3>Part 3.2 - Maximum number of steps</h3>
+
+<pre><code class="r,echo = TRUE">  interval_average[which.max(interval_average$average), ]
+</code></pre>
+
+<h2>Part 4 - Inputing Missing Values</h2>
+
+<h3>Part 4.1 - Total Number of Missing Values</h3>
+
+<pre><code class="r, echo = TRUE">  nrow(subset(good, good == FALSE))
+</code></pre>
+
+<h3>Part 4.2 - Filling the Missing Values</h3>
+
+<p>Decided to use the average of the interval to fill in the missing values. The &ldquo;activity_tab2&rdquo; is the new dataframe with the missing values replaced. </p>
+
+<pre><code class="r, echo = TRUE">    activity_tab2 &lt;- activity_tab
+    for (i in 1:17568){  
+        if (is.na(activity_tab[i,1 ])==TRUE){
+          interval &lt;- activity_tab[i, 3]
+            for(u in 1:288){ 
+              if(interval_average[u,1] == interval){
+                activity_tab2 [i,1] &lt;-interval_average[u,2]
+              }  
+            }  
+        }           
+    }
+</code></pre>
+
+<h3>Part 4.3 - New histogram</h3>
+
+<pre><code class="r, echo= TRUE">  day2 &lt;- group_by(activity_tab2, date)
+  day_sum2 &lt;- summarize(day2, sum_steps = sum (steps))
+  hist (day_sum2$sum_steps, xlab = &quot;Total number steps per day&quot;)
+</code></pre>
+
+<p>We can see that the histogram is more concentrated in the middle then before.</p>
+
+<h3>Part 4.4 - Mean and Median</h3>
+
+<pre><code class="r, echo = TRUE">  mean (day_sum2$sum_steps)
+  median (day_sum2$sum_steps)
+</code></pre>
+
+<p>Now the mean and the median coincide because we input the missing data as the averages we already had for each interval.</p>
+
+<h2>Part 5 - Differences in activity patterns between Weekdays and Weekends</h2>
+
+<pre><code class="r,echo = TRUE">  activity_week &lt;- mutate (activity_tab2, weekday = weekdays(date))
+  activity_week$weekday [ activity_week$weekday == &quot;Monday&quot;] &lt;- &quot;Weekday&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Tuesday&quot;] &lt;- &quot;Weekday&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Wednesday&quot;] &lt;- &quot;Weekday&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Thursday&quot;] &lt;- &quot;Weekday&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Friday&quot;] &lt;- &quot;Weekday&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Saturday&quot;] &lt;- &quot;Weekdend&quot;
+  activity_week$weekday [ activity_week$weekday == &quot;Sunday&quot;] &lt;- &quot;Weekdend&quot;
+  week &lt;- group_by (activity_week, weekday)
+  week_interval &lt;- group_by(week, interval)
+  library(lattice)
+  xyplot(steps ~ interval | weekday, data = week_interval, layout = c(1,2), type = &quot;l&quot;)
+</code></pre>
+
+</body>
+
+</html>
