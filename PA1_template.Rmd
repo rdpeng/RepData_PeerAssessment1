@@ -7,7 +7,13 @@ output:
 
 
 ## Loading and preprocessing the data
-
+load required librarys
+````{r}
+library(ggplot2)
+library(knitr)
+library(lubridate)
+library(dplyr)
+```
 
 
 ## What is mean total number of steps taken per day?
