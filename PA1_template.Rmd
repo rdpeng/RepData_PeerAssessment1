@@ -2,7 +2,7 @@
 title: '"Reproducible Research: Peer Assessment 1"'
 author: "Sylvester Cash"
 date: "March 6, 2016"
-keep_md: true
+
 --
 
 ## Loading and processing the data
@@ -13,11 +13,11 @@ library(ggplot2)
 library(knitr)
 library(lubridate)
 library(dplyr)
+library(rmarkdown)
 ```
 
-Set working directory to where data files are and load data
+load data file
 ```{r, echo=TRUE}
-
 data <- read.csv("activity.csv", header = TRUE, sep = ',', colClasses = c("numeric", "character", "integer"))
 ```
 

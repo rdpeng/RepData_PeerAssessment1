@@ -112,18 +112,12 @@ $(document).ready(function () {
 
 
 <table>
+<colgroup>
+<col width="4%"></col>
+</colgroup>
 <tbody>
 <tr class="odd">
-<td align="left">title: ‘“Reproducible Research: Peer Assessment 1”’</td>
-</tr>
-<tr class="even">
-<td align="left">author: “Sylvester Cash”</td>
-</tr>
-<tr class="odd">
-<td align="left">date: “March 6, 2016”</td>
-</tr>
-<tr class="even">
-<td align="left">keep_md: true</td>
+<td align="left">title: ‘“Reproducible Research: Peer Assessment 1”’ author: “Sylvester Cash” date: “March 6, 2016”</td>
 </tr>
 </tbody>
 </table>
@@ -136,7 +130,19 @@ $(document).ready(function () {
 library(knitr)
 library(lubridate)
 library(dplyr)</code></pre>
-<p>Set working directory to where data files are and load data</p>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:lubridate':
+## 
+##     intersect, setdiff, union</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(rmarkdown)</code></pre>
+<p>load data file</p>
 <pre class="r"><code>data &lt;- read.csv(&quot;activity.csv&quot;, header = TRUE, sep = ',', colClasses = c(&quot;numeric&quot;, &quot;character&quot;, &quot;integer&quot;))</code></pre>
 <ol start="2" style="list-style-type: decimal">
 <li>Change date format</li>
@@ -277,7 +283,7 @@ median_steps_full</code></pre>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 <ol style="list-style-type: decimal">
-<li>Create a new factor variable in the dataset with two levels â€“ â€œweekdayâ€ and â€œweekendâ€ indicating whether a given date is a weekday or weekend day.</li>
+<li>Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</li>
 </ol>
 <pre class="r"><code>data_full &lt;- mutate(data_full, weektype = ifelse(weekdays(data_full$date) == &quot;Saturday&quot; | weekdays(data_full$date) == &quot;Sunday&quot;, &quot;weekend&quot;, &quot;weekday&quot;))
 data_full$weektype &lt;- as.factor(data_full$weektype)
