@@ -1,4 +1,11 @@
 ---
+title: "test"
+author: "Sylvester Cash"
+date: "March 6, 2016"
+output: html_document
+---
+
+---
 title: '"Reproducible Research: Peer Assessment 1"'
 author: "Sylvester Cash"
 date: "March 6, 2016"
