@@ -1,8 +1,11 @@
 ---
 title: "RR week 1"
 author: "MV"
-date: "March 7, 2016"
-output: html_document
+date: "March 8, 2016"
+#output: html_document
+output:
+  md_document:
+   variant: markdown_github
 ---
 
 Introduction
@@ -19,7 +22,7 @@ steps: Number of steps taking in a 5-minute interval (missing values are coded a
 
 date: The date on which the measurement was taken in YYYY-MM-DD format
 
-interval: Identifier for the 5-minute interval in which measurement was taken  
+interval: Identifier for the 5-minute interval in which measurement was taken
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
@@ -36,6 +39,18 @@ In the next steps, the data is aggregated by date in order to:
 1. Calculate the total number of steps taken per day
 2. Make a histogram of the total number of steps taken each day
 3. Calculate and report the mean and median of the total number of steps taken per day
+
+```{r}
+library(lubridate)
+library(plyr)
+library(dplyr)
+library(ggplot2)
+library(lattice)
+library(data.table)
+library(knitr)
+library(rmarkdown)
+library("markdown")
+```
 
 ```{r}
 actAgg <- tapply(act$steps, act$date, FUN = sum, na.rm = TRUE)
@@ -60,10 +75,10 @@ steps1 <- act %>%
   summarize(steps = sum(steps)) %>%
   print
 
+hist(steps1$steps, main="Histogram of Steps" ,
+     xlab="Steps", ylab="Count") 
+abline(v = mean(steps1$steps), col = "blue", lwd = 2)
 
-barplot(steps1$steps, names.arg=steps1$date, 
-        main= 'Total Number of Steps per day',
-        xlab='Dates', ylab='Steps')
 ```
 
 What is the average daily activity pattern?
@@ -122,9 +137,12 @@ steps2 <- act_miss_rep %>%
   summarize(steps = sum(steps)) %>%
   print      
 
-barplot(steps2$steps, names.arg=steps2$date, 
-        main= 'Total numbers of Steps per day',
-        xlab='Dates', ylab='Steps - *missing values replaced with the mean of steps')
+hist(steps2$steps, main="Histogram of Steps" , sub="Missing Values replaced with mean of interval steps" ,
+     xlab="Steps", ylab="Count") 
+abline(v = mean(steps2$steps), col = "blue", lwd = 2)
+
+
+
 ```
 Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ```{r}

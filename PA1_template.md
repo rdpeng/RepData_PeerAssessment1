@@ -1,4 +1,4 @@
-Introduction (document version github)
+Introduction
 
 It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
 
@@ -187,9 +187,9 @@ steps1 <- act %>%
     ## ..        ...   ...
 
 ``` r
-barplot(steps1$steps, names.arg=steps1$date, 
-        main= 'Total Number of Steps per day',
-        xlab='Dates', ylab='Steps')
+hist(steps1$steps, main="Histogram of Steps" ,
+     xlab="Steps", ylab="Count") 
+abline(v = mean(steps1$steps), col = "blue", lwd = 2)
 ```
 
 ![](PA1_template_files/figure-markdown_github/unnamed-chunk-3-1.png)<!-- -->
@@ -306,9 +306,9 @@ steps2 <- act_miss_rep %>%
     ## ..        ...   ...
 
 ``` r
-barplot(steps2$steps, names.arg=steps2$date, 
-        main= 'Total numbers of Steps per day',
-        xlab='Dates', ylab='Steps - *missing values replaced with the mean of steps')
+hist(steps2$steps, main="Histogram of Steps" , sub="Missing Values replaced with mean of interval steps" ,
+     xlab="Steps", ylab="Count") 
+abline(v = mean(steps2$steps), col = "blue", lwd = 2)
 ```
 
 ![](PA1_template_files/figure-markdown_github/unnamed-chunk-10-1.png)<!-- --> Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
