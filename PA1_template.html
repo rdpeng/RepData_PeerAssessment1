@@ -141,6 +141,43 @@ summary(act)</code></pre>
 <li>Make a histogram of the total number of steps taken each day</li>
 <li>Calculate and report the mean and median of the total number of steps taken per day</li>
 </ol>
+<pre class="r"><code>library(lubridate)
+library(plyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'plyr'</code></pre>
+<pre><code>## The following object is masked from 'package:lubridate':
+## 
+##     here</code></pre>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: 'dplyr'</code></pre>
+<pre><code>## The following objects are masked from 'package:plyr':
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre><code>## The following objects are masked from 'package:lubridate':
+## 
+##     intersect, setdiff, union</code></pre>
+<pre><code>## The following objects are masked from 'package:stats':
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(lattice)
+library(data.table)</code></pre>
+<pre><code>## 
+## Attaching package: 'data.table'</code></pre>
+<pre><code>## The following objects are masked from 'package:dplyr':
+## 
+##     between, last</code></pre>
+<pre><code>## The following objects are masked from 'package:lubridate':
+## 
+##     hour, mday, month, quarter, wday, week, yday, year</code></pre>
+<pre class="r"><code>library(knitr)
+library(rmarkdown)
+library(&quot;markdown&quot;)</code></pre>
 <pre class="r"><code>actAgg &lt;- tapply(act$steps, act$date, FUN = sum, na.rm = TRUE)
 print(actAgg)</code></pre>
 <pre><code>## 2012-10-01 2012-10-02 2012-10-03 2012-10-04 2012-10-05 2012-10-06 
@@ -170,13 +207,8 @@ act$date &lt;- ymd(act$date)
 summary(actAgg)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##       0    6778   10400    9354   12810   21190</code></pre>
-<pre class="r"><code>library(data.table)</code></pre>
-<pre><code>## 
-## Attaching package: 'data.table'</code></pre>
-<pre><code>## The following objects are masked from 'package:lubridate':
-## 
-##     hour, mday, month, quarter, wday, week, yday, year</code></pre>
-<pre class="r"><code>actAgg_dt=data.table(actAgg)
+<pre class="r"><code>library(data.table)
+actAgg_dt=data.table(actAgg)
 summary(actAgg_dt)</code></pre>
 <pre><code>##        V1       
 ##  Min.   :    0  
@@ -189,32 +221,10 @@ summary(actAgg_dt)</code></pre>
 <pre><code>## [1] 9354.23</code></pre>
 <pre class="r"><code>median(actAgg_dt$V1)</code></pre>
 <pre><code>## [1] 10395</code></pre>
-<pre class="r"><code>library(plyr)</code></pre>
-<pre><code>## 
-## Attaching package: 'plyr'</code></pre>
-<pre><code>## The following object is masked from 'package:lubridate':
-## 
-##     here</code></pre>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:plyr':
-## 
-##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize</code></pre>
-<pre><code>## The following objects are masked from 'package:data.table':
-## 
-##     between, last</code></pre>
-<pre><code>## The following objects are masked from 'package:lubridate':
-## 
-##     intersect, setdiff, union</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>steps1 &lt;- act %&gt;%
+<pre class="r"><code>library(plyr)
+library(dplyr)
+
+steps1 &lt;- act %&gt;%
   filter(!is.na(steps)) %&gt;%
   group_by(date) %&gt;%
   summarize(steps = sum(steps)) %&gt;%
