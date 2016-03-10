@@ -36,7 +36,6 @@ data <- read.csv("activity.csv",header=TRUE)
 ```{r}
 steps <- tapply(data$steps,data$date,na.rm=TRUE,FUN = sum)
 
-#steps_by_day <- aggregate(steps ~ date, data = data,sum)
 ```
 
 Run the summary command to list the min/max, median and mean values of the data set
