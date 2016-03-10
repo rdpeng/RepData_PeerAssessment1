@@ -1,8 +1,7 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
-  html_document:
-    keep_md: true
+  html_document
 ---
 
 ## 0. Data Source
@@ -188,7 +187,10 @@ install.packages("lubridate")
 ```
 
 ```
-## Error in install.packages : Updating loaded packages
+## package 'lubridate' successfully unpacked and MD5 sums checked
+## 
+## The downloaded binary packages are in
+## 	C:\Users\chenru\AppData\Local\Temp\RtmpMHiPxQ\downloaded_packages
 ```
 
 ```r
