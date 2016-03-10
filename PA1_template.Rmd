@@ -45,9 +45,9 @@ summary(steps_by_day)
 ```
 
 **2.2** Make a histogram of the total number of steps taken each day
-
-
-
+```{r}
+hist(dataSteps, breaks=10, ylim = c(0,20), xlim = c(0,25000), xlab = "Total # of Steps", main = "Histogram Of The Total Number Of Steps Taken Each Day")
+```
 Calculate and report the **mean** and **median** total number of steps taken per day
 
 
