@@ -26,8 +26,9 @@ The variables included in this dataset are:
 ## 1. Loading and preprocessing the data
 
 * Read the data into a data frame
-
+```{r}
 data <- read.csv("activity.csv",header=TRUE)
+```
 
 ## 2. What is mean total number of steps taken per day?
 
