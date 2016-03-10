@@ -5,7 +5,7 @@ output:
     keep_md: true
 ---
 
-## Data Source
+## 0. Data Source
 
 The data for this assignment can be downloaded from the course web
 site:
@@ -23,11 +23,29 @@ The variables included in this dataset are:
 * **interval**: Identifier for the 5-minute interval in which
     measurement was taken
 
-## Loading and preprocessing the data
+## 1. Loading and preprocessing the data
+
+* Read the data into a data frame
 
 data <- read.csv("activity.csv",header=TRUE)
 
-## What is mean total number of steps taken per day?
+## 2. What is mean total number of steps taken per day?
+
+**2.1** Before making a histogram of the total number of steps taken each day, we'll need to sum all the steps per day (ignore all the missing values)
+
+steps <- tapply(data$steps,data$date,na.rm=TRUE,FUN = sum)
+
+steps_by_day <- aggregate(steps ~ date, data = data,sum)
+
+Run the summary command to list the min/max, median and mean values of the data set
+
+summary(steps_by_day)
+
+**2.2** Make a histogram of the total number of steps taken each day
+
+
+
+Calculate and report the **mean** and **median** total number of steps taken per day
 
 
 ## What is the average daily activity pattern?
