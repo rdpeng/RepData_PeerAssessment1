@@ -33,14 +33,16 @@ data <- read.csv("activity.csv",header=TRUE)
 ## 2. What is mean total number of steps taken per day?
 
 **2.1** Before making a histogram of the total number of steps taken each day, we'll need to sum all the steps per day (ignore all the missing values)
-
+```{r}
 steps <- tapply(data$steps,data$date,na.rm=TRUE,FUN = sum)
 
 steps_by_day <- aggregate(steps ~ date, data = data,sum)
+```
 
 Run the summary command to list the min/max, median and mean values of the data set
-
+```{r}
 summary(steps_by_day)
+```
 
 **2.2** Make a histogram of the total number of steps taken each day
 
