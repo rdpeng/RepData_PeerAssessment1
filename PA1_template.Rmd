@@ -1,15 +1,10 @@
 ---
-title: "Untitled"
-author: "Sylvester Cash"
-date: "March 6, 2016"
-output: html_document
----
-
----
 title: "Reproducible Research: Peer Assessment 1"
 author: "Sylvester Cash"
 date: "March 6, 2016"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 
 ## Loading and processing the data
@@ -153,20 +148,19 @@ There is no impact to imputing missing data on the estimates of the total daily 
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
 ```{r, echo=TRUE}
-weekend <- with(activity.filled, 
-                ifelse( weekdays(datetime) %in% c("Saturday","Sunday"),"weekend","weekday"))
-activity.filled$weekend <- factor(weekend)
-steps.bywknd <- aggregate( steps ~ weekend + timeofday, data=activity.filled,FUN = mean)
+data_full <- mutate(data_full, weektype = ifelse(weekdays(data_full$date) == "Saturday" | weekdays(data_full$date) == "Sunday", "weekend", "weekday"))
+data_full$weektype <- as.factor(data_full$weektype)
 head(data_full)
 ```
 
 2. Make a panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days. 
 
 ```{r, echo=TRUE}
-library(scales)
-p <- ggplot(steps.bywknd,aes(x=timeofday,y=steps))
-p <- p +geom_line( col= "blue")+facet_grid(weekend~.)
-p <- p + scale_x_datetime(labels=date_format("%H:%M %p"))
-p <- p + labs(title="Average steps taken per five minute interval")
-p
+interval_full <- data_full %>%
+group_by(interval, weektype) %>%
+summarise(steps = mean(steps))
+s <- ggplot(interval_full, aes(x=interval, y=steps, color = weektype)) +
+geom_line() +
+facet_wrap(~weektype, ncol=2, nrow=1)
+print(s)
 ```
