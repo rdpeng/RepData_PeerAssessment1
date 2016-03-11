@@ -1,25 +1,55 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible Research"
+author: "Adam"
+date: "March 10, 2016"
 ---
+Declarations
+```{r}
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+Download the Dataset
+```{r}
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+stepdata <- read.csv(unz(temp, "activity.csv"),stringsAsFactors = F)
+unlink(temp)
+
+```
+
+What is the mean and median number of steps taken per day?
+```{r}
+daily_data <- stepdata %>% select(date,steps) %>% group_by(date) %>% summarise(total_steps=sum(steps,na.rm=T))
+mean(daily_data$total_steps, na.rm=T)
+median(daily_data$total_steps, na.rm=T)
+```
+
+What is the average daily activity pattern?
+```{r}
+time_data <- stepdata %>% select(interval,steps) %>% group_by(interval) %>% summarise(avg_steps=mean(steps,na.rm=T))
+plot(time_data, type='l')
+max_location<-grep(max(time_data$avg_steps,na.rm=T),time_data$avg_steps)
+time_data[max_location,]
+```
+
+Impute Missing Values:
+```{r}
+  filled_data <- stepdata %>% select(date,interval,steps) %>% left_join(time_data, by="interval")
+  filled_data <- filled_data %>% mutate(imputed_steps = ifelse(is.na(steps),avg_steps,steps))
+  summary(filled_data)  
+```
 
 
-## Loading and preprocessing the data
 
+Are there different patterns between weekdays and weekends?
+```{r}
+  filled_data$weekday <- weekdays(ymd(filled_data$date))
+  filled_data <- transform(filled_data, grouping = ifelse(weekday == "Saturday"|weekday == "Sunday","Weekend","Weekday"))
 
+  comparison_data <- filled_data %>% select(grouping,interval,imputed_steps) %>% group_by(grouping,interval) %>%
+      summarise(avg_steps=mean(imputed_steps, na.rm=T))
+  
+  ggplot(data=comparison_data, aes(interval,avg_steps))+geom_line(color="black")+facet_wrap(~grouping,nrow=2)
 
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```
