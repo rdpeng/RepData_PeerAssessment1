@@ -5,6 +5,7 @@ keep_md: yes
 ---
 
 
+<<<<<<< HEAD
 
 ## Loading and preprocessing the data
  1. Load the data (i.e. read.csv())
@@ -15,6 +16,12 @@ needed library
 library(ggplot2)
 library(lattice)
 ```
+=======
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+
+>>>>>>> origin/master
  Reading in the  csv, remove NA values and store it in data. 
 ```{r}
 unzip("activity.zip")
@@ -26,7 +33,11 @@ data <- read.csv("activity.csv", sep=",", header = TRUE, stringsAsFactors = FALS
 head(data, 10)
 ```
 
+<<<<<<< HEAD
 #--------------------------------------------------------------------
+=======
+#---------------------------------------------------------------------------
+>>>>>>> origin/master
 ## What is mean total number of steps taken per day?
 
 Extract complete cases and store them in datasteps.
@@ -60,7 +71,11 @@ median_total <- median(total_steps_per_day)
 median_total
 ```
 
+<<<<<<< HEAD
 #---------------------------------------------------------------------
+=======
+#-------------------------------------------------------------------------
+>>>>>>> origin/master
 
 ## What is the average daily activity pattern?
 ```{r}
@@ -78,7 +93,11 @@ plot(names(daily_activity), daily_activity, type = "l", xlab = "5 minute Interva
 largest_n_steps_interval <- which.max(daily_activity)
 names(largest_n_steps_interval)
 ```
+<<<<<<< HEAD
 # -----------------------------------------------------------------
+=======
+# ------------------------------------------------------------------------
+>>>>>>> origin/master
 
 ## Imputing missing values
  1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
@@ -131,7 +150,11 @@ mean_total2 - mean_total
 median_total2 - median_total
 ```
 
+<<<<<<< HEAD
 #----------------------------------------------------------------------
+=======
+#---------------------------------------------------------------------------
+>>>>>>> origin/master
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -158,7 +181,13 @@ new_data_filling_NA$week <- week
 ```{r}
 final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
 ```
+<<<<<<< HEAD
 
+=======
+```{r}
+library(lattice)
+```
+>>>>>>> origin/master
 ```{r}
 xyplot(steps ~ interval | week, data = final_data, type = "l", layout = c(1, 2), xlab = "Interval", ylab = "Number of Steps")
 ```
