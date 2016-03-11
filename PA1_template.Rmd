@@ -75,6 +75,7 @@ output:
 
 
 ## Loading and preprocessing the data
+<<<<<<< HEAD
  1. Load the data (i.e. read.csv())
  2. Process/transform the data (if necessary) into a format suitable for your analysis.
  
@@ -166,6 +167,10 @@ library(lattice)
 unzip("activity.zip")
 data <- read.csv("activity.csv", sep=",", header = TRUE, stringsAsFactors = FALSE, na.strings = "NA")
 ```
+=======
+
+
+>>>>>>> parent of d0553bb... push push
 
 >>>>>>> origin/master
 >>>>>>> origin/master
@@ -194,6 +199,7 @@ head(data, 10)
 >>>>>>> origin/master
 ## What is mean total number of steps taken per day?
 
+<<<<<<< HEAD
 Extract complete cases and store them in datasteps.
 <<<<<<< HEAD
 
@@ -712,3 +718,16 @@ xyplot(steps ~ interval | week, data = final_data, type = "l", layout = c(1, 2),
 >>>>>>> origin/master
 >>>>>>> origin/master
 ```
+=======
+
+
+## What is the average daily activity pattern?
+
+
+
+## Imputing missing values
+
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+>>>>>>> parent of d0553bb... push push
