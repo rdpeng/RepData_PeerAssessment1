@@ -153,7 +153,7 @@ time_data[max_location,]</code></pre>
 ##   interval avg_steps
 ##      (int)     (dbl)
 ## 1      835  206.1698</code></pre>
-<p>Impute Missing Values:</p>
+<p>Impute Missing Values by using the average of that time interval:</p>
 <pre class="r"><code>  filled_data &lt;- stepdata %&gt;% select(date,interval,steps) %&gt;% left_join(time_data, by=&quot;interval&quot;)
   filled_data &lt;- filled_data %&gt;% mutate(imputed_steps = ifelse(is.na(steps),avg_steps,steps))
   imputed_totals &lt;- aggregate(imputed_steps ~ date, data=filled_data, FUN=sum)

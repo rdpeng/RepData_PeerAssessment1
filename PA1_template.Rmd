@@ -39,7 +39,7 @@ max_location<-grep(max(time_data$avg_steps,na.rm=T),time_data$avg_steps)
 time_data[max_location,]
 ```
 
-Impute Missing Values:
+Impute Missing Values by using the average of that time interval:
 ```{r}
   filled_data <- stepdata %>% select(date,interval,steps) %>% left_join(time_data, by="interval")
   filled_data <- filled_data %>% mutate(imputed_steps = ifelse(is.na(steps),avg_steps,steps))

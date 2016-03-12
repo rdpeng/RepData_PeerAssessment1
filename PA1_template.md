@@ -85,7 +85,7 @@ time_data[max_location,]
 ## 1      835  206.1698
 ```
 
-Impute Missing Values:
+Impute Missing Values by using the average of that time interval:
 
 ```r
   filled_data <- stepdata %>% select(date,interval,steps) %>% left_join(time_data, by="interval")
