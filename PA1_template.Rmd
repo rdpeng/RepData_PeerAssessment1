@@ -1,17 +1,724 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+<<<<<<< HEAD
+output: html_document
+keep_md: true
 ---
 
 
+
 ## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library and setting echo to true
+
+```{r}
+library("knitr")
+opts_chunk$set(echo = TRUE, results = 'hold')
+```
+
+```{r}
+library("xtable")
+library("ggplot2")
+```
+
+=======
+<<<<<<< HEAD
+output: html_document
+keep_md: true
+---
 
 
 
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library and setting echo to true
+```{r}
+library("knitr")
+opts_chunk$set(echo = TRUE, results = 'hold')
+library("dplyr")
+```
+
+```{r}
+
+=======
+<<<<<<< HEAD
+output: html_document
+keep_md: true
+---
+
+
+
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library and setting echo to true
+```{r}
+library("knitr")
+opts_chunk$set(echo = TRUE, results = 'hold')
+library("dplyr")
+```
+
+```{r}
+
+=======
+<<<<<<< HEAD
+output: 
+    html_document:
+       keep_md: true
+---
+
+
+
+## Loading and preprocessing the data
+<<<<<<< HEAD
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library and setting echo to true
+```{r}
+library("knitr")
+opts_chunk$set(echo = TRUE, results = 'hold')
+```
+
+```{r}
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+library("xtable")
+library("ggplot2")
+```
+
+>>>>>>> origin/master
+ Reading in the  csv, remove NA values and store it in data.
+ 
+```{r}
+unzip("activity.zip")
+data <- read.csv("activity.csv", sep=",", header = TRUE, stringsAsFactors = FALSE, na.strings = "NA")
+```
+<<<<<<< HEAD
+
+ Display the data, a use to sellect a number of data entries from the head.
+ 
+```{r}
+head(data, 10)
+```
+=======
+<<<<<<< HEAD
+
+ Display the data, a use to sellect a number of data entries from the head.
+```{r}
+head(data, 10)
+```
+
+=======
+<<<<<<< HEAD
+
+=======
+
+=======
+output: html_document
+keep_md: yes
+---
+
+
+<<<<<<< HEAD
+
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library
+
+library("dplyr")
+library("ggplot2")
+library("xtable")
+library("knitr")
+library("mice")
+library("reshape")
+>>>>>>> origin/master
+
+
+=======
+<<<<<<< HEAD
+
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+ 
+needed library
+```{r}
+library(ggplot2)
+library(lattice)
+```
+=======
+## Loading and preprocessing the data
+ 1. Load the data (i.e. read.csv())
+ 2. Process/transform the data (if necessary) into a format suitable for your analysis.
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+ Reading in the  csv, remove NA values and store it in data. 
+```{r}
+unzip("activity.zip")
+data <- read.csv("activity.csv", sep=",", header = TRUE, stringsAsFactors = FALSE, na.strings = "NA")
+```
+=======
+
+
+>>>>>>> parent of d0553bb... push push
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+ Display the data, a use to sellect a number of data entries from the head.
+```{r}
+head(data, 10)
+```
+>>>>>>> origin/master
+
+<<<<<<< HEAD
+#--------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#--------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#--------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#--------------------------------------------------------------------
+=======
+#---------------------------------------------------------------------------
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
 ## What is mean total number of steps taken per day?
 
+<<<<<<< HEAD
+Extract complete cases and store them in datasteps.
+<<<<<<< HEAD
+
+```{r}
+datasteps <- data[complete.cases(data),]
+```
+
+=======
+```{r}
+datasteps <- data[complete.cases(data),]
+```
+>>>>>>> origin/master
+ 1. Calculate the total number of steps taken per day.
+
+```{r}
+total_steps_per_day <- tapply(datasteps$steps, datasteps$date, sum, na.rm = TRUE)
+total_steps_per_day
+```
+<<<<<<< HEAD
+
+ 2. histogram showing the steps per day
+
+=======
+<<<<<<< HEAD
+
+ 2. histogram showing the steps per day
+
+=======
+<<<<<<< HEAD
+
+ 2. histogram showing the steps per day
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+hist(total_steps_per_day, col="red", xlab = "Steps per Day", main = "Number of Steps per Day")
+```
+
+ 3. Calculate and report the mean and median of the total number of steps taken per day
+ 
+```{r}
+summary(total_steps_per_day)
+```
+# mean_total of steps
+
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+
+ 2. histogram showing the steps per day
+
+=======
+<<<<<<< HEAD
+
+ 2. histogram showing the steps per day
+
+=======
+
+ 2. histogram showing the steps per day
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+hist(total_steps_per_day, col="red", xlab = "Steps per Day", main = "Number of Steps per Day")
+```
+
+ 3. Calculate and report the mean and median of the total number of steps taken per day
+ 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/master
+```{r}
+summary(total_steps_per_day)
+```
+# mean_total of steps
+
+<<<<<<< HEAD
+=======
+=======
+# mean_total of steps
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+mean_total <- mean(total_steps_per_day)
+mean_total
+```
+
+# median_total of steps
+```{r}
+median_total <- median(total_steps_per_day)
+median_total
+```
+
+<<<<<<< HEAD
+
+## What is the average daily activity pattern?
+
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+#---------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#---------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#---------------------------------------------------------------------
+=======
+<<<<<<< HEAD
+#---------------------------------------------------------------------
+=======
+#-------------------------------------------------------------------------
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+
+## What is the average daily activity pattern?
+>>>>>>> origin/master
+```{r}
+data_pattern <- data[complete.cases(data),]
+    daily_activity <- tapply(data_pattern$steps, data_pattern$interval, mean, na.rm = TRUE)
+    head(daily_activity, 10)
+```
+<<<<<<< HEAD
+
+ 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+ 
+# Plot of average daily activity
+
+=======
+ 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+# Plot of average daily activity
+>>>>>>> origin/master
+```{r}
+plot(names(daily_activity), daily_activity, type = "l", xlab = "5 minute Interval", ylab = "Average Number of Steps Taken Througout the Days", main = "Average Daily Activity", col = "red")
+```
+ 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+<<<<<<< HEAD
+ 
+=======
+>>>>>>> origin/master
+```{r}
+largest_n_steps_interval <- which.max(daily_activity)
+names(largest_n_steps_interval)
+```
+<<<<<<< HEAD
+
+
+## Imputing missing values
+
+ 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
+ 
+# Number of missing values stores in number_na.
+
+=======
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+# -----------------------------------------------------------------
+=======
+<<<<<<< HEAD
+# -----------------------------------------------------------------
+=======
+<<<<<<< HEAD
+# -----------------------------------------------------------------
+=======
+<<<<<<< HEAD
+# -----------------------------------------------------------------
+=======
+# ------------------------------------------------------------------------
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+
+## Imputing missing values
+ 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs) 
+ 
+# Number of missing values stores in number_na.
+>>>>>>> origin/master
+```{r}
+number_na <- sum(!(complete.cases(data)))
+number_na
+```
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+
+=======
+<<<<<<< HEAD
+
+
+=======
+
+
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+ 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc. and 
+ 3. create a new dataset that is equal to the original dataset but with the missing data filled in. asign each NA value the average number of steps for all days as calculated in previous steps.
+ 
+```{r}
+new_data_filling_NA <- data
+    for (i in 1:nrow(new_data_filling_NA)){
+        if (is.na(new_data_filling_NA$steps[i])){
+            new_data_filling_NA$steps[i] <- mean(new_data_filling_NA$steps[new_data_filling_NA$interval == new_data_filling_NA$interval[i]], na.rm=TRUE)
+        }
+    }   
+```
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/master
+ 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values # differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+ 
+```{r}
+total_steps_per_day2 <- tapply(new_data_filling_NA$steps, new_data_filling_NA$date, sum)
+```
+<<<<<<< HEAD
+
+```{r}
+hist(total_steps_per_day2, col = "blue",xlab = "Steps taken per Day", main = "Average number of Steps per Day\n With Filled in Missing Values")
+```
+
+```{r}
+summary(total_steps_per_day2)
+```
+
+# mean_total of steps with filled in missing values
+
+=======
+```{r}
+hist(total_steps_per_day2, col = "blue",xlab = "Steps taken per Day", main = "Average number of Steps per Day\n With Filled in Missing Values")
+```
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+summary(total_steps_per_day2)
+```
+
+# mean_total of steps with filled in missing values
+
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+# mean_total of steps with filled in missing values
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+mean_total2 <- mean(total_steps_per_day2)
+mean_total2
+```
+
+
+# median_total of steps with filled in missing values
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/master
+```{r}
+median_total2 <- median(total_steps_per_day2)
+median_total2
+```
+# difference in mean between filled in and not filled in
+
+```{r}
+mean_total2 - mean_total
+```
+# difference in median between filled in and not filled in.
+<<<<<<< HEAD
+
+```{r}
+median_total2 - median_total
+```
+
+=======
+```{r}
+median_total2 - median_total
+```
+<<<<<<< HEAD
+
+=======
+<<<<<<< HEAD
+
+#----------------------------------------------------------------------
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+ 1. For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+ 2. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+ 3. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+=======
+<<<<<<< HEAD
+
+#----------------------------------------------------------------------
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+ 1. For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+ 2. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+ 3. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+=======
+
+<<<<<<< HEAD
+#----------------------------------------------------------------------
+>>>>>>> origin/master
+>>>>>>> origin/master
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+ 1. For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+ 2. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+ 3. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+<<<<<<< HEAD
+#----------------------------------------------------------------------
+=======
+#---------------------------------------------------------------------------
+>>>>>>> origin/master
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+ 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+ 
+```{r}
+week <- weekdays(strptime(new_data_filling_NA$date, format = "%Y-%m-%d"))
+    for (i in 1:length(week))
+        {
+            if (week[i] == "Saturday" | week[i] == "Sunday"){
+            week[i] <- "weekend"
+        } 
+    else {
+            week[i] <- "weekday"
+         }
+}
+```
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+
+```{r}
+library("lattice")
+```
+
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+```{r}
+week <- as.factor(week)
+new_data_filling_NA$week <- week
+```
+<<<<<<< HEAD
+
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+
+```{r}
+xyplot(steps ~ interval | week, final_data
+     , type = "l"
+     , xlab = "Interval"
+     , ylab = "Number of steps"
+     , main = "Average steps, averaged across all weekday days or weekend days"
+     , layout = c(1, 2))
+
+=======
+<<<<<<< HEAD
+
+
+ 
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+
+```{r}
+xyplot(steps ~ interval | week, final_data
+     , type = "l"
+     , xlab = "Interval"
+     , ylab = "Number of steps"
+     , main = "Average steps, averaged across all weekday days or weekend days"
+     , layout = c(1, 2))
+
+=======
+<<<<<<< HEAD
+
+
+ 
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+
+```{r}
+xyplot(steps ~ interval | week, final_data
+     , type = "l"
+     , xlab = "Interval"
+     , ylab = "Number of steps"
+     , main = "Average steps, averaged across all weekday days or weekend days"
+     , layout = c(1, 2))
+
+=======
+<<<<<<< HEAD
+
+
+ 
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+
+```{r}
+xyplot(steps ~ interval | week, final_data
+     , type = "l"
+     , xlab = "Interval"
+     , ylab = "Number of steps"
+     , main = "Average steps, averaged across all weekday days or weekend days"
+     , layout = c(1, 2))
+
+=======
+
+<<<<<<< HEAD
+
+ 
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+
+```{r}
+xyplot(steps ~ interval | week, final_data
+     , type = "l"
+     , xlab = "Interval"
+     , ylab = "Number of steps"
+     , main = "Average number of steps taken, averaged across all weekday days or weekend days"
+     , layout = c(1, 2))
+
+=======
+ 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or # # weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+```{r}
+final_data <- aggregate(steps ~ interval + week, data = new_data_filling_NA, mean)
+```
+<<<<<<< HEAD
+
+=======
+```{r}
+library(lattice)
+```
+>>>>>>> origin/master
+```{r}
+xyplot(steps ~ interval | week, data = final_data, type = "l", layout = c(1, 2), xlab = "Interval", ylab = "Number of Steps")
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+>>>>>>> origin/master
+```
+=======
 
 
 ## What is the average daily activity pattern?
@@ -23,3 +730,4 @@ output:
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+>>>>>>> parent of d0553bb... push push
