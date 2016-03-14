@@ -83,6 +83,7 @@ AMD_Adj <- AMD_Adj[c('interval', 'date', 'stepsAdj')]
 ```
 
 #### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+##### Means the same.  Minor difference in medians.  Minimal to no impact
 
 ```{r}
 stepsPerDay_Adj <- AMD_Adj %>%
@@ -90,11 +91,7 @@ stepsPerDay_Adj <- AMD_Adj %>%
                         summarize(total = sum(stepsAdj))
 
 hist(stepsPerDay_Adj$total, main = expression('Total Steps per Day'[Adj]), xlab = 'Number of Steps')
-```
 
-##### Means the same.  Minor difference in medians.
-
-```{r}
 round(mean(stepsPerDay_Adj$total))
 round(median(stepsPerDay_Adj$total))
 ```
