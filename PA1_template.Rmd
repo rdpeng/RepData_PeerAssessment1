@@ -4,6 +4,7 @@ title: "Reproducible Research: Peer Assessment 1"
 
 
 ## Loading and preprocessing the data
+```{r}
 library('dplyr');
 library('lattice')
 
@@ -16,7 +17,7 @@ unzip(zipFile)
 
 AMD <- read.csv(csvFile, sep = ',', header = TRUE, stringsAsFactors = FALSE)
 AMD$date <- as.Date(AMD$date)
-
+```
 
 ## What is mean total number of steps taken per day?
 #### 1. Calculate the total number of steps taken per day
