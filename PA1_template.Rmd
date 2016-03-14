@@ -1,24 +1,52 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
 ---
 
 
 ## Loading and preprocessing the data
+library("dplyr")
+library("lattice")
 
+URL <- 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip';
+zipFile <- 'repdata_data_factivity.zip';
+csvFile <- 'activity.csv'
+
+download.file(URL, zipFile, method = 'curl')
+unzip(zipFile)
+
+AMD <- read.csv(csvFile, sep = ',', header = TRUE, stringsAsFactors = FALSE)
+AMD$date <- as.Date(AMD$date)
 
 
 ## What is mean total number of steps taken per day?
-
+stepsPerDay <- AMD %>%
+                filter(!is.na(steps)) %>%
+                group_by(date) %>%
+                summarize(total = sum(steps))
+                
+  hist(stepsPerDay$total, main = 'Total Steps per Day', xlab = 'Number of Steps')
+  
+  round(mean(stepsPerDay$total))
+  median(stepsPerDay$total)
 
 
 ## What is the average daily activity pattern?
+##### 1. Calculate the total number of steps taken per day
+stepsPerInterval <- aggregate(steps ~ interval, data = AMD, FUN = mean)
+plot(x = stepsPerInterval$interval, y = stepsPerInterval$steps, type = 'l',
+     main = 'Avg Number of Steps Across All Days', xlab = 'Steps', ylab = 'Interval')
 
+stepsPerInterval[which.max(stepsPerInterval$steps), ]
 
 
 ## Imputing missing values
+sum(is.na(AMD$steps))
+
+IntervalAvg <- aggregate(steps ~ interval, FUN = mean, data = AMD)
+
+AMD_Adj <- merge(x = AMD, y = IntervalAvg, by = 'interval')
+AMD_Adj$stepsAdj <- ifelse(is.na(AMD_Adj$steps.x), AMD_Adj$steps.y, AMD_Adj$steps.x) 
+AMD_Adj <- AMD_Adj[c('interval', 'date', 'stepsAdj')]  
 
 
 
