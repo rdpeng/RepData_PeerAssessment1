@@ -19,23 +19,30 @@ AMD$date <- as.Date(AMD$date)
 
 
 ## What is mean total number of steps taken per day?
+#### 1. Calculate the total number of steps taken per day
 stepsPerDay <- AMD %>%
                 filter(!is.na(steps)) %>%
                 group_by(date) %>%
                 summarize(total = sum(steps))
                 
-  hist(stepsPerDay$total, main = 'Total Steps per Day', xlab = 'Number of Steps')
+#### 2. Make a histogram of the total number of steps taken each day
+hist(stepsPerDay$total, main = 'Total Steps per Day', xlab = 'Number of Steps')
   
-  round(mean(stepsPerDay$total))
-  median(stepsPerDay$total)
+#### 3. Calculate and report the mean and median of the total number of steps taken per day
+##### Mean
+round(mean(stepsPerDay$total))
+
+#####Median
+median(stepsPerDay$total)
 
 
 ## What is the average daily activity pattern?
-##### 1. Calculate the total number of steps taken per day
+#### 1. Make a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 stepsPerInterval <- aggregate(steps ~ interval, data = AMD, FUN = mean)
-plot(x = stepsPerInterval$interval, y = stepsPerInterval$steps, type = 'l',
-     main = 'Avg Number of Steps Across All Days', xlab = 'Steps', ylab = 'Interval')
+                      plot(x = stepsPerInterval$interval, y = stepsPerInterval$steps, type = 'l',
+                      main = 'Avg Number of Steps Across All Days', xlab = 'Steps', ylab = 'Interval')
 
+#### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 stepsPerInterval[which.max(stepsPerInterval$steps), ]
 
 
