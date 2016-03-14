@@ -3,7 +3,7 @@
 
 ## Loading and preprocessing the data
 
-```{r}
+```{r, echo = TRUE}
 library('dplyr');
 library('lattice')
 
