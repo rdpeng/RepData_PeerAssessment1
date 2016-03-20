@@ -1,0 +1,73 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+## Loading and preprocessing the data
+
+```{r, echo=TRUE}
+ activityunzip <- unz("activity.zip","activity.csv")
+ activity <- read.table(file = activityunzip,header = TRUE,sep = ",")
+```
+Convert the columns in their correct class to allow their analysis.
+
+```{r, echo=TRUE}
+  activity$date<-as.Date( activity$date, format = "%Y-%m-%d")
+  activity$interval <- factor(activity$interval )  
+```
+Load the libraries
+
+```{r, echo=TRUE}
+library(ggplot2)
+```  
+
+## What is mean total number of steps taken per day?
+
+```{r, echo=TRUE}
+Total_steps_day <- aggregate(steps ~ date, activity,sum, na.rm=TRUE)
+mean_data <- round(mean(Total_steps_day$steps, na.rm=TRUE))
+median_data <-round(median(Total_steps_day$steps, na.rm=TRUE))  
+hist1 <- ggplot(Total_steps_day,aes(x=date,y=steps)) + 
+  geom_bar(stat="identity") + 
+  ggtitle("Total number of steps per day ")+
+  geom_hline(yintercept = mean_data, color = "brown", linetype = "dashed",size = 1) +          geom_hline(yintercept = median_data, color = "red", linetype = "dashed", size = 1)         
+print(hist1)
+print(c("The mean is",mean_data))
+print(c("The median is",median_data))
+```
+
+## What is the average daily activity pattern?
+
+```{r, echo=TRUE}
+Average_steps_day <-aggregate(steps ~ interval, activity,mean, na.rm=TRUE)
+Average_steps_day$interval<-as.numeric(levels(Average_steps_day$interval))[Average_steps_day$interval]
+Max_average <- round(max(Average_steps_day$steps,na.rm=TRUE))
+Average_graph<-ggplot(Average_steps_day, aes(x=interval,y=steps)) +geom_line()+geom_point()
+print(Average_graph)
+print(c("Max average of number of steps",Max_average))
+```
+                                                                             
+##Imputing missing values
+
+I will replace NA values for the mean value obtainad in the first question in the steps columns.
+
+```{r, echo=TRUE}
+Avg_steps<- round(mean(activity$steps,na.rm=TRUE))
+activity[is.na(activity)] <- Avg_steps
+```
+
+I will used the same code to generate to second Histogram
+
+
+```{r, echo=TRUE}
+
+Total_steps_day2 <- aggregate(steps ~ date, activity,sum, na.rm=FALSE)
+
+hist2 <- ggplot(Total_steps_day2,aes(x=date,y=steps)) + 
+  geom_bar(stat="identity") + 
+  ggtitle("Total number of steps per day ")
+          
+print(hist2)
+```
+
