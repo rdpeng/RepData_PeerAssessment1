@@ -13,7 +13,6 @@ md$daytype <- as.factor(ifelse(weekdays(md$date)=="samedi"|weekdays(md$date)=="d
 ```
 
 
-
 ## What is mean total number of steps taken per day?
 Calculate dayly totals of steps and the mean and the median of these values
 
@@ -25,7 +24,7 @@ vmedian <- median(md$steps,na.rm=T)
 hist(dateagg$steps,main="Total number of steps taken each day",xlab="",ylab="")  
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
   
 The mean of the dayly total of steps is 37.3825996.  
@@ -42,7 +41,7 @@ vmax <- intagg[intagg$steps==max(intagg$steps),1]
 plot(intagg$interval,intagg$steps, type="l", ylab="Averaged number of steps", xlab="5-minutes interval")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 The interval with the average maximum number of steps is 835th interval.
 
@@ -66,7 +65,7 @@ vmedian2 <- median(md$steps,na.rm=T)
 hist(dateagg2$imputed.steps,main="Total number of steps taken each day (imputed values)",xlab="",ylab="")  
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
   
 Number of missing values: 2304.  
 Mean number of steps (with imputed values): 37.3825996.  
@@ -77,6 +76,8 @@ Median number of steps (with imputed values): 0.
 
 
 ```r
+## dayType factor was created in the first chunk
+
 daytypeagg <- aggregate(imputed.steps~(interval*daytype), newmd, FUN=mean)
 library(ggplot2)
 g <- ggplot(daytypeagg,aes(interval,imputed.steps))
@@ -84,6 +85,6 @@ g <- g+geom_line()+ylab("Averaged number of steps")+xlab("Interval")
 g+facet_grid(daytype ~ .)+ggtitle("Differences between weekdays and weekends")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 

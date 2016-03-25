@@ -2,7 +2,8 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
-    keep_md: true
+    fig_caption: yes
+    keep_md: yes
 ---
 
 
@@ -15,7 +16,6 @@ md$date <- strptime(md$date, format="%Y-%m-%d")
 md$rawdate <- strftime(md$date, format="%Y-%m-%d") 
 md$daytype <- as.factor(ifelse(weekdays(md$date)=="samedi"|weekdays(md$date)=="dimanche","weekend","weekday"))
 ```
-
 
 
 ## What is mean total number of steps taken per day?
@@ -71,6 +71,8 @@ Median number of steps (with imputed values): `r vmedian2`.
 ## Are there differences in activity patterns between weekdays and weekends?
 
 ```{r}
+## dayType factor was created in the first chunk
+
 daytypeagg <- aggregate(imputed.steps~(interval*daytype), newmd, FUN=mean)
 library(ggplot2)
 g <- ggplot(daytypeagg,aes(interval,imputed.steps))
