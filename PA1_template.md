@@ -1,13 +1,5 @@
 # Reproducible Research: Peer Assessment 1
 
-Bikash Maharjan,
-March 26, 2016  
-
-# Introduction
-
-This report is a part of an assignment for Data Science Specialization Course offered by John Hopkins University through Coursera. Here, we are creating a report on a study of Activity Monitorin Data answering various questions about the dataset.
-
-
 
 ## Loading and preprocessing the data
 - Extract zip file
