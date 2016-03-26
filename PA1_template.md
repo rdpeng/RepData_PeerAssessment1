@@ -1,6 +1,6 @@
 # Reproducible Research: Peer Assessment 1
 
-Bikash Maharjan
+Bikash Maharjan,
 March 26, 2016  
 
 # Introduction
