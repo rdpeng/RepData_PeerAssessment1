@@ -262,7 +262,7 @@ p <- xyplot(steps ~ interval | daytype, data=meansteps,
 print (p)    
 ```
 
-![Plot4.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/Plot4.png)
+![Plot4.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/plot4.png)
 
 **The plot indicates that the person is generally more active  during the weekends.**
 
