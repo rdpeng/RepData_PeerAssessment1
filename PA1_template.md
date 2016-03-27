@@ -107,7 +107,7 @@ hist(StepsByDay,
      xlim = c(0,25000),
      ylim = c(0,20))
 ```
-![Plot1.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/Plot1.png)
+![Plot1.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/figures/Plot1.png)
 
 
 Mean of the total number of steps taken per day
@@ -144,7 +144,7 @@ graph <- ggplot(data=IntervalMean, aes(x=interval, y=mean)) +
         ggtitle("Average number of steps taken by 5 minutes interval")
 print(graph)
 ```
-![Plot2.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/Plot2.png)
+![Plot2.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/figures/Plot2.png)
 
 Which 5-minute interval contains the maximum number of steps ?
 
@@ -204,7 +204,7 @@ hist(NewStepsByDay,
      ylim = c(0,25))
 ```
 
-![Plot3.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/Plot3.png)
+![Plot3.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/figures/Plot3.png)
 
 Mean of the total number of steps taken per day
 
@@ -262,7 +262,7 @@ p <- xyplot(steps ~ interval | daytype, data=meansteps,
 print (p)    
 ```
 
-![Plot4.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/plot4.png)
+![Plot4.png](https://github.com/pierrewinkel/RepData_PeerAssessment1/blob/master/figures/Plot4.png)
 
 **The plot indicates that the person is generally more active  during the weekends.**
 
