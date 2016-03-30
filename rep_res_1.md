@@ -1,7 +1,4 @@
----
-title: "PA1_template"
-output: html_document
----
+# PA1_template
 ## R Markdown
 What is mean total number of steps taken per day?
 
@@ -12,7 +9,7 @@ b=aggregate(a$steps,by=list(a$date),FUN=sum)
 hist(b$x,labels=unique(b$x[order(b$x)]),main="Total steps a day",xlab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-1](figure/unnamed-chunk-1-1.png)
+![](rep_res_1_files/figure-html/unnamed-chunk-1-1.png)<!-- -->
 
 ```r
 # mean of the number of steps a day is:
@@ -31,7 +28,7 @@ median(b$x, na.rm = TRUE)
 ```
 ## [1] 10765
 ```
-knit('rep_res_1.Rmd')
+
 What is the average daily activity pattern?
 
 ```r
@@ -39,7 +36,7 @@ c=aggregate(a$steps, by=list(a$interval), FUN=mean, na.rm=TRUE)
 plot(c$Group.1,c$x, type = "l", xlab= "interval", ylab= "steps")
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![](rep_res_1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 ```r
 # Below the 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps:
@@ -67,7 +64,7 @@ e=aggregate(d$steps,by=list(d$date),FUN=sum)
 hist(e$x,labels=unique(e$x[order(e$x)]),main="Total steps a day",xlab="Steps")
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-2.png)
+![](rep_res_1_files/figure-html/unnamed-chunk-2-2.png)<!-- -->
 
 ```r
 # mean of the number of steps a day is (with averaged na's by interval):
@@ -101,4 +98,5 @@ plot(i$Group.1,i$x, type = "l",main= "weekend", xlab= "interval", ylab= "steps")
 plot(j$Group.1,j$x, type = "l",main= "weekday", xlab= "interval", ylab= "steps")
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png)
+![](rep_res_1_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+knit('rep_res_1.Rmd')
