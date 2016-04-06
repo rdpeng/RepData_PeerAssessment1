@@ -4,30 +4,35 @@ output:
   html_document:
     keep_md: true
 ---
-### Installing from library
+### Loading add-on package
 ```{r}
 library(ggplot2)
-setwd("C:/Users/Tdashi/Documents/GitHub/RepData_PeerAssessment1")
 ```
 
-### Loading and preprocessing the data
+### Loading the data
 ```{r}
+file_url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(file_url, "activity.zip")
 unzip(zipfile = "activity.zip")
-RawData <- read.csv("activity.csv")
-OmittedData <- na.omit(RawData)
+raw_data <- read.csv("activity.csv")
+```
+
+### Preproccessing the data
+```{r}
+omitted_data <- na.omit(raw_data)
 ```
 
 ### What is mean total number of steps taken per day?
 ####1. Calculate the total number of steps taken per day using omitted data.
 ```{r}
-stepdata1_O <- aggregate(OmittedData["steps"], by=OmittedData["date"], FUN=sum)
+stepdata1_O <- aggregate(omitted_data["steps"], by=omitted_data["date"], FUN=sum)
 head(stepdata1_O)
 ```
 
 ####2. Make a histogram of the total number of steps taken each day
 ```{r}
-sd1 <- ggplot(stepdata1_O, aes(x = steps)) 
-sd1 + geom_histogram(binwidth = 2500) +
+hist_steps1 <- ggplot(stepdata1_O, aes(x = steps)) 
+hist_steps1 + geom_histogram(binwidth = 2500) +
       ggtitle("The total number of steps taken each day")
 ```
 
@@ -47,10 +52,10 @@ median(stepdata1_O$steps)
 
 ####1. Make a time series plot of the 5-minute interval (x-axis) and the average number across all days.
 ```{r}
-stepdata2_O <- aggregate(OmittedData["steps"], by=OmittedData["interval"], FUN=mean)
+stepdata2_O <- aggregate(omitted_data["steps"], by=omitted_data["interval"], FUN=mean)
 
-sd2 <- ggplot(stepdata2_O, aes(x = interval, y = steps))
-sd2 + geom_line() + ggtitle("The average number of steps across all days")
+plot_steps2 <- ggplot(stepdata2_O, aes(x = interval, y = steps))
+plot_steps2 + geom_line() + ggtitle("The average number of steps across all days")
 ```
 
 ####2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -62,30 +67,30 @@ stepdata2_O$interval[stepdata2_O$steps == max(stepdata2_O$steps)]
 
 ####1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 ```{r}
-sum(is.na(RawData))
+sum(is.na(raw_data))
 ```
 
 ####2.Devise a strategy for filling in all of the missing values in the dataset. 
 
 - Create a new dataset that is equal to the original dataset.
 ```{r}
-filledData <- RawData
+filled_data <- raw_data
 ```
 - ...but with the missing data filled in. I used the mean for that 5-minute interval.
 ```{r}
-num <- 1:length(RawData[,1])
+num <- 1:length(raw_data[,1])
 for (i in num){
-    if(is.na(RawData[i, 1])){
-        filledData[i, 1] <- stepdata2_O[stepdata2_O$interval == RawData[i,3], 2]
+    if(is.na(raw_data[i, 1])){
+        filled_data[i, 1] <- stepdata2_O[stepdata2_O$interval == raw_data[i,3], 2]
     }
 }
 ```
 
 ####3. Make a histogram of the total number of steps taken each day
 ```{r}
-stepdata3_Filled <- aggregate(filledData["steps"], by=filledData["date"], FUN=sum)
-sd3 <- ggplot(stepdata3_Filled, aes(x = steps)) 
-sd3 + geom_histogram(binwidth = 2500) +
+stepdata3_filled <- aggregate(filled_data["steps"], by=filled_data["date"], FUN=sum)
+hist_step3 <- ggplot(stepdata3_filled, aes(x = steps)) 
+hist_step3 + geom_histogram(binwidth = 2500) +
       ggtitle("The total number of steps taken each day (filled)")
 ```
 * We can see only the middle bar is extended.
@@ -94,11 +99,11 @@ sd3 + geom_histogram(binwidth = 2500) +
 ####4. Calculate and report the mean and median of the total number of steps taken per day.
 - mean
 ```{r}
-mean(stepdata3_Filled$steps)
+mean(stepdata3_filled$steps)
 ```
 - median
 ```{r}
-median(stepdata3_Filled$steps)
+median(stepdata3_filled$steps)
 ```
 * These data are not changed compareed to the raw data.
 
@@ -107,15 +112,15 @@ median(stepdata3_Filled$steps)
 ### Are there differences in activity patterns between weekdays and weekends?
 ####1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend"
 ```{r}
-filledData$week <- weekdays(as.Date.factor(filledData[, 2]))
-filledData$weekday <- ""
-num <- 1:length(RawData[,1])
+filled_data$week <- weekdays(as.Date.factor(filled_data[, 2]))
+filled_data$weekday <- ""
+num <- 1:length(raw_data[,1])
 for (i in num){
-    if(filledData[i, 4] == "Sunday" || filledData[i, 4] == "Saturday"){
-        filledData[i, "weekday"] <- "Weekends"
+    if(filled_data[i, 4] == "Sunday" || filled_data[i, 4] == "Saturday"){
+        filled_data[i, "weekday"] <- "Weekends"
 
     } else {
-        filledData[i, "weekday"] <- "Weekdays"
+        filled_data[i, "weekday"] <- "Weekdays"
     }
 }
 ```
@@ -123,7 +128,7 @@ for (i in num){
 
 ####2. Make time seriese graph and compare "weekday" and "weekend".
 ```{r}
-twolevel <-aggregate(filledData["steps"], by=filledData[c("interval", "weekday")], FUN=mean)
+twolevel <-aggregate(filled_data["steps"], by=filled_data[c("interval", "weekday")], FUN=mean)
 
 g <- ggplot(data = twolevel, aes(x=interval, y=steps, col=weekday))
 g + geom_line() + facet_grid(weekday ~.) +
