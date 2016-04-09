@@ -11,6 +11,7 @@ library(ggplot2)
 
 ### Loading the data
 ```{r}
+#setwd("./RepData_PeerAssessment1")
 file_url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 download.file(file_url, "activity.zip")
 unzip(zipfile = "activity.zip")
@@ -76,7 +77,7 @@ sum(is.na(raw_data))
 ```{r}
 filled_data <- raw_data
 ```
-- ...but with the missing data filled in. I used the mean for that 5-minute interval.
+- ...but the missing data must be filled in. I used the mean for that 5-minute interval.
 ```{r}
 num <- 1:length(raw_data[,1])
 for (i in num){
@@ -87,14 +88,14 @@ for (i in num){
 ```
 
 ####3. Make a histogram of the total number of steps taken each day
+We can see only the middle bar is extended, because the NA are filled with mean value.
 ```{r}
 stepdata3_filled <- aggregate(filled_data["steps"], by=filled_data["date"], FUN=sum)
 hist_step3 <- ggplot(stepdata3_filled, aes(x = steps)) 
 hist_step3 + geom_histogram(binwidth = 2500) +
       ggtitle("The total number of steps taken each day (filled)")
 ```
-* We can see only the middle bar is extended.
-* Because the value witch are filled in NA are close to the average value. 
+
 
 ####4. Calculate and report the mean and median of the total number of steps taken per day.
 - mean
@@ -105,8 +106,7 @@ mean(stepdata3_filled$steps)
 ```{r}
 median(stepdata3_filled$steps)
 ```
-* These data are not changed compareed to the raw data.
-
+* These data are not changed compared to the raw data.
 
 
 ### Are there differences in activity patterns between weekdays and weekends?
