@@ -1,25 +1,202 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "Course Project 1 Reproducible Research"
+author: "sborda"
+date: "April 5th 2016"
 output: 
-  html_document:
-    keep_md: true
+  html_document: 
+    fig_caption: yes
+    toc: yes
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 ## Loading and preprocessing the data
 
+First set up the directory and download the file that you are going to use
+
+Then load the whole file, incluiding NA and NaN's in a data frame
+called "activity". 
+
+```{r load file}
+activity <- read.csv("activity.csv", na.strings=c(NA,""))
+str(activity)
+
+```
+
+The "date" column is formatted as Factor class, change it to a Date class and steps as numeric.
+
+```{r}
+activity$date <- as.Date(activity$date)
+activity$steps<- as.numeric(activity$steps)
+
+```
 
 
 ## What is mean total number of steps taken per day?
+Sum every step taken in the same day and store it in a variable called "stepsday"
 
+```{r}
+stepsday <- tapply(activity$steps, activity$date, sum, na.rm=TRUE)
+```
 
+With this variable plot a histogram that shows the total number of steps taken per day.
+
+```{r}
+hist(stepsday, xlab="Sum of steps per day", 
+     main="Mean Total Number of Steps taken per day")
+```
+
+In this sample the subject took most frecuently between 10.000 and 15.000 steps per day.
+
+After that find out the mean and median of all the total steps per day
+
+```{r mean and median}
+mean <- mean(stepsday, na.rm=TRUE)
+median <- median(stepsday, na.rm=TRUE)
+```
+
+The subject took a mean of `r mean`and median of `r median` steps per day.
 
 ## What is the average daily activity pattern?
 
+Create an array called "stepsinterval" that stores the mean number steps taken per interval. 
+```{r}
+stepsinterval<- tapply(activity$steps, activity$interval, mean, na.rm=TRUE)
 
+```
+
+Using the base plotting system, create a plot using the average number of steps as y axis and the five minute intervals from 0 to 2355, as x axis.
+```{r, }
+plot(y=stepsinterval, x=unique(activity$interval), type="l", 
+     xlab="5 minute interval", ylab="Average number of steps")
+```
+
+Find the interval that accounts for the maximum number of average steps.
+
+```{r}
+which.max(stepsinterval)
+```
+
+The maximum mean number of steps taken in a interval is 104 and they were taken in the 835th interval.
 
 ## Imputing missing values
 
+Use table and summary to find out the number of missing values in the original data frame. Also use mean to find out the proportion of NA's in the data frame.
 
+```{r}
+table(is.na(activity))
+summary(activity)
+mean(is.na(activity))
+mean(is.na(activity$steps))
+```
+
+There are 2304 missing values, all in the column "steps". A total of 4.37% of the observations are missing values. But for the steps variable, the total the proportion is larger, a 13,11% percent, nevertheless is still small.
+
+In order to fill the missing values, filter the non missing values in a different data frame, called "activity_good". Then group by the interval and use summarize to find the mean steps taken for the intervals, only for those that have complete observations. 
+
+```{r, (echo = FALSE)} 
+library(dplyr) 
+```
+
+```{r}
+activity_good<- filter(activity, !is.na(steps), 2:3)
+interval_steps<- group_by(activity_good, interval)
+interval_total <- summarise(interval_steps, steps= mean(steps))
+```
+
+Create a data frame with only the missing values and merge it with the mean values of steps per interval. 
+
+```{r}
+activity_na <- filter(activity, is.na(steps), 2:3)
+
+activity_merge <- merge(interval_total, activity_na, by="interval")
+```
+
+Finally bind the the data frames to have a complete data frame with no missing values.
+
+```{r}
+activity_complete <- rbind(select(activity_merge, interval, steps=steps.x,                              date), activity_good)
+```
+
+Test the properties of the new data frame.
+
+```{r}
+summary(activity_complete)
+table(is.na(activity_complete))
+```
+
+There are no missing values in the "activity_complete" data frame
+
+Use tapply to calculate new vector of total steps per day.
+```{r}
+stepsday_complete <- tapply(activity_complete$steps, 
+                            activity_complete$date, sum)
+```
+
+To create the histogram repeate the previous hist code chunk, but this time with the new data frame without missing values.
+```{r}
+hist(stepsday_complete, xlab="Sum of steps per day", 
+     main="Mean Total Number of Steps taken per day (no NA's)")
+```
+
+Calculate the mean and median with the new vector "stepsday_complete"
+
+```{r}
+mean_complete <- mean(stepsday_complete, na.rm=TRUE)
+median_complete <- median(stepsday_complete, na.rm=TRUE)
+```
+
+The subject took a mean of `r mean_complete` 
+and median of `r median_complete` steps per day.
+
+Use par() to create a comparisson of the two histograms.
+
+```{r}
+par(mfrow=c(1,2), mar=c(5,4,3,1), oma=c(0,0,2,0) )
+hist(stepsday, xlab="Sum of steps per day", 
+     main="with NA's")
+hist(stepsday_complete, xlab="Sum of steps per day", 
+     main="no NA's")
+title(mtext("Comparison of histograms", outer=T, cex=1.5))
+```
+
+The "with NA's" histogram is more skewed to the left than the "no NA's" histogram. But both have a higher frecuencies in the interval of 10000 to 15000 steps.
+
+Create a data frame to compare the means a medians of both data frames.
+```{r}
+data.frame(Measure=c("mean","median"), With.NA=c(mean,median), No.NA=c(mean_complete,median_complete))
+
+```
+The mean steps is smaller in the data frame with NA removed, than in the one with NA replaced with the mean steps of the interval. The same can be said the with the median.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Use weekdays() to specify the day of the week that corresponds to the "date" column. Then use %in% to look for days that fulfill the condition of weekend, fill those that don't match with weekday.
+
+```{r}
+activity_complete$weekdays <- weekdays(activity_complete$date)
+
+activity_complete$weekdays2 <- ifelse((activity_complete$weekdays %in% c("Saturday","Sunday")), "Weekend", "Weekday") 
+```
+
+Group the data frame "activity_complete" by interval and the condition of weekday or weekend. Then find the mean steps per interval and weekday and weekend.
+
+```{r}
+activity_week <- group_by(activity_complete, interval, weekdays2)
+activity_week_total <- summarise(activity_week, steps= mean(steps))
+```
+
+Create a plot of 1x2, divided by the condition of weekday o weekend.
+```{r}
+library(lattice)
+xyplot(steps ~ interval | weekdays2, data = activity_week_total, type = "l", layout = c(1, 2))
+
+```
+
+During the weekday there is an interval where the most steps were taken. Through the weekend the mean steps are more regular, possibly the subject is a weekend warrior and a potato coach weekday guy!
+
+
+
+
