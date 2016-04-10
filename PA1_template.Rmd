@@ -105,3 +105,81 @@ summary(NAs)
 ```
 
 It seems that there are 2304 missing values for steps variable (TRUE represents number of values that were considered NA by is.na function). 
+
+Every missing value will be replaced by the mean for the relevant 5-minute interval. We can use a convenient na.aggregate function from zoo package:
+
+```{r, echo=TRUE}
+library(zoo)
+activity$steps2<-na.aggregate(activity$steps, by=activity$interval, FUN = mean,
+             na.rm = FALSE, maxgap = Inf)
+```
+
+Now that we have a new steps column with no NAs, we can create a new dataset:
+
+```{r, echo=TRUE}
+
+activity_noNA <-data.frame(cbind(activity$steps2, activity$date, activity$interval))
+activity_noNA$X1<-round(activity_noNA$X1, digits=3)
+activity_noNA$X2<-as.Date(as.numeric(activity_noNA$X2))
+names(activity_noNA) <- c("steps", "date", "interval")
+```
+
+Steps variable was rounded to 3 digits and date variable's class was changed to Date. 
+
+```{r, echo=TRUE}
+sum_per_day2<- aggregate(steps ~ date, data=activity_noNA, sum)
+```
+
+The following code will return a histogram of the total steps taken per day
+```{r, echo=TRUE}
+hist(sum_per_day2$steps, xlab="Total number of steps per day", ylab="Frequency", main="Total number of steps per day - histogram", freq=TRUE)
+
+abline(v=mean(sum_per_day2$steps),col="red")
+abline(v=median(sum_per_day2$steps),col="green")
+
+
+legend(x = "topright",
+       c("Mean", "Median"),
+       col = c("red", "green"),
+       lwd = c(2, 2, 2))
+
+
+```
+
+Summary function will return mean and median values for the steps variable:
+
+```{r, echo=TRUE}
+summary(sum_per_day2$steps)
+```
+
+Mean and median are equal (10770 steps per day). It is a change in the median compared to values calculated without replacing the NAs - median was 10 steps less than the mean (10770). Also 1st and 3rd Quarter values changed.
+
+
+Q3: Are there differences in activity patterns between weekdays and weekends?
+
+First step will be to check what days of the week are the dates from the file:
+```{r, echo=TRUE}
+activity_noNA$date2<-weekdays(activity_noNA$date)
+```
+
+Then we have to create a new factor variable with two values: weekday and weekend, depending which day it is: 
+```{r, echo=TRUE}
+activity_noNA$category[activity_noNA$date2=="Monday"|activity_noNA$date2=="Tuesday"|activity_noNA$date2=="Wednesday"|activity_noNA$date2=="Thursday"|activity_noNA$date2=="Friday"] <- "weekday"
+activity_noNA$category[activity_noNA$date2=="Saturday"|activity_noNA$date2=="Sunday"] <- "weekend"
+```
+
+Before plotting the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days, we have to calculate means:
+
+```{r, echo=TRUE}
+average<-aggregate(steps~category+interval, data=activity_noNA, mean)
+```
+
+And as the last part, the code for creating a panel plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days:
+
+```{r, echo=TRUE}
+xyplot(steps~interval|category,
+       data = average,
+       type = "l")
+```
+
+As we can see, there are differences between activity patterns during weekdays and weekends. Weekend activity is more regular contrary to the weekdays activity which has one major spike between 500 and 1000 interval.
