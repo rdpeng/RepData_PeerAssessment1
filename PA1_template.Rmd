@@ -62,7 +62,7 @@ plot(average_steps ~ time,
      type="l",
      col="blue",
      lwd=2)
-
+print(plot)
 ```
 
 ###Imputing missing values
@@ -96,6 +96,7 @@ plot(density(total_steps_by_date_imputed$total_steps,
      col="purple",
      lwd=3)
 par(mfrow=c(1,1))
+print(plot)
 ```
 ###Are there differences in activity patterns between weekdays and weekends?
 
@@ -138,6 +139,7 @@ qplot(x = time,
       ylab="Average steps",
       main="Activity Patterns\nWeekdays vs. Weekends",
       facets = daytype ~ .)
+print(qplot)
 
 ```
 
