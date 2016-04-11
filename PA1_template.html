@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Lautier" />
+
+<meta name="date" content="2016-04-10" />
+
+<title>PA1_template</title>
+
+<script src="PA1_template_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="PA1_template_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="PA1_template_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="PA1_template_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="PA1_template_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="PA1_template_files/highlight/default.css"
+      type="text/css" />
+<script src="PA1_template_files/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="PA1_template_files/navigation-1.0/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+<h1 class="title">PA1_template</h1>
+<h4 class="author"><em>Lautier</em></h4>
+<h4 class="date"><em>10 April 2016</em></h4>
+
+</div>
+
+
+<p>Reproducible Research Assignment 1</p>
+<p>First step is reading the file (activity monitoring data) into R, which can be done by means of the following:</p>
+<pre class="r"><code>activity &lt;- read.csv(&quot;activity.csv&quot;)</code></pre>
+<p>Date variable is originally of factor class, so it is useful to change its class to Date:</p>
+<pre class="r"><code>activity$date &lt;- as.Date(as.character(activity$date))</code></pre>
+<p>Q1: What is mean total number of steps taken per day?</p>
+<p>Firstly, we have to calculate total number of steps taken per day. Aggregate function comes in handy:</p>
+<pre class="r"><code>sum_per_day&lt;- aggregate(steps ~ date, data=activity, sum)</code></pre>
+<p>Even though there are 61 days in total, the step above provided us with results only for 53 days, because of the NA values.</p>
+<p>We can obtain a histogram of total number of steps taken each day with lines marking the mean and the median by:</p>
+<pre class="r"><code>hist(sum_per_day$steps, xlab=&quot;Total number of steps per day&quot;, ylab=&quot;Frequency&quot;, main=&quot;Total number of steps per day - histogram&quot;, freq=TRUE)
+
+abline(v=mean(sum_per_day$steps),col=&quot;red&quot;)
+abline(v=median(sum_per_day$steps),col=&quot;green&quot;)
+
+
+legend(x = &quot;topright&quot;,
+       c(&quot;Mean&quot;, &quot;Median&quot;),
+       col = c(&quot;red&quot;, &quot;green&quot;),
+       lwd = c(2, 2, 2))</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-4-1.png" /></p>
+<p>It seems that median and mean values are located very close to each other and because of that we cannot discern the lines from each other.</p>
+<p>To check what is the mean and median, we can use the following code:</p>
+<pre class="r"><code>summary(sum_per_day$steps)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10760   10770   13290   21190</code></pre>
+<p>Mean is equal to 10770 steps per day and median to 10760 steps per day. As noted above, it is true that those values are very close to each other on the histogram.</p>
+<p>Q2: What is the average daily activity pattern?</p>
+<p>To check what is the average daily activity pattern, first we have to calculate the mean number of steps taken per every 5-minute interval averaged across all days:</p>
+<pre class="r"><code>mean_int &lt;- aggregate(steps ~ interval, data=activity, mean)</code></pre>
+<p>Then we can plot the 5-minute interval and the average number of steps taken, averaged across all days.</p>
+<pre class="r"><code>library(lattice)
+xyplot(steps~interval,
+       data = mean_int,
+       type = &quot;l&quot;,
+       main=&quot;Average number of steps per interval&quot;,
+       xlab=&quot;5-minute intervals&quot;,
+       ylab=&quot;Average number of steps&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-7-1.png" /></p>
+<p>To check which 5-minute interval contains the maximum number of steps, we can use the following code:</p>
+<pre class="r"><code>mean_int[which.max(mean_int$steps), ]</code></pre>
+<pre><code>##     interval    steps
+## 104      835 206.1698</code></pre>
+<p>Interval 835 contains the maximum number of steps, which is equal to 206,2 steps.</p>
+<p>——Imputing missing values——</p>
+<p>To check how many missing values there are in the dataset, we can use is.na function:</p>
+<pre class="r"><code>NAs &lt;-is.na(activity)</code></pre>
+<p>Then we have to call the summary function of the newly created object:</p>
+<pre class="r"><code>summary(NAs)</code></pre>
+<pre><code>##    steps            date          interval      
+##  Mode :logical   Mode :logical   Mode :logical  
+##  FALSE:15264     FALSE:17568     FALSE:17568    
+##  TRUE :2304      NA&#39;s :0         NA&#39;s :0        
+##  NA&#39;s :0</code></pre>
+<p>It seems that there are 2304 missing values for steps variable (TRUE represents number of values that were considered NA by is.na function).</p>
+<p>Every missing value will be replaced by the mean for the relevant 5-minute interval. We can use a convenient na.aggregate function from zoo package:</p>
+<pre class="r"><code>library(zoo)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>activity$steps2&lt;-na.aggregate(activity$steps, by=activity$interval, FUN = mean,
+             na.rm = FALSE, maxgap = Inf)</code></pre>
+<p>Now that we have a new steps column with no NAs, we can create a new dataset:</p>
+<pre class="r"><code>activity_noNA &lt;-data.frame(cbind(activity$steps2, activity$date, activity$interval))
+activity_noNA$X1&lt;-round(activity_noNA$X1, digits=3)
+activity_noNA$X2&lt;-as.Date(as.numeric(activity_noNA$X2))
+names(activity_noNA) &lt;- c(&quot;steps&quot;, &quot;date&quot;, &quot;interval&quot;)</code></pre>
+<p>Steps variable was rounded to 3 digits and date variable’s class was changed to Date.</p>
+<pre class="r"><code>sum_per_day2&lt;- aggregate(steps ~ date, data=activity_noNA, sum)</code></pre>
+<p>The following code will return a histogram of the total steps taken per day</p>
+<pre class="r"><code>hist(sum_per_day2$steps, xlab=&quot;Total number of steps per day&quot;, ylab=&quot;Frequency&quot;, main=&quot;Total number of steps per day - histogram&quot;, freq=TRUE)
+
+abline(v=mean(sum_per_day2$steps),col=&quot;red&quot;)
+abline(v=median(sum_per_day2$steps),col=&quot;green&quot;)
+
+
+legend(x = &quot;topright&quot;,
+       c(&quot;Mean&quot;, &quot;Median&quot;),
+       col = c(&quot;red&quot;, &quot;green&quot;),
+       lwd = c(2, 2, 2))</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-14-1.png" /></p>
+<p>Summary function will return mean and median values for the steps variable:</p>
+<pre class="r"><code>summary(sum_per_day2$steps)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190</code></pre>
+<p>Mean and median are equal (10770 steps per day). It is a change in the median compared to values calculated without replacing the NAs - median was 10 steps less than the mean (10770). Also 1st and 3rd Quarter values changed.</p>
+<p>Q3: Are there differences in activity patterns between weekdays and weekends?</p>
+<p>First step will be to check what days of the week are the dates from the file:</p>
+<pre class="r"><code>activity_noNA$date2&lt;-weekdays(activity_noNA$date)</code></pre>
+<p>Then we have to create a new factor variable with two values: weekday and weekend, depending which day it is:</p>
+<pre class="r"><code>activity_noNA$category[activity_noNA$date2==&quot;Monday&quot;|activity_noNA$date2==&quot;Tuesday&quot;|activity_noNA$date2==&quot;Wednesday&quot;|activity_noNA$date2==&quot;Thursday&quot;|activity_noNA$date2==&quot;Friday&quot;] &lt;- &quot;weekday&quot;
+activity_noNA$category[activity_noNA$date2==&quot;Saturday&quot;|activity_noNA$date2==&quot;Sunday&quot;] &lt;- &quot;weekend&quot;</code></pre>
+<p>Before plotting the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days, we have to calculate means:</p>
+<pre class="r"><code>average&lt;-aggregate(steps~category+interval, data=activity_noNA, mean)</code></pre>
+<p>And as the last part, the code for creating a panel plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days:</p>
+<pre class="r"><code>xyplot(steps~interval|category,
+       data = average,
+       type = &quot;l&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-19-1.png" /></p>
+<p>As we can see, there are differences between activity patterns during weekdays and weekends. Weekend activity is more regular (less steep and more even) contrary to the weekdays activity which has one major spike between 500 and 1000 interval and is not as regular.</p>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
