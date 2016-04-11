@@ -1,12 +1,6 @@
----
-title: "PA1_template"
-author: "Lautier"
-date: "10 April 2016"
-output: 
-  html_document: 
-    keep_md: yes
-    self_contained: no
----
+# PA1_template
+Lautier  
+10 April 2016  
 
 
 
@@ -15,13 +9,15 @@ Reproducible Research Assignment 1
 
 First step is reading the file (activity monitoring data) into R, which can be done by means of the following:
 
-```{r, echo=TRUE}
+
+```r
 activity <- read.csv("activity.csv")
 ```
 
 Date variable is originally of factor class, so it is useful to change its class to Date:
 
-```{r, echo=TRUE}
+
+```r
 activity$date <- as.Date(as.character(activity$date))
 ```
 
@@ -30,7 +26,8 @@ Q1: What is mean total number of steps taken per day?
 
 Firstly, we have to calculate total number of steps taken per day. Aggregate function comes in handy:
 
-```{r, echo=TRUE}
+
+```r
 sum_per_day<- aggregate(steps ~ date, data=activity, sum)
 ```
 
@@ -38,7 +35,8 @@ Even though there are 61 days in total, the step above provided us with results 
 
 We can obtain a histogram of total number of steps taken each day with lines marking the mean and the median by:
 
-```{r, echo=TRUE}
+
+```r
 hist(sum_per_day$steps, xlab="Total number of steps per day", ylab="Frequency", main="Total number of steps per day - histogram", freq=TRUE)
 
 abline(v=mean(sum_per_day$steps),col="red")
@@ -49,17 +47,23 @@ legend(x = "topright",
        c("Mean", "Median"),
        col = c("red", "green"),
        lwd = c(2, 2, 2))
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
 
 It seems that median and mean values are located very close to each other and because of that we cannot discern the lines from each other.
 
 To check what is the mean and median, we can use the following code:
 
 
-```{r, echo=TRUE}
+
+```r
 summary(sum_per_day$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10760   10770   13290   21190
 ```
 
 Mean is equal to 10770 steps per day and median to 10760 steps per day. As noted above, it is true that those values are very close to each other on the histogram.
@@ -70,13 +74,15 @@ Q2: What is the average daily activity pattern?
 To check what is the average daily activity pattern, first we have to calculate the mean number of steps taken per every 5-minute interval averaged across all days:
 
 
-```{r, echo=TRUE}
+
+```r
 mean_int <- aggregate(steps ~ interval, data=activity, mean)
 ```
 
 Then we can plot the 5-minute interval and the average number of steps taken, averaged across all days.
 
-```{r, echo=TRUE}
+
+```r
 library(lattice)
 xyplot(steps~interval,
        data = mean_int,
@@ -86,10 +92,18 @@ xyplot(steps~interval,
        ylab="Average number of steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)
+
 To check which 5-minute interval contains the maximum number of steps, we can use the following code:
 
-```{r, echo=TRUE}
+
+```r
 mean_int[which.max(mean_int$steps), ]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 Interval 835 contains the maximum number of steps, which is equal to 206,2 steps.
@@ -99,30 +113,55 @@ Interval 835 contains the maximum number of steps, which is equal to 206,2 steps
 
 To check how many missing values there are in the dataset, we can use is.na function:
 
-```{r, echo=TRUE}
+
+```r
 NAs <-is.na(activity)
 ```
 
 Then we have to call the summary function of the newly created object:
 
-```{r, echo=TRUE}
+
+```r
 summary(NAs)
+```
+
+```
+##    steps            date          interval      
+##  Mode :logical   Mode :logical   Mode :logical  
+##  FALSE:15264     FALSE:17568     FALSE:17568    
+##  TRUE :2304      NA's :0         NA's :0        
+##  NA's :0
 ```
 
 It seems that there are 2304 missing values for steps variable (TRUE represents number of values that were considered NA by is.na function). 
 
 Every missing value will be replaced by the mean for the relevant 5-minute interval. We can use a convenient na.aggregate function from zoo package:
 
-```{r, echo=TRUE}
+
+```r
 library(zoo)
+```
+
+```
+## 
+## Attaching package: 'zoo'
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric
+```
+
+```r
 activity$steps2<-na.aggregate(activity$steps, by=activity$interval, FUN = mean,
              na.rm = FALSE, maxgap = Inf)
 ```
 
 Now that we have a new steps column with no NAs, we can create a new dataset:
 
-```{r, echo=TRUE}
 
+```r
 activity_noNA <-data.frame(cbind(activity$steps2, activity$date, activity$interval))
 activity_noNA$X1<-round(activity_noNA$X1, digits=3)
 activity_noNA$X2<-as.Date(as.numeric(activity_noNA$X2))
@@ -131,12 +170,14 @@ names(activity_noNA) <- c("steps", "date", "interval")
 
 Steps variable was rounded to 3 digits and date variable's class was changed to Date. 
 
-```{r, echo=TRUE}
+
+```r
 sum_per_day2<- aggregate(steps ~ date, data=activity_noNA, sum)
 ```
 
 The following code will return a histogram of the total steps taken per day
-```{r, echo=TRUE}
+
+```r
 hist(sum_per_day2$steps, xlab="Total number of steps per day", ylab="Frequency", main="Total number of steps per day - histogram", freq=TRUE)
 
 abline(v=mean(sum_per_day2$steps),col="red")
@@ -147,14 +188,20 @@ legend(x = "topright",
        c("Mean", "Median"),
        col = c("red", "green"),
        lwd = c(2, 2, 2))
-
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)
 
 Summary function will return mean and median values for the steps variable:
 
-```{r, echo=TRUE}
+
+```r
 summary(sum_per_day2$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    9819   10770   10770   12810   21190
 ```
 
 Mean and median are equal (10770 steps per day). It is a change in the median compared to values calculated without replacing the NAs - median was 10 steps less than the mean (10770). Also 1st and 3rd Quarter values changed.
@@ -163,28 +210,34 @@ Mean and median are equal (10770 steps per day). It is a change in the median co
 Q3: Are there differences in activity patterns between weekdays and weekends?
 
 First step will be to check what days of the week are the dates from the file:
-```{r, echo=TRUE}
+
+```r
 activity_noNA$date2<-weekdays(activity_noNA$date)
 ```
 
 Then we have to create a new factor variable with two values: weekday and weekend, depending which day it is: 
-```{r, echo=TRUE}
+
+```r
 activity_noNA$category[activity_noNA$date2=="Monday"|activity_noNA$date2=="Tuesday"|activity_noNA$date2=="Wednesday"|activity_noNA$date2=="Thursday"|activity_noNA$date2=="Friday"] <- "weekday"
 activity_noNA$category[activity_noNA$date2=="Saturday"|activity_noNA$date2=="Sunday"] <- "weekend"
 ```
 
 Before plotting the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days, we have to calculate means:
 
-```{r, echo=TRUE}
+
+```r
 average<-aggregate(steps~category+interval, data=activity_noNA, mean)
 ```
 
 And as the last part, the code for creating a panel plot of the 5-minute interval and the average number of steps taken, averaged across all weekday days or weekend days:
 
-```{r, echo=TRUE}
+
+```r
 xyplot(steps~interval|category,
        data = average,
        type = "l")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-19-1.png)
 
 As we can see, there are differences between activity patterns during weekdays and weekends. Weekend activity is more regular (less steep and more even) contrary to the weekdays activity which has one major spike between 500 and 1000 interval and is not as regular.
