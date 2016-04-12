@@ -7,8 +7,6 @@ March 28, 2016
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-
 ### Loading and processing data
 
 ```r
@@ -87,10 +85,9 @@ average_steps_by_time[which.max(average_steps_by_time$average_steps),]
 ## 104 2016-04-12 08:35:00      835      206.1698
 ```
 
-###Plot -What is the average daily activity pattern?
-
 ```r
-daily_activity <- plot(average_steps ~ time,
+###Plot -What is the average daily activity pattern?
+plot(average_steps ~ time,
      data=average_steps_by_time,
      xlab="Time interval",
      ylab="Mean steps",
@@ -101,15 +98,6 @@ daily_activity <- plot(average_steps ~ time,
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)
-
-```r
-print(daily_activity)
-```
-
-```
-## NULL
-```
-
 
 ###Imputing missing values
 
@@ -145,7 +133,7 @@ hist(total_steps_by_date_imputed$total_steps,
      col="lightblue")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)
 
 ```r
 plot(density(total_steps_by_date_imputed$total_steps,
@@ -157,18 +145,10 @@ plot(density(total_steps_by_date_imputed$total_steps,
      lwd=3)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-7-2.png)
+![](PA1_template_files/figure-html/unnamed-chunk-6-2.png)
 
 ```r
 par(mfrow=c(1,1))
-print(plot)
-```
-
-```
-## function (x, y, ...) 
-## UseMethod("plot")
-## <bytecode: 0x0000000008425c18>
-## <environment: namespace:graphics>
 ```
 ###Are there differences in activity patterns between weekdays and weekends?
 
@@ -203,17 +183,12 @@ par(mfrow=c(1,2))
 ```
 
 
-
-
-
-
 ```r
 average_steps_by_time_weekend <- aggregate(list(average_steps = activity_imputed$steps),
                                            by=list(time       = activity_imputed$time.x,
                                                    daytype    = activity_imputed$weekend_indicator),
                                            FUN=mean)
 ```
-
 
 ###Now draw a panel plot using ggplot2, comparing activity patterns on weekdays and weekends.
 
@@ -229,98 +204,5 @@ qplot(x = time,
       facets = daytype ~ .)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-10-1.png)
-
-```r
-print(qplot)
-```
-
-```
-## function (x, y = NULL, ..., data, facets = NULL, margins = FALSE, 
-##     geom = "auto", xlim = c(NA, NA), ylim = c(NA, NA), log = "", 
-##     main = NULL, xlab = deparse(substitute(x)), ylab = deparse(substitute(y)), 
-##     asp = NA, stat = NULL, position = NULL) 
-## {
-##     if (!missing(stat)) 
-##         warning("`stat` is deprecated", call. = FALSE)
-##     if (!missing(position)) 
-##         warning("`position` is deprecated", call. = FALSE)
-##     if (!is.character(geom)) 
-##         stop("`geom` must be a character vector", call. = FALSE)
-##     argnames <- names(as.list(match.call(expand.dots = FALSE)[-1]))
-##     arguments <- as.list(match.call()[-1])
-##     env <- parent.frame()
-##     aesthetics <- compact(arguments[.all_aesthetics])
-##     aesthetics <- aesthetics[!is.constant(aesthetics)]
-##     aes_names <- names(aesthetics)
-##     aesthetics <- rename_aes(aesthetics)
-##     class(aesthetics) <- "uneval"
-##     if (missing(data)) {
-##         data <- data.frame()
-##         facetvars <- all.vars(facets)
-##         facetvars <- facetvars[facetvars != "."]
-##         names(facetvars) <- facetvars
-##         facetsdf <- as.data.frame(mget(facetvars, envir = env))
-##         if (nrow(facetsdf)) 
-##             data <- facetsdf
-##     }
-##     if ("auto" %in% geom) {
-##         if ("sample" %in% aes_names) {
-##             geom[geom == "auto"] <- "qq"
-##         }
-##         else if (missing(y)) {
-##             x <- eval(aesthetics$x, data, env)
-##             if (is.discrete(x)) {
-##                 geom[geom == "auto"] <- "bar"
-##             }
-##             else {
-##                 geom[geom == "auto"] <- "histogram"
-##             }
-##             if (missing(ylab)) 
-##                 ylab <- "count"
-##         }
-##         else {
-##             if (missing(x)) {
-##                 aesthetics$x <- bquote(seq_along(.(y)), aesthetics)
-##             }
-##             geom[geom == "auto"] <- "point"
-##         }
-##     }
-##     p <- ggplot(data, aesthetics, environment = env)
-##     if (is.null(facets)) {
-##         p <- p + facet_null()
-##     }
-##     else if (is.formula(facets) && length(facets) == 2) {
-##         p <- p + facet_wrap(facets)
-##     }
-##     else {
-##         p <- p + facet_grid(facets = deparse(facets), margins = margins)
-##     }
-##     if (!is.null(main)) 
-##         p <- p + ggtitle(main)
-##     for (g in geom) {
-##         params <- arguments[setdiff(names(arguments), c(aes_names, 
-##             argnames))]
-##         params <- lapply(params, eval, parent.frame())
-##         p <- p + do.call(paste0("geom_", g), params)
-##     }
-##     logv <- function(var) var %in% strsplit(log, "")[[1]]
-##     if (logv("x")) 
-##         p <- p + scale_x_log10()
-##     if (logv("y")) 
-##         p <- p + scale_y_log10()
-##     if (!is.na(asp)) 
-##         p <- p + theme(aspect.ratio = asp)
-##     if (!missing(xlab)) 
-##         p <- p + xlab(xlab)
-##     if (!missing(ylab)) 
-##         p <- p + ylab(ylab)
-##     if (!missing(xlim)) 
-##         p <- p + xlim(xlim)
-##     if (!missing(ylim)) 
-##         p <- p + ylim(ylim)
-##     p
-## }
-## <environment: namespace:ggplot2>
-```
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)
 

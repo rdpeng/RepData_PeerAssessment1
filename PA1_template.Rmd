@@ -2,16 +2,15 @@
 title: "PA1_template"
 author: "tbaber"
 date: "March 28, 2016"
-output: html_document:
-    ---
+output:
+  html_document: 
+    keep_md: yes
+---
 
-```{r setup, include=FALSE}
-require(knitr)
-require(markdown)
+```{r setup, include=TRUE
+
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
-
 
 ### Loading and processing data
 ```{r}
@@ -51,9 +50,8 @@ average_steps_by_time <- aggregate(list(average_steps = activity$steps),
 
 average_steps_by_time[which.max(average_steps_by_time$average_steps),]   
 ```
-
+```{r}
 ###Plot -What is the average daily activity pattern?
-```{r, echo=TRUE}
 plot(average_steps ~ time,
      data=average_steps_by_time,
      xlab="Time interval",
@@ -62,7 +60,7 @@ plot(average_steps ~ time,
      type="l",
      col="blue",
      lwd=2)
-print(plot)
+
 ```
 
 ###Imputing missing values
@@ -82,7 +80,7 @@ total_steps_by_date_imputed <- aggregate(list(total_steps = activity_imputed$ste
                                          na.rm=FALSE)
 ```
 ###Plot - Total number of steps taken each day
-```{r, echo=T}
+```{r}
 hist(total_steps_by_date_imputed$total_steps,
      breaks=30,
      xlab="Total Steps",
@@ -96,7 +94,6 @@ plot(density(total_steps_by_date_imputed$total_steps,
      col="purple",
      lwd=3)
 par(mfrow=c(1,1))
-print(plot)
 ```
 ###Are there differences in activity patterns between weekdays and weekends?
 
@@ -114,10 +111,6 @@ str(activity_imputed)
 par(mfrow=c(1,2))
 ```
 
-
-
-
-
 ```{r}
 
 average_steps_by_time_weekend <- aggregate(list(average_steps = activity_imputed$steps),
@@ -125,7 +118,6 @@ average_steps_by_time_weekend <- aggregate(list(average_steps = activity_imputed
                                                    daytype    = activity_imputed$weekend_indicator),
                                            FUN=mean)
 ```
-
 
 ###Now draw a panel plot using ggplot2, comparing activity patterns on weekdays and weekends.
 ```{r}
@@ -139,7 +131,6 @@ qplot(x = time,
       ylab="Average steps",
       main="Activity Patterns\nWeekdays vs. Weekends",
       facets = daytype ~ .)
-print(qplot)
 
 ```
 
