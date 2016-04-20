@@ -18,3 +18,14 @@ activity <- activity %>%
         select(steps, Date, interval)
 
 
+stepsPerday <- activity %>%
+        group_by(Date) %>%
+        summarise(Steps = sum(steps)) %>%
+        select(Date, Steps)
+
+hist(stepsPerday$Steps, breaks = 10,
+          xlab = "Total number of steps per day",
+          main = "Distribution of total steps per day",
+          col = "lightblue",
+          type = "count")
+
