@@ -65,7 +65,36 @@ p  <- q + geom_point(color = "steelblue", size = 4, alpha = 1/2 ) + geom_smooth(
 
 
 # Code to describe and show a strategy for imputing missing data
+# we need to find out if there are a lot of NA that may affect the analysis
 
+library(mice)
+# http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
+
+md.pattern(activity)
+
+# Data shows that there are 2304 NA affecting Variable = steps
+# Imputing base on mean of the data points is probably too conservative and thus
+# it will not change the average but it however reduces the variance.
+# This could lead to more type error.
+View(activity)
+summary(activity)
+
+# Find out the % of NA that would affect the Data
+# Removing/ dropping categorical 5 minute interval since they will be part of grouping
+# and No NA are in there.
+missing <- activity[,-c(2,3)]
+
+
+# Now we have to look for > 5 % that have NA's
+# percentMissing
+
+percentMissing <- function(x){
+        sum(is.na(x)) /
+        length(x) * 100
+}
+
+# Apply the above funstion to check for the % of Na that are missing.
+apply(activity, 2, percentMissing)
 
 activityNA <- activity   %>%
         filter(is.na(steps)) %>%
