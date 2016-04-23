@@ -76,13 +76,15 @@ md.pattern(activity)
 # Imputing base on mean of the data points is probably too conservative and thus
 # it will not change the average but it however reduces the variance.
 # This could lead to more type error.
-View(activity)
-summary(activity)
+# copied another raw data saved into CSV
+activity2 <- read.csv( "activity.csv")
+View(activity2)
+summary(activity2)
 
 # Find out the % of NA that would affect the Data
 # Removing/ dropping categorical 5 minute interval since they will be part of grouping
 # and No NA are in there.
-missing <- activity[,-c(2,3)]
+
 
 
 # Now we have to look for > 5 % that have NA's
@@ -94,7 +96,28 @@ percentMissing <- function(x){
 }
 
 # Apply the above funstion to check for the % of Na that are missing.
-apply(activity, 2, percentMissing)
+# 2 on the apply function pertains to looking for NA in all of the column
+apply(activity2, 2, percentMissing)
+
+dontReplaceColumn <- activity2[,c(2,3)]
+replaceColumn <- activity2[,-c(2,3)]
+
+
+# The result > 5 % which is above the recommended allowance and technically unusable
+# and warrants explanation on why there are many NA's. These should not be imputed.
+# But for the purpose of this assingment we will still impute these NA's
+
+# 1 on the apply function pertains to looking for NA in all of the column
+missingByRow <- apply(activity2, 1, percentMissing)
+
+summary(missingByRow)
+table(missingByRow)
+
+replaceRowValues <- activity[missingByRow > 33.3333333333333,]
+dontReplaceRowValue <- activity2[missingByRow <33.3333333333333,]
+
+
+
 
 activityNA <- activity   %>%
         filter(is.na(steps)) %>%
