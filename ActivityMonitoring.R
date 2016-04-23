@@ -41,11 +41,19 @@ statsPerDay <- activity_ %>%
                   medianSteps = median(steps)) %>%
         select(Date, Steps, meanSteps, medianSteps)
 
+# Do plot for:Time series plot of the average number of steps taken using
+# above "statsPerDay
+
+# The 5-minute interval that, on average, contains the maximum number of steps
 
 intervalStats <- activity_ %>%
         group_by(interval) %>%
         summarise(sum = sum(steps),
-                  mean = mean(steps))
+                  mean = mean(steps)) %>%
+        arrange(ave = desc(mean))
+
+# Code to describe and show a strategy for imputing missing data
+
 
 
 
