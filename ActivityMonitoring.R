@@ -13,17 +13,21 @@ dateNull <- sum(is.na(activity$date))
 
 #convert csv to dplyr (tbl.df)
 activity <- tbl_df(activity)
-activity <- activity %>%
+activity_ <- activity %>%
         filter(!is.na(steps)) %>%
         select(steps, Date, interval)
 
 # 2. Histogram of the total number of steps taken each day
-stepsPerday <- activity %>%
-        group_by(Date) %>%
-        summarise(Steps = sum(steps)) %>%
-        select(Date, Steps)
 
-hist(stepsPerday$Steps, breaks = 10,
+stepsPerDay <- activity_ %>%
+                group_by(Date) %>%
+                summarise(Steps = sum(steps)) %>%
+                select(Date, Steps)
+
+
+
+
+hist(stepsPerDay$Steps , breaks = 10,
         xlab = "Number of steps per day",
         freq = TRUE,
         main = "Bell Shape distribution (Steps per Day)",
