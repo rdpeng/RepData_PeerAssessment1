@@ -78,60 +78,37 @@ md.pattern(activity)
 # This could lead to more type error.
 # copied another raw data saved into CSV
 activity2 <- read.csv( "activity.csv")
+
+# change to Df
+activity2df_ <- tbl_df(activity2)
+activity2df_$Date <- as.POSIXct(activity2df_$date)
+
+str(activity2df_)
+library(mice)
+# check NA data to impute
+
+
+md.pattern(activity2df_)
+
+summary(tempdata_)
+
+
+#If you would like to check the imputed data, for instance for the variable Ozone, you need #to enter the following line of code
+# tempdata_$imp$steps
+
+#The mice() function takes care of the imputing process
+tempdata_ <- mice(activity2df_)
+
+str(tempdata_$imp$steps)
+# Now we can get back the completed dataset using the complete() function. It is almost plain English:
+# The missing values have been replaced with the imputed values in the first of the five datasets. If you wish to use another one, just change the second parameter in the complete() function.
+#
+completedData <- complete(tempdata_, 1)
+
+
+
+str(completedData)
+
+activity2 <- as.matrix(activity2)
 View(activity2)
 summary(activity2)
-
-# Find out the % of NA that would affect the Data
-# Removing/ dropping categorical 5 minute interval since they will be part of grouping
-# and No NA are in there.
-
-
-
-# Now we have to look for > 5 % that have NA's
-# percentMissing
-
-percentMissing <- function(x){
-        sum(is.na(x)) /
-        length(x) * 100
-}
-
-# Apply the above funstion to check for the % of Na that are missing.
-# 2 on the apply function pertains to looking for NA in all of the column
-apply(activity2, 2, percentMissing)
-
-dontReplaceColumn <- activity2[,c(2,3)]
-replaceColumn <- activity2[,-c(2,3)]
-
-
-# The result > 5 % which is above the recommended allowance and technically unusable
-# and warrants explanation on why there are many NA's. These should not be imputed.
-# But for the purpose of this assingment we will still impute these NA's
-
-# 1 on the apply function pertains to looking for NA in all of the column
-missingByRow <- apply(activity2, 1, percentMissing)
-
-summary(missingByRow)
-table(missingByRow)
-
-replaceRowValues <- activity[missingByRow > 33.3333333333333,]
-dontReplaceRowValue <- activity2[missingByRow <33.3333333333333,]
-
-
-
-
-activityNA <- activity   %>%
-        filter(is.na(steps)) %>%
-        group_by(interval)
-# http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
-# will use to impute the NA
-
-
-temp_activity <- mice(activity, m = 5, maxit = 50, method = 'pmm', seed = 500)
-md.pattern(activity)
-
-md.pattern(temp_activity)
-temp_activity$imp$steps
-
-complete_activity <- complete(temp_activity, 1)
-
-
