@@ -1,12 +1,11 @@
 # Course Assingment 1
 install.packages("mice")
-install.packages("VIM")
-install.packages("pbkrtest")
+
 
 library(dplyr)
 library(ggplot2)
 library(mice)
-library (VIM)
+
 
 
 #load csv file
