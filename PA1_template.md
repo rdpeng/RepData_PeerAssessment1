@@ -1,53 +1,88 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 1. Code for reading the data from activity.csv file
-```{r}
+
+```r
 activityDF = read.csv('activity.csv', header = T)
 
 head(activityDF)
 ```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
 ## What is mean total number of steps taken per day?
 2. Histogram of the total number of steps taken each day
 Histogram plot of aggregate number of steps taken each day:
-```{r}
+
+```r
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.1.3
+```
+
+```r
 stepsByDate <- aggregate(steps ~ date, activityDF, sum)
 qplot(steps, data = stepsByDate,  binwidth = 500, main = 'Total number of steps per day', xlab = 'Number of steps')
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)
 3. Mean and median number of steps taken each day
 We calculate the mean and the median numbers of the steps taken each day:
 
 - Mean of steps taken each day.
-```{r}
+
+```r
 mean(stepsByDate$steps)
 ```
+
+```
+## [1] 10766.19
+```
 - Median of steps taken each day.
-```{r}
+
+```r
 median(stepsByDate$steps) 
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 4. Time series plot of the average number of steps taken
 
 Time series plot with average steps taken every day.
-```{r, echo=TRUE}
+
+```r
 avgDay <- aggregate(steps ~ interval, activityDF, mean)
 qplot(interval, steps, data = avgDay, geom = 'line', main = 'Average daily activity', xlab = '5-min interval', ylab = 'Average number of steps')
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)
+
 5. The 5-minute interval that, on average, contains the maximum number of steps
 
 Calculate which 5-minute interval contains the maximum number of steps:
-```{r}
+
+```r
 avgDay[which.max(avgDay$steps), ]
+```
+
+```
+##     interval    steps
+## 104      835 206.1698
 ```
 
 ## Imputing missing values
@@ -55,7 +90,8 @@ avgDay[which.max(avgDay$steps), ]
 
 The strategy is to create a new dataset that is equal to the original dataset but with the missing values filled in with use the mean/median for that day.
 
-```{r}
+
+```r
 stepsByDate <- aggregate(steps ~ date, data = activityDF, FUN=sum)
 filledDF <- merge(activityDF, stepsByDate, by="date", suffixes=c("",".new"))
 naSteps <- is.na(filledDF$steps)
@@ -66,18 +102,22 @@ filledDF <- filledDF[,1:3]
 7. Histogram of the total number of steps taken each day after missing values are imputed
 
 Plot the histogram of the total of steps taken each day after missing values are filled in.
-```{r}
+
+```r
 stepsByDate <- aggregate(steps ~ date, data=filledDF, FUN=sum)
 barplot(stepsByDate$steps, names.arg=stepsByDate$date, xlab="Date", ylab="Number of Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)
 ## Are there differences in activity patterns between weekdays and weekends?
 
 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays ans weekends
 use the weekday() function to differ weekdays and weekends and panel plot to compare both datasets.
 
-```{r}
+
+```r
 WeekPart <- function(date) {
-  if(weekdays(as.Date(date)) %in% c("sábado", "domingo")) {
+  if(weekdays(as.Date(date)) %in% c("sÃ¡bado", "domingo")) {
 		day <- "Weekend"
 	} else {
 		day <- "Weekday"
@@ -102,3 +142,5 @@ xyplot(steps~interval|weekPart,
 	layout=c(1,2)
 )
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)
