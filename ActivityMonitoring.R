@@ -1,5 +1,6 @@
 # Course Assingment 1
 library(dplyr)
+library(ggplot2)
 
 #load csv file
 activity <- read.csv( "activity.csv")
@@ -33,4 +34,20 @@ hist(stepsPerDay$Steps , breaks = 10,
         col = "red",
         labels = TRUE,
         type = "count")
+
+statsPerDay <- activity_ %>%
+        group_by(Date) %>%
+        summarise(Steps = sum(steps), meanSteps = mean(steps),
+                  medianSteps = median(steps)) %>%
+        select(Date, Steps, meanSteps, medianSteps)
+
+
+intervalStats <- activity_ %>%
+        group_by(interval) %>%
+        summarise(sum = sum(steps),
+                  mean = mean(steps))
+
+
+
+
 
