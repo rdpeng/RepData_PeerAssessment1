@@ -26,7 +26,10 @@ stepsPerDay <- activity_ %>%
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7dd5d2fb47276170158c557d2ae003efc1e60743
 hist(stepsPerDay$Steps , breaks = 10,
         xlab = "Number of steps per day",
         freq = TRUE,
