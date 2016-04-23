@@ -1,11 +1,10 @@
 # Course Assingment 1
+# Loading istall packages and libraries
 install.packages("mice")
-
 
 library(dplyr)
 library(ggplot2)
 library(mice)
-
 
 
 #load csv file
@@ -17,16 +16,18 @@ activity$Date <- as.POSIXct(activity$date)
 stepsNull <- sum(is.na(activity$steps))
 dateNull <- sum(is.na(activity$date))
 
+#Loading and Preprocessing of Data
 
-#convert csv to dplyr (tbl.df)
+#convert csv to dplyr (tbl.df) removing NA's
 activity <- tbl_df(activity)
-activity_ <- activity %>%
+activity_No_NA <- activity %>%
         filter(!is.na(steps)) %>%
         select(steps, Date, interval)
 
-# 2. Histogram of the total number of steps taken each day
+# 2. What is the meand total number of steps taken per day
+# Histogram of the total number of steps taken each day
 
-stepsPerDay <- activity_ %>%
+stepsPerDay <- activity_No_NA %>%
                 group_by(Date) %>%
                 summarise(Steps = sum(steps)) %>%
                 select(Date, Steps)
@@ -41,22 +42,27 @@ hist(stepsPerDay$Steps , breaks = 10,
         labels = TRUE,
         type = "count")
 
-statsPerDay <- activity_ %>%
+
+statsPerDay <- activity_No_NA %>%
         group_by(Date) %>%
-        summarise(Steps = sum(steps), meanSteps = mean(steps),
-                  medianSteps = median(steps)) %>%
-        select(Date, Steps, meanSteps, medianSteps)
+        summarise(Steps = sum(steps), meanSteps = mean(steps)) %>%
+        select(Date, Steps, meanSteps)
 
-# Do plot for:Time series plot of the average number of steps taken using
-# above "statsPerDay
 
+
+# What is the average daily activity pattern?
 # The 5-minute interval that, on average, contains the maximum number of steps
 
-intervalStats <- activity_ %>%
+intervalStats <- activity_No_NA %>%
         group_by(interval) %>%
         summarise(sum = sum(steps),
                   mean = mean(steps)) %>%
         arrange(ave = desc(mean))
+
+# Plot using
+q <- ggplot (intervalStats, aes(interval, mean))
+p  <- q + geom_point(color = "steelblue", size = 4, alpha = 1/2 ) + geom_smooth() + labs(title = "Average daily activity pattern") + labs(x = "5 min Interval", y = "Steps Mean Aggregated Days")
+
 
 # Code to describe and show a strategy for imputing missing data
 
@@ -75,6 +81,5 @@ md.pattern(temp_activity)
 temp_activity$imp$steps
 
 complete_activity <- complete(temp_activity, 1)
-
 
 
