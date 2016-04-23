@@ -1,6 +1,13 @@
 # Course Assingment 1
+install.packages("mice")
+install.packages("VIM")
+install.packages("pbkrtest")
+
 library(dplyr)
 library(ggplot2)
+library(mice)
+library (VIM)
+
 
 #load csv file
 activity <- read.csv( "activity.csv")
@@ -55,7 +62,20 @@ intervalStats <- activity_ %>%
 # Code to describe and show a strategy for imputing missing data
 
 
+activityNA <- activity   %>%
+        filter(is.na(steps)) %>%
+        group_by(interval)
+# http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
+# will use to impute the NA
 
+
+temp_activity <- mice(activity, m = 5, maxit = 50, method = 'pmm', seed = 500)
+md.pattern(activity)
+
+md.pattern(temp_activity)
+temp_activity$imp$steps
+
+complete_activity <- complete(temp_activity, 1)
 
 
 
