@@ -96,7 +96,7 @@ dateNull <- sum(is.na(activity$date))
 activity$Date <- as.POSIXct(activity$date)
 ```                
 
-Converted the file to tbl.df using dply package for ease of table manipulation
+Converted the file to tbl.df using dplyr package for ease of table manipulation
 Please check [Hadley Wickham's tutorial on dpylr][1]
         
 ```{r, echo=FALSE}
@@ -108,6 +108,36 @@ activity_No_NA <- activity %>%
 ```
 ```{r actvitytbl, echo=TRUE}
 activity
+```
+## Assingment rubrics
+###What is mean total number of steps taken per day?
+1. Calculate the total number of steps taken per day
+2. Calculate and report the mean and median of the total number of steps taken per day
+3. Make a histogram of the total number of steps taken each day
+```{r question1,echo=FALSE}
+stepsPerDay <- activity_No_NA %>%
+                group_by(Date) %>%
+                summarise(Steps = sum(steps)) %>%
+                select(Date, Steps)
+```
+
+```{r}
+statsPerDay <- activity_No_NA %>%
+        group_by(Date) %>%
+        summarise(Steps = sum(steps), meanSteps = mean(steps)) %>%
+        select(Date, Steps, meanSteps)
+```
+
+Histogram
+```{r, echo=TRUE}
+hist(stepsPerDay$Steps , breaks = 10,
+        xlab = "Number of steps per day",
+        freq = TRUE,
+        main = "Bell Shape distribution (Steps per Day)",
+        axes = TRUE,
+        col = "red",
+        labels = TRUE,
+        type = "count")
 ```
 
 
