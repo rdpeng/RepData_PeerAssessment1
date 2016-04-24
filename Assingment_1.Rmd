@@ -49,9 +49,9 @@ are a total of 17,568 observations in this
 dataset.
                
 ### Loading and preprocessing the data
-
+        
 The following are libraries and packages used:
-```{r, echo = TRUE}
+```{r, echo = TRUE, results="hide"}
 library(dplyr)
 library(ggplot2)
 library(mice)
@@ -64,7 +64,7 @@ opts_chunk$set(eval=TRUE)
 ```
 
 Downloaded zip file from the Rdpeng Repo and eventually unzip using OS specific program. Check and set specific directory in your Rstudio using:
-```{r, echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 getwd()
 ```
         
@@ -103,7 +103,8 @@ activity_No_NA <- activity %>%
         filter(!is.na(steps)) %>%
         select(steps, Date, interval)
 ```
-```{r actvitytbl, echo=TRUE}
+
+```{r actvitytbl, echo=TRUE, results="hide"}
 activity
 ```
 ## Assingment rubrics
@@ -194,13 +195,15 @@ md.pattern(activity2df_)
 
 - Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-```{r, echo=TRUE}
+```{r, echo=TRUE, results="hide"}
 #If you would like to check the imputed data, for instance for the variable steps, 
 # tempdata_$imp$steps
 #The mice() function takes care of the imputing process
 
 tempdata_ <- mice(activity2df_)
+```
 
+```{r, echo=TRUE}
 summary(tempdata_)
 str(tempdata_$imp$steps)
 ```
