@@ -7,21 +7,22 @@ title: "Reproducible Research: Peer Assessment 1"
 
 ## Loading and preprocessing the data
 
+```{r}
 unzip("activity.zip")
-
 mydata <- read.csv("activity.csv")
-
+```
 ## What is mean total number of steps taken per day?
 ###Make a histogram of the total number of steps taken each day
+```{r}
 totalsteps <- aggregate(steps ~ date, data=mydata, FUN=sum)
-
 qplot(date, data=totalsteps, geom="bar", weight=steps, ylab="steps")
-
+```
 
 ###Calculate and report the mean and median total number of steps taken per day
+```{r}
 mean(totalsteps$steps)
 median(totalsteps$steps)
-
+```
 ## What is the average daily activity pattern?
 
 
