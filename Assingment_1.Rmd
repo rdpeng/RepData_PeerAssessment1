@@ -274,12 +274,12 @@ print(printq2)
 
 
 submitted by :  
-
--        Felix Barangan, 
--        MS, Health Informatics, Business Informatics
--       Medical Laboratory Scientist
--        Registered Nurse
--        Certified OBIEE Implementation Specialist
+                
+Felix Barangan
+- MS, Health Informatics, Business Informatics
+- Medical Laboratory Scientist
+- Registered Nurse
+- Certified OBIEE Implementation Specialist
         
 [1]: https://www.youtube.com/watch?v=8SGif63VW6E
 [2]: http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
