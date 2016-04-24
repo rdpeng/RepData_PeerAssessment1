@@ -104,11 +104,20 @@ str(tempdata_$imp$steps)
 # The missing values have been replaced with the imputed values in the first of the five datasets. If you wish to use another one, just change the second parameter in the complete() function.
 #
 completedData <- complete(tempdata_, 1)
-
-
-
 str(completedData)
+#convert data to df
+completedDataDf_ <- tbl_df(completedData)
 
-activity2 <- as.matrix(activity2)
-View(activity2)
-summary(activity2)
+stepsPerDay_withImput <- completedDataDf_ %>%
+        group_by(Date) %>%
+        summarise(Steps = sum(steps)) %>%
+        select(Date, Steps)
+
+hist(stepsPerDay_withImput$Steps , breaks = 10,
+     xlab = "Number of steps per day (Imputed)",
+     freq = TRUE,
+     main = "Bell Shape distribution (Steps per Day)",
+     axes = TRUE,
+     col = "red",
+     labels = TRUE,
+     type = "count")
