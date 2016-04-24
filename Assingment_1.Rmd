@@ -47,11 +47,11 @@ The variables included in this dataset are:
 The dataset is stored in a comma-separated-value (CSV) file and there
 are a total of 17,568 observations in this
 dataset.
-
+               
 ### Loading and preprocessing the data
 
 The following are libraries and packages used:
-```{r, echo = FALSE}
+```{r, echo = TRUE}
 library(dplyr)
 library(ggplot2)
 library(mice)
@@ -96,7 +96,7 @@ activity$Date <- as.POSIXct(activity$date)
 Converted the file to tbl.df using dplyr package for ease of table manipulation.  
 Please check [Hadley Wickham's tutorial on dpylr][1]
         
-```{r, echo=FALSE}
+```{r, echo=TRUE }
 #convert csv to dplyr (tbl.df) removing NA's
 activity <- tbl_df(activity)
 activity_No_NA <- activity %>%
@@ -118,7 +118,7 @@ stepsPerDay <- activity_No_NA %>%
                 select(Date, Steps)
 ```
 
-```{r}
+```{r, echo=TRUE}
 statsPerDay <- activity_No_NA %>%
         group_by(Date) %>%
         summarise(Steps = sum(steps), meanSteps = mean(steps)) %>%
@@ -142,7 +142,7 @@ hist(stepsPerDay$Steps , breaks = 10,
 2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 The above question can be easily reproduce and manipulated using dplyr package.
-```{r}
+```{r, echo=TRUE}
 intervalStats <- activity_No_NA %>%
         group_by(interval) %>%
         summarise(sum = sum(steps),
@@ -150,11 +150,11 @@ intervalStats <- activity_No_NA %>%
         arrange(ave = desc(mean))
 ```
 
-```{r}
+```{r, echo=TRUE}
 intervalStats
 ```
 The 835th minute interval is the maximum steps recorded.
-```{r}
+```{r, echo=TRUE}
 subset(intervalStats, interval == 835)
 ```
         
@@ -173,7 +173,7 @@ Note that there are a number of days/intervals where there are missing values (c
 
 To answer this question, I decided to use the [mice package][2].
 to find the total number of row, first I decided to copy the original csv.
-```{r}
+```{r, echo=TRUE}
 activity2 <- read.csv( "activity.csv")
 
 # change to Df
@@ -194,7 +194,7 @@ md.pattern(activity2df_)
 
 - Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-```{r}
+```{r, echo=TRUE}
 #If you would like to check the imputed data, for instance for the variable steps, 
 # tempdata_$imp$steps
 #The mice() function takes care of the imputing process
@@ -206,21 +206,21 @@ str(tempdata_$imp$steps)
 ```
 
 Now we can get back the completed dataset using the complete() function.
-```{r}
+```{r, echo=TRUE}
 completedData <- complete(tempdata_, 1)
 
 str(completedData)
 ```
 
 convert data to df
-```{r}
+```{r, echo=TRUE}
 completedDataDf_ <- tbl_df(completedData)
 ```
 
 - Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 New activity data with imputed values
-```{r}
+```{r, echo=TRUE}
 stepsPerDay_withImput <- completedDataDf_ %>%
         group_by(Date) %>%
         summarise(Steps = sum(steps)) %>%
@@ -232,7 +232,7 @@ stepsPerDay_withImput <- completedDataDf_ %>%
 New histogram for data with imputed values
 The results may not greatly differ with that of the non imputed data. There probably just a change in the variance.
 The mice method used is the 'pmm'. please see [r-blooger for further info][2]
-```{r}
+```{r, echo=TRUE}
 
 hist(stepsPerDay_withImput$Steps , breaks = 10,
      xlab = "Number of steps per day (Imputed)",
@@ -249,7 +249,7 @@ hist(stepsPerDay_withImput$Steps , breaks = 10,
 
 - Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 Convert date to extract day of the week.
-```{r}
+```{r, echo=TRUE}
 dayofWeek <- weekdays(as.Date(activity2df_$date))
 ```
 
@@ -257,7 +257,7 @@ Using dplyr, create another variable- Weekday using "mutate", then group by 5 mi
 - Weekdays will be labeled = TRUE
 -Weekends will be labeled = FALSE
 
-```{r}
+```{r, echo=TRUE}
 weekPatterns <- completedDataDf_  %>%
         mutate(dayofWeek = weekdays(as.Date(activity2df_$date)))  %>%
         mutate(Weekdays = as.character(dayofWeek %in% c("Monday","Tuesday","Wednesday","Thursday","Friday"))) %>%
