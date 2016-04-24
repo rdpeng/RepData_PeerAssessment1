@@ -80,9 +80,9 @@ This may not be necessary by I do like to have a general rule to check the data 
 str(activity)
 names(activity)
 summary(activity)
-```
+```     
 
-Based on the above summary, It trned out that there are   NA's   :2304   on one of the variable (step).
+Based on the above summary, It turned out that there are 2304 NA's on the variable "step".
 
 Run a code to determine if there are any other NA value that will affect analysis. Coerce Date variable from character to date to extract days of the week value
 
@@ -93,7 +93,7 @@ dateNull <- sum(is.na(activity$date))
 activity$Date <- as.POSIXct(activity$date)
 ```                
 
-Converted the file to tbl.df using dplyr package for ease of table manipulation
+Converted the file to tbl.df using dplyr package for ease of table manipulation.  
 Please check [Hadley Wickham's tutorial on dpylr][1]
         
 ```{r, echo=FALSE}
@@ -163,6 +163,7 @@ subset(intervalStats, interval == 835)
 q <- ggplot (intervalStats, aes(interval, mean))
 p  <- q + geom_point(color = "steelblue", size = 4, alpha = 1/2 ) + geom_smooth() + labs(title = "Average daily activity pattern") + labs(x = "5 min Interval", y = "Steps Mean Aggregated Days")
 
+print(p)
 ```
 
 ### Imputing missing values
@@ -192,12 +193,12 @@ md.pattern(activity2df_)
 
 
 - Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-...impute the data
-```{r}
-#If you would like to check the imputed data, for instance for the variable Ozone, you need #to enter the following line of code
-# tempdata_$imp$steps
 
+```{r}
+#If you would like to check the imputed data, for instance for the variable steps, 
+# tempdata_$imp$steps
 #The mice() function takes care of the imputing process
+
 tempdata_ <- mice(activity2df_)
 
 summary(tempdata_)
@@ -211,7 +212,7 @@ completedData <- complete(tempdata_, 1)
 str(completedData)
 ```
 
-#convert data to df
+convert data to df
 ```{r}
 completedDataDf_ <- tbl_df(completedData)
 ```
@@ -230,7 +231,7 @@ stepsPerDay_withImput <- completedDataDf_ %>%
 
 New histogram for data with imputed values
 The results may not greatly differ with that of the non imputed data. There probably just a change in the variance.
-The mice method use is the 'pmm'. please see [r-blooger for further info][2]
+The mice method used is the 'pmm'. please see [r-blooger for further info][2]
 ```{r}
 
 hist(stepsPerDay_withImput$Steps , breaks = 10,
@@ -268,15 +269,17 @@ Plot using ggplot2
 ```{r, echo=TRUE}
 q2 <- qplot(interval,NumberSte, data = weekPatterns, color= Weekdays, facets =  Weekdays~.)
 printq2 <- q2 + geom_line() +  labs(title = "Comparison bet Weekdays:Labeled TRUE and Weekend:Labeled FALSE") + labs(x = "5 min Interval", y = "Number of Aggregated Steps")
+print(printq2)
 ```
 
 
-submitted by : 
-        Felix Barangan, 
-        MS, Health Informatics, Business Informatics
-        Medical Laboratory Scientist
-        Registered Nurse
-        Certified OBIEE Implementation Specialist
+submitted by :  
+
+-        Felix Barangan, 
+-        MS, Health Informatics, Business Informatics
+-       Medical Laboratory Scientist
+-        Registered Nurse
+-        Certified OBIEE Implementation Specialist
         
 [1]: https://www.youtube.com/watch?v=8SGif63VW6E
 [2]: http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
