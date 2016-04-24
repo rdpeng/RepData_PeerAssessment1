@@ -6,14 +6,7 @@ date: "April 24, 2016"
     keep_md: true
 ---
 
-
----
-title: "Course_Assignment_1"
-author: "Felix Barangan"
-date: "April 24, 2016"
-output: html_document
-
----
+                
                                          
 ## Introduction
 
