@@ -22,7 +22,7 @@ summary(activity)
 
 stepsNull <- sum(is.na(activity$steps))
 dateNull <- sum(is.na(activity$date))
-# coerve Date  class into "Date"
+# coerce Date  class into "Date"
 activity$Date <- as.POSIXct(activity$date)
 
 #Loading and Preprocessing of Data
@@ -33,7 +33,7 @@ activity_No_NA <- activity %>%
         filter(!is.na(steps)) %>%
         select(steps, Date, interval)
 
-# 2. What is the meand total number of steps taken per day
+# 2. What is the mean total number of steps taken per day
 # Histogram of the total number of steps taken each day
 
 stepsPerDay <- activity_No_NA %>%
@@ -96,10 +96,7 @@ str(activity2df_)
 library(mice)
 # check NA data to impute
 
-
 md.pattern(activity2df_)
-
-summary(tempdata_)
 
 
 #If you would like to check the imputed data, for instance for the variable Ozone, you need #to enter the following line of code
@@ -107,13 +104,14 @@ summary(tempdata_)
 
 #The mice() function takes care of the imputing process
 tempdata_ <- mice(activity2df_)
+summary(tempdata_)
 
 str(tempdata_$imp$steps)
-# Now we can get back the completed dataset using the complete() function. It is almost plain English:
-# The missing values have been replaced with the imputed values in the first of the five datasets. If you wish to use another one, just change the second parameter in the complete() function.
-#
+# Now we can get back the completed dataset using the complete() function.
+
 completedData <- complete(tempdata_, 1)
 str(completedData)
+
 #convert data to df
 completedDataDf_ <- tbl_df(completedData)
 
@@ -142,3 +140,4 @@ weekPatterns <- completedDataDf_  %>%
 
 q2 <- qplot(interval,NumberSte, data = weekPatterns, color= Weekdays, facets =  Weekdays~.)
 printq2 <- q2 + geom_line() +  labs(title = "Comparison bet Weekdays:Labeled TRUE and Weekend:Labeled FALSE") + labs(x = "5 min Interval", y = "Number of Aggregated Steps")
+printq2
