@@ -44,9 +44,6 @@ The variables included in this dataset are:
 * **interval**: Identifier for the 5-minute interval in which
     measurement was taken
 
-
-
-
 The dataset is stored in a comma-separated-value (CSV) file and there
 are a total of 17,568 observations in this
 dataset.
@@ -62,24 +59,24 @@ library(knitr)
 ```             
 
 default global options:          
-```{r setopions, echo=FALSE}
+```{r setopions, echo=TRUE}
 opts_chunk$set(eval=TRUE)
 ```
 
-Zip file downloaded from the Rdpeng Repo and eventually unzip using OS specific program. Check and set specific directory using:
-```{r, echo=FALSE}
+Downloaded zip file from the Rdpeng Repo and eventually unzip using OS specific program. Check and set specific directory in your Rstudio using:
+```{r, echo=TRUE}
 getwd()
 ```
 
 In my case, I named the .csv file as "activity.csv"
-Load fil:
-```{r load_file, echo=FALSE}
+Load file:
+```{r load_file, echo=TRUE}
 #load csv file
 activity <- read.csv( "activity.csv")
 ```
        
 This may not be necessary by I do like to have a general rule to check the data file
-```{r checkData, echo=FALSE}
+```{r checkData, echo=TRUE}
 str(activity)
 names(activity)
 summary(activity)
@@ -152,11 +149,134 @@ intervalStats <- activity_No_NA %>%
                   mean = mean(steps)) %>%
         arrange(ave = desc(mean))
 ```
-The
+
 ```{r}
 intervalStats
 ```
+The 835th minute interval is the maximum steps recorded.
+```{r}
+subset(intervalStats, interval == 835)
+```
+        
+```{r, echo= TRUE}
+# Plot using
+q <- ggplot (intervalStats, aes(interval, mean))
+p  <- q + geom_point(color = "steelblue", size = 4, alpha = 1/2 ) + geom_smooth() + labs(title = "Average daily activity pattern") + labs(x = "5 min Interval", y = "Steps Mean Aggregated Days")
+
+```
+
+### Imputing missing values
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+- Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+To answer this question, I decided to use the [mice package][2].
+to find the total number of row, first I decided to copy the original csv.
+```{r}
+activity2 <- read.csv( "activity.csv")
+
+# change to Df
+activity2df_ <- tbl_df(activity2)
+activity2df_$Date <- as.POSIXct(activity2df_$date)
+
+str(activity2df_)
+
+library(mice)
+
+# check NA data to impute
+
+md.pattern(activity2df_)
+
+# The result showed "steps" is the only variable with  2304 NA's 
+```
 
 
+- Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+...impute the data
+```{r}
+#If you would like to check the imputed data, for instance for the variable Ozone, you need #to enter the following line of code
+# tempdata_$imp$steps
+
+#The mice() function takes care of the imputing process
+tempdata_ <- mice(activity2df_)
+
+summary(tempdata_)
+str(tempdata_$imp$steps)
+```
+
+Now we can get back the completed dataset using the complete() function.
+```{r}
+completedData <- complete(tempdata_, 1)
+
+str(completedData)
+```
+
+#convert data to df
+```{r}
+completedDataDf_ <- tbl_df(completedData)
+```
+
+- Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+New activity data with imputed values
+```{r}
+stepsPerDay_withImput <- completedDataDf_ %>%
+        group_by(Date) %>%
+        summarise(Steps = sum(steps)) %>%
+        select(Date, Steps)
+```
+
+- Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+New histogram for data with imputed values
+The results may not greatly differ with that of the non imputed data. There probably just a change in the variance.
+The mice method use is the 'pmm'. please see [r-blooger for further info][2]
+```{r}
+
+hist(stepsPerDay_withImput$Steps , breaks = 10,
+     xlab = "Number of steps per day (Imputed)",
+     freq = TRUE,
+     main = "Bell Shape distribution (Steps per Day)",
+     axes = TRUE,
+     col = "red",
+     labels = TRUE,
+     type = "count")
+
+```
+
+### Are there differences in activity patterns between weekdays and weekends?
+
+- Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+Convert date to extract day of the week.
+```{r}
+dayofWeek <- weekdays(as.Date(activity2df_$date))
+```
+
+Using dplyr, create another variable- Weekday using "mutate", then group by 5 minute interval and Weekdays (Days of the week).
+- Weekdays will be labeled = TRUE
+-Weekends will be labeled = FALSE
+
+```{r}
+weekPatterns <- completedDataDf_  %>%
+        mutate(dayofWeek = weekdays(as.Date(activity2df_$date)))  %>%
+        mutate(Weekdays = as.character(dayofWeek %in% c("Monday","Tuesday","Wednesday","Thursday","Friday"))) %>%
+        group_by (interval, Weekdays) %>%
+        summarise(NumberSte = sum(steps))
+```
+        
+Plot using ggplot2
+```{r, echo=TRUE}
+q2 <- qplot(interval,NumberSte, data = weekPatterns, color= Weekdays, facets =  Weekdays~.)
+printq2 <- q2 + geom_line() +  labs(title = "Comparison bet Weekdays:Labeled TRUE and Weekend:Labeled FALSE") + labs(x = "5 min Interval", y = "Number of Aggregated Steps")
+```
+
+
+submitted by : 
+        Felix Barangan, 
+        MS, Health Informatics, Business Informatics
+        Medical Laboratory Scientist
+        Registered Nurse
+        Certified OBIEE Implementation Specialist
         
 [1]: https://www.youtube.com/watch?v=8SGif63VW6E
+[2]: http://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/
