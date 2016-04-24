@@ -131,4 +131,5 @@ weekPatterns <- completedDataDf_  %>%
         group_by (interval, Weekdays) %>%
         summarise(NumberSte = sum(steps))
 
-q2 <- qplot()
+q2 <- qplot(interval,NumberSte, data = weekPatterns, facets =  Weekdays~.)
+printq2 <- q2 + geom_line() +  labs(title = "Comparison bet Weekdays:Labeled TRUE and Weekend:Labeled FALSE") + labs(x = "5 min Interval", y = "Number of Aggregated Steps")
