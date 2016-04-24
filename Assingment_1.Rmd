@@ -2,8 +2,12 @@
 title: "Course_Assignment_1"
 author: "Felix Barangan"
 date: "April 24, 2016"
-output: html_document
-
+output: 
+  html_document: 
+    fig_caption: yes
+    keep_md: yes
+    theme: spacelab
+    toc: yes
 ---
                                          
 ## Introduction
@@ -56,12 +60,9 @@ library(dplyr)
 library(ggplot2)
 library(mice)
 library(knitr)
+library(xtable)
 ```             
-
-default global options:          
-```{r setopions, echo=TRUE}
-opts_chunk$set(eval=TRUE)
-```
+        
 
 Downloaded zip file from the Rdpeng Repo and eventually unzip using OS specific program. Check and set specific directory in your Rstudio using:
 ```{r, echo=TRUE, results="hide"}
@@ -79,9 +80,10 @@ This may not be necessary by I do like to have a general rule to check the data 
 ```{r checkData, echo=TRUE}
 str(activity)
 names(activity)
-summary(activity)
+xt <- xtable(summary(activity))
+print(xt)
 ```     
-
+                
 Based on the above summary, It turned out that there are 2304 NA's on the variable "step".
 
 Run a code to determine if there are any other NA value that will affect analysis. Coerce Date variable from character to date to extract days of the week value
@@ -103,9 +105,11 @@ activity_No_NA <- activity %>%
         filter(!is.na(steps)) %>%
         select(steps, Date, interval)
 ```
-
+        
 ```{r actvitytbl, echo=TRUE, results="hide"}
-activity
+
+xtActivity <- xtable(activity)
+print(xtActivity)
 ```
 ## Assingment rubrics
 ###What is mean total number of steps taken per day?
@@ -182,7 +186,9 @@ activity2df_ <- tbl_df(activity2)
 activity2df_$Date <- as.POSIXct(activity2df_$date)
 
 str(activity2df_)
+```
 
+```{r, echo=FALSE}
 library(mice)
 
 # check NA data to impute
@@ -211,8 +217,8 @@ str(tempdata_$imp$steps)
 Now we can get back the completed dataset using the complete() function.
 ```{r, echo=TRUE}
 completedData <- complete(tempdata_, 1)
-
 str(completedData)
+
 ```
 
 convert data to df

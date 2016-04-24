@@ -1,13 +1,13 @@
 # Course Assingment 1
 # Loading install packages and libraries
 install.packages("mice")
+install.packages("xtable")
 
 library(dplyr)
 library(ggplot2)
 library(mice)
 library(knitr)
-
-
+library(xtable)
 
 
 #load csv file
