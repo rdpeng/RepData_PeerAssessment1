@@ -1,20 +1,29 @@
 # Course Assingment 1
-# Loading istall packages and libraries
+# Loading install packages and libraries
 install.packages("mice")
 
 library(dplyr)
 library(ggplot2)
 library(mice)
+library(knitr)
+
 
 
 #load csv file
 activity <- read.csv( "activity.csv")
-activity$Date <- as.POSIXct(activity$date)
+
 
 
 # check null/NA values.
+str(activity)
+names(activity)
+summary(activity)
+
+
 stepsNull <- sum(is.na(activity$steps))
 dateNull <- sum(is.na(activity$date))
+# coerve Date  class into "Date"
+activity$Date <- as.POSIXct(activity$date)
 
 #Loading and Preprocessing of Data
 
@@ -131,5 +140,5 @@ weekPatterns <- completedDataDf_  %>%
         group_by (interval, Weekdays) %>%
         summarise(NumberSte = sum(steps))
 
-q2 <- qplot(interval,NumberSte, data = weekPatterns, facets =  Weekdays~.)
+q2 <- qplot(interval,NumberSte, data = weekPatterns, color= Weekdays, facets =  Weekdays~.)
 printq2 <- q2 + geom_line() +  labs(title = "Comparison bet Weekdays:Labeled TRUE and Weekend:Labeled FALSE") + labs(x = "5 min Interval", y = "Number of Aggregated Steps")

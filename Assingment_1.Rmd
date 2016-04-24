@@ -60,9 +60,40 @@ library(ggplot2)
 library(mice)
 library(knitr)
 ```             
-               
+
+default global options:          
 ```{r setopions, echo=FALSE}
 opts_chunk$set(eval=TRUE)
 ```
 
-                
+Zip file downloaded from the Rdpeng Repo and eventually unzip using OS specific program. Check and set specific directory using:
+```{r, echo=FALSE}
+getwd()
+```
+
+In my case, I named the .csv file as "activity.csv"
+Load fil:
+```{r load_file, echo=FALSE}
+#load csv file
+activity <- read.csv( "activity.csv")
+```
+       
+This may not be necessary by I do like to have a general rule to check the data file
+```{r checkData, echo=FALSE}
+str(activity)
+names(activity)
+summary(activity)
+```
+
+Based on the above summary, It trned out that there are   NA's   :2304   on one of the variable (step).
+
+Run a code to determine if there are any other NA value that will affect analysis. Coerce Date variable from character to date to extract days of the week value
+
+```{r sumNull, echo=TRUE}
+stepsNull <- sum(is.na(activity$steps))
+dateNull <- sum(is.na(activity$date))
+
+activity$Date <- as.POSIXct(activity$date)
+```                
+
+
