@@ -67,7 +67,7 @@ Downloaded zip file from the Rdpeng Repo and eventually unzip using OS specific 
 ```{r, echo=TRUE}
 getwd()
 ```
-
+        
 In my case, I named the .csv file as "activity.csv"
 Load file:
 ```{r load_file, echo=TRUE}
