@@ -96,4 +96,22 @@ dateNull <- sum(is.na(activity$date))
 activity$Date <- as.POSIXct(activity$date)
 ```                
 
+Converted the file to tbl.df using dply package for ease of table manipulation
+Please check [Hadley Wickham's tutorial on dpylr][1]
+        
+```{r, echo=FALSE}
+#convert csv to dplyr (tbl.df) removing NA's
+activity <- tbl_df(activity)
+activity_No_NA <- activity %>%
+        filter(!is.na(steps)) %>%
+        select(steps, Date, interval)
+```
+```{r actvitytbl, echo=TRUE}
+activity
+```
 
+
+
+
+
+[1]https://www.youtube.com/watch?v=8SGif63VW6E
