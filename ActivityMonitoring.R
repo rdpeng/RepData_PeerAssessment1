@@ -121,3 +121,14 @@ hist(stepsPerDay_withImput$Steps , breaks = 10,
      col = "red",
      labels = TRUE,
      type = "count")
+
+#Are there differences in activity patterns between weekdays and weekends?
+dayofWeek <- weekdays(as.Date(activity2df_$date))
+
+weekPatterns <- completedDataDf_  %>%
+        mutate(dayofWeek = weekdays(as.Date(activity2df_$date)))  %>%
+        mutate(Weekdays = as.character(dayofWeek %in% c("Monday","Tuesday","Wednesday","Thursday","Friday"))) %>%
+        group_by (interval, Weekdays) %>%
+        summarise(NumberSte = sum(steps))
+
+q2 <- qplot()
