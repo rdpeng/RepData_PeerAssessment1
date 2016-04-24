@@ -9,6 +9,7 @@ library(knitr)
 
 
 
+
 #load csv file
 activity <- read.csv( "activity.csv")
 
