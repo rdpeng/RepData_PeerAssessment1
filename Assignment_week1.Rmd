@@ -2,12 +2,15 @@
 title: "Assignment_week1"
 author: "Eszter Takacs"
 date: "27. April 2016"
-output: html_document
+output:
+  html_document:
+    keep_md: yes
 ---
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-
+Loading the data
+----------------
 * Loading and preprocessing the data
 
 ```{r echo=TRUE}
@@ -15,7 +18,9 @@ setwd("~/Eszter C/Spotfire Edu/Data science")
 unzip("repdata-data-activity.zip")
 mydata <- read.csv("activity.csv")
 ```
-## What is mean total number of steps taken per day?
+
+What is mean total number of steps taken per day?
+-------------------------------------------------
 * Make a histogram of the total number of steps taken each day
 ```{r echo=TRUE}
 totalsteps <- aggregate(steps ~ date, data=mydata, FUN=sum)
@@ -30,8 +35,8 @@ qplot(date, data=totalsteps, geom="bar", weight=steps, ylab="steps", xlab="day",
 mean(totalsteps$steps)
 median(totalsteps$steps)
 ```
-## What is the average daily activity pattern?
-
+What is the average daily activity pattern?
+-------------------------------------------
 * Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ```{r echo=TRUE}
 intervalsteps <- aggregate(steps ~ interval, data=mydata, FUN=mean)
@@ -42,7 +47,8 @@ ggplot(intervalsteps, aes(interval, steps)) + geom_line() + xlab("") + ylab("Int
 ```{r echo=TRUE}
 intervalsteps$interval[which.max(intervalsteps$steps)]
 ```
-## Imputing missing values
+Imputing missing values
+-----------------------
 * Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 ```{r echo=TRUE}
 sum(!complete.cases(mydata))
@@ -64,7 +70,8 @@ median(totalsteps2$steps)
 median(totalsteps$steps)
 ##impact of replacing NA-s: decreasing values, used logic: interval mean
 ```
-## Are there differences in activity patterns between weekdays and weekends?
+Are there differences in activity patterns between weekdays and weekends?
+--------------------------------------------------------------------------
 * Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 ```{r echo=TRUE}
 mydata2$date <- as.Date(mydata2$date)
@@ -87,5 +94,4 @@ xyplot(steps ~ interval | Day, stepsDay, type = "l", layout = c(1, 2),
        xlab = "Interval", ylab = "Number of steps")
 ```
 
-    keep_md: yes
 ---
