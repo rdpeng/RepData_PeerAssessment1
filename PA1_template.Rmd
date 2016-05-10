@@ -5,21 +5,63 @@ output:
     keep_md: true
 ---
 
+```{r global_options, include=TRUE}                                
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+```
 
 ## Loading and preprocessing the data
 
+```{r read data,echo=TRUE}
+data<-read.csv("activity.csv",stringsAsFactors = FALSE)
 
+```
 
 ## What is mean total number of steps taken per day?
+```{r histogram of total number of steps,echo=TRUE}
+datanew<-data%>%group_by(date)%>%summarize(sumofstep=sum(steps))
+ggplot(datanew)+aes(sumofstep)+geom_histogram()
 
+```
 
 
 ## What is the average daily activity pattern?
 
+```{r mean&median, echo=TRUE}
+datasummary<-datanew%>%summarize(mean=mean(sumofstep,na.rm=TRUE),median=median(sumofstep,na.rm=TRUE))
 
+```
+The mean is `r datasummary$mean` and median is `r datasummary$median`
+```{r time series,echo=TRUE}
+timeseries<-data%>%group_by(interval)%>%summarize(avg=mean(steps,na.rm=TRUE))
+ggplot(timeseries)+aes(interval,avg)+geom_line()
+
+```
 
 ## Imputing missing values
+```{r input missing values,echo=TRUE}
+data_imput<-data
+datamiss<-is.na(data$steps)
+intervalmean<- tapply(data_imput$steps, data_imput$interval, mean, na.rm=TRUE, simplify = TRUE)
+data_imput$steps[datamiss] <- intervalmean[as.character(data_imput$interval[datamiss])]
 
+dataimputnew<-data_imput%>%group_by(date)%>%summarise(sumofstep=sum(steps))
+ggplot(dataimputnew)+aes(sumofstep)+geom_histogram()
+dataimputsummary<-dataimputnew%>%summarize(mean=mean(sumofstep,na.rm=TRUE),median=median(sumofstep,na.rm=TRUE))
+```
+The number of missing values `r sum(is.na(data_imput))
+`
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r weekdays and weekends,echo=TRUE}
+
+data_imput$date<-ymd(data_imput$date)
+week<-data_imput%>%mutate(week=ifelse(weekdays(data_imput$date)=="Saturday"|weekdays(data_imput$date)=="Sunday","weekend","weekday"))
+weeknew<-week%>%group_by(interval,week)%>%summarize(avgsteps=mean(steps,na.rm=TRUE))
+
+ggplot(weeknew)+aes(interval,avgsteps)+geom_line()+facet_wrap(~week)
+
+```
