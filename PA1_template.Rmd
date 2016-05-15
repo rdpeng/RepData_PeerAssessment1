@@ -4,22 +4,84 @@ output:
   html_document:
     keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
-
-
+```{r}
+# We load the Dataset "Activity monitoring data" if no exists
+if (!exists("datos")){
+  datos <- read.csv("activity.csv")
+}
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r}
+# We aggregate data by date and then we make an histogram (with 15 intervals)
+data <- aggregate(steps ~ date, data=datos, sum, na.rm = TRUE)
+hist(data$steps, breaks=15, main="Total Steps per Day", xlab="Steps", ylab="Frequency")
 
+# Calculate and report the mean and median of the total number of steps taken per day
+steps_mean <- mean(datos$steps, na.rm=TRUE)
+steps_median <- median(datos$steps, na.rm=TRUE)
+print(paste("The mean steps per day is: ", round(steps_mean,2),"and the median is: ", steps_median ))
+```
 
 ## What is the average daily activity pattern?
+In this case, we aggregate the data on steps by the interval and took the mean then we make:
 
+1. A time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+2. Answer the question: Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
+```{r}
+stepsdata <- aggregate(steps ~ interval, data=datos, mean, na.rm=TRUE)
+plot(stepsdata$interval, stepsdata$steps, type="l", main="Average Steps per Five Minute Interval",
+     xlab="Interval No.", ylab="steps")
+
+maxsteps <- max(stepsdata$steps)
+print(paste("The maximum number of steps in a five minute interval was: ", round(maxsteps,2)))
+
+```
 
 ## Imputing missing values
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+```{r}
+print(paste("The total number of missing values in the dataset is: ",sum(is.na(datos$steps))))
+```
+2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+In this case, I replace the NA value with the median value in the data set because the median is more robust than the mean.
 
 
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r}
+new_datos<- datos
+new_datos$steps[is.na(new_datos$steps)] <- median(datos$steps, na.rm=TRUE)
+```
+
+4. Make a histogram of the total number of steps taken each day and calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?.
+
+```{r}
+date_new_datos <- aggregate(steps ~ date, data=new_datos, sum, na.rm=TRUE)
+hist(date_new_datos$steps, breaks=15, main="Total Steps per Day \n Adjusted Data",
+     xlab="Steps", ylab="Frequency")
+nsteps_mean <- mean(new_datos$steps)
+nsteps_median <- median(new_datos$steps)
+print(paste("The mean steps per day is: ", round(nsteps_mean,2),"and the median is: ", nsteps_median ))
+```
+We can observe than the value of mean goes down. The median takes the same value earlier, i.e. 0
 
 ## Are there differences in activity patterns between weekdays and weekends?
+1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r}
+new_datos$date <- as.Date(new_datos$date)
+new_datos$dayname <- weekdays(new_datos$date)
+new_datos$weekend <- as.factor(ifelse(new_datos$dayname == "sabado" |
+                                        new_datos$dayname == "domingo", "weekend", "weekday"))
+```
+2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis)
+```{r}
+library(lattice)
+newplot <- aggregate(steps ~ interval + weekend, new_datos, mean)
+xyplot(steps ~ interval | factor(weekend), data=newplot, aspect=1/3, type="l")
+```
