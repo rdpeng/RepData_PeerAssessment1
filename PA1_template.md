@@ -6,6 +6,12 @@
 
 
 ```r
+if(!file.exists("getdata-projectfiles-UCI HAR Dataset.zip")) {
+        tmp <- tempfile()
+        download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", tmp)
+        unzip(tmp)
+        unlink(tmp)
+}
 activity <- read.csv("activity.csv")
 ```
 

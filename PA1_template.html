@@ -122,7 +122,13 @@ $(document).ready(function () {
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <p>‘activity’ is a loaded data frame.</p>
-<pre class="r"><code>activity &lt;- read.csv(&quot;activity.csv&quot;)</code></pre>
+<pre class="r"><code>if(!file.exists(&quot;getdata-projectfiles-UCI HAR Dataset.zip&quot;)) {
+        tmp &lt;- tempfile()
+        download.file(&quot;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&quot;, tmp)
+        unzip(tmp)
+        unlink(tmp)
+}
+activity &lt;- read.csv(&quot;activity.csv&quot;)</code></pre>
 </div>
 <div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
 <h2>What is mean total number of steps taken per day?</h2>
