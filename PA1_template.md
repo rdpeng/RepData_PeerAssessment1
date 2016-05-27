@@ -1,16 +1,31 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 
-```{r getdata, warning=FALSE}
 
+```r
 library('dplyr')
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 rm (list=ls())
 setwd("~/GitHub/RepData_PeerAssessment1")
 steps <- read.table(unz("activity.zip", "activity.csv"), header=T, quote="\"", sep=",")
@@ -18,10 +33,20 @@ steps <- read.table(unz("activity.zip", "activity.csv"), header=T, quote="\"", s
 
 And showing a summary of the loaded data
 
-```{r}
 
+```r
 summary(steps)
+```
 
+```
+##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA's   :2304     (Other)   :15840
 ```
 
 
@@ -29,9 +54,8 @@ summary(steps)
 
 ## What is mean total number of steps taken per day?
 
-``` {r steps.per.day, fig.width=9}
 
-
+```r
 steps.per.day <- steps %>% group_by(date) %>% summarize(sum=sum(steps, na.rm=T))
 
 ## Plot the histogram of steps per day
@@ -45,11 +69,14 @@ legend("topright", lwd=c(3,3), col=c("red", "green"),
     )
 ```
 
+![](PA1_template_files/figure-html/steps.per.day-1.png)<!-- -->
+
 -------------
 
 ## What is the average daily activity pattern?
 
-``` {r steps.per.interval, fig.width=9}
+
+```r
 steps$intfactor <- factor(format(steps$interval,digits=4))
 
 steps.per.interval <- steps %>% group_by(interval) %>% 
@@ -65,22 +92,25 @@ legend("topright", lwd=c(1,1), col=c("black","red"),
              paste("Maximum at interval", avgmax)))
 ```
 
+![](PA1_template_files/figure-html/steps.per.interval-1.png)<!-- -->
+
 -------------
 
 ## Imputing missing values
 
-```{r missing.values}
 
+```r
 missing <- is.na(steps)
 total.missing <- sum(missing)
 pct.missing <- signif(mean(missing)*100,3)
 ```
 
-### Total missing values `r total.missing` or `r pct.missing`% of the values.
+### Total missing values 2304 or 3.28% of the values.
 
 I chose to impute the missing values with the mean of the same interval over the entire data set.
 
-```{r new.steps.per.day, fig.width=9}
+
+```r
 # make new df with the average steps per interval as a new column
 new.steps <- merge(steps, steps.per.interval, by="interval")
 # add a new column 'imputed' that checks if the original steps is na, and then uses 
@@ -99,14 +129,16 @@ legend("topright", lwd=c(3,3), col=c("red", "green"),
       )
 ```
 
+![](PA1_template_files/figure-html/new.steps.per.day-1.png)<!-- -->
+
 With the missing values imputed to the average, the median is essentially the same as the mean.
 
 -------------
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekend.vs.weekday, fig.width=9}
 
+```r
 ## add columns to original dataset for day of the week and weekday vs. weekend
 
 steps$dayofweek <- factor(weekdays(as.Date(as.character(steps$date),'%Y-%m-%d')), 
@@ -123,8 +155,9 @@ with(steps.per.weekend[steps.per.weekend$weekend == "weekday",],
      main="Average Steps per interval -- Weekend vs. Weekday", xlab="Interval", ylab="Avg Steps" ))
 with(steps.per.weekend[steps.per.weekend$weekend == "weekend",], points(interval, avg, type="l", col="blue"))
 legend("topright", lwd=c(1,1), col=c("red","blue"), legend=c("weekday","weekend"))
-
 ```
+
+![](PA1_template_files/figure-html/weekend.vs.weekday-1.png)<!-- -->
 
 #### Observations
 
@@ -135,6 +168,6 @@ legend("topright", lwd=c(1,1), col=c("red","blue"), legend=c("weekday","weekend"
 
 -------------
 
-Published by username: *`r Sys.getenv("USERNAME")`* on *`r Sys.Date()`*.
+Published by username: *Maurice* on *2016-05-26*.
 
 
