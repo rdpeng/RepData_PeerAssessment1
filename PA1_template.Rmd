@@ -1,25 +1,107 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Rama Krishna"
+date: "30 May 2016"
+output: html_document
 ---
 
+## Introduction
+Large amout of personal activity data collected using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone. These devices collect data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
-## Loading and preprocessing the data
+### Data
+The data for this assignment can be downloaded from the course web site:
 
+* Dataset: Activity monitoring data [52K]
 
+The variables included in this dataset are:
+* steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+* date: The date on which the measurement was taken in YYYY-MM-DD format
+* interval: Identifier for the 5-minute interval in which measurement wastaken
 
-## What is mean total number of steps taken per day?
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
+Following report provides clarifications to the questions detailed below.
 
+### Loading and preprocessing the data
 
+```{r}
+library(dplyr)
+library(lubridate)
+setwd("C:/WorkingData/RK/Data Science(JHU)/Reproducible Research/Week-2/Data and Programs")
+DS <- read.csv2("activity.csv", header = TRUE, sep = ",")
+
+```
+### What is mean total number of steps taken per day?
+
+```{r}
+steps.date <- aggregate(steps ~ date, data = DS, FUN = sum)
+```
+Total No. of steps taken each day represented thru Histogram
+```{r}
+hist.default(steps.date$steps, main = "Total No.of Steps taken Daily", xlab = "No. of steps taken", ylab = "Frequency")
+```
+Mean and Median of No. of steps taken
+```{r}
+summary(steps.date$steps)
+```
 ## What is the average daily activity pattern?
 
+Average number of steps taken, averaged across all days of the 5-minute interval
+```{r}
+steps.interval <- aggregate(steps ~ interval, data = DS, FUN = mean)
+steps.interval$steps <- round(steps.interval$steps)
+```
+Represent average number of steps taken, averaged across all days for every 5-minute interval using a Time Series Graph
 
+```{r echo=FALSE} 
+x <- steps.interval$interval
+y <- steps.interval$steps
+
+plot(x, y, type = "l", xlim = c(0000, 2359), main="Average Daily Activity Patters", xlab="Time Intervals in the Day", ylab="Average No. of Steps Taken")
+```
+
+The time 5-minute interval which contains the maximum number of steps on average across all the days
+```{r}
+steps.interval$interval[which.max(steps.interval$steps)]
+```
 
 ## Imputing missing values
+There are a number of days/intervals where there are missing values (coded as NA) in the dataset. All these missing values were for filled mean for that day, or the mean for that 5-minute interval and Created a new dataset that is equal to the original dataset but with the missing data filled in.
 
-
+```{r}
+DS2 <- merge(DS, steps.interval, by = "interval", suffixes = c("", ".y"))
+nas <- is.na(DS2$steps)
+DS2$steps[nas] <- DS2$steps.y[nas]
+DS2 <- DS2[, c(1:3)]
+steps1.date <- aggregate(steps ~ date, data = DS2, FUN = sum)
+```
+Redraw the Histogram of Total No. of steps taken each day using the new dataset with with missing values filled in.
+```{r}
+hist(steps1.date$steps, main = "Total No.of Steps taken Daily", xlab = "No. of steps taken", ylab = "Frequency")
+```
+Mean and Median of No. of steps taken from the new dataset
+```{r}
+summary(steps1.date$steps)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+daytype <- function(date) {
+    if (weekdays(as.Date(date)) %in% c("Saturday", "Sunday")) {
+        "weekend"
+    } else {
+        "weekday"
+    }
+}
+
+DS2['daytype'] <- NA
+DS2$daytype <- as.factor(sapply(DS2$date, daytype))
+```
+```{r echo=FALSE}
+par(mfrow = c(2, 1))
+for (type in c("weekend", "weekday")) {
+    steps.type <- aggregate(steps ~ interval, data = DS2, subset = DS2$daytype == type, FUN = mean)
+    plot(steps.type, type = "l", main = type)
+}
+
+```
