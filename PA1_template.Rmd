@@ -8,17 +8,57 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r}
+unzip("activity.zip")
+d<-read.csv("activity.csv")
+d$date<-as.Date(d$date)
+library(dplyr)
+d<-tbl_df(d)
+
+```
 
 
 ## What is mean total number of steps taken per day?
 
+Before plotting the histogram, I group_by using date and sum the steps
+```{r}
+total <- d %>% group_by(date) %>% summarize(steps_day=sum(steps, na.rm = T))
+hist(total$steps_day, breaks = 10, xlab = "Steps per day", main="Histogram of steps per day")
 
+mean(total$steps_day, na.rm=T)
+median(total$steps_day, na.rm = T)
+```
 
 ## What is the average daily activity pattern?
 
+Now I group by interval and average per day to plot the time series, and using the same data frame, it's easy to calculate which is the maximun 5 minutes interval
+```{r}
+time<-d %>% group_by(interval) %>% summarize(mean_interval=mean(steps, na.rm=T))
+
+plot(time$interval, time$mean_interval, type="l", xlab="Interval", ylab="Mean of steps", main="Daily activity pattern")
+
+time[which.max(time$mean_interval), ]
+```
 
 
 ## Imputing missing values
+
+```{r}
+
+sum(is.na(d$steps))
+
+dd<-d
+dd$steps[is.na(dd$steps)]<-merge(dd, time, by = "interval")$mean_interval[is.na(dd$steps)]
+dd
+dd[is.na(dd$steps), ]
+head(merge(dd, time, by = "interval"))
+tail(time)
+
+head(ifelse(is.na(d$steps), time$mean_interval[d$interval], d$steps), 300)
+dd$kk<-ifelse(is.na(d$steps), -9, d$steps)
+newd<-data.frame(steps=ifelse(is.na(d$steps), -9, d$steps), date=d$date, interval=d$interval)
+```
+
 
 
 
