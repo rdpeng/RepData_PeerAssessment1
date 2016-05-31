@@ -1,0 +1,69 @@
+---
+title: "Project Assignment 1- RR"
+author: "Bharath"
+date: "May 28, 2016"
+output: html_document
+---
+## Synopsis
+
+This assignment analyses data from activty monitoring device. The data contains activity at 5 minute interval everyday for two months.
+     
+
+##Load the necessary packages     
+```{r global_options, include=TRUE} 
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+library(ggvis)
+library(lubridate)
+```
+### Reading data from the activity file
+```{r read data,echo=TRUE}
+activity<-read.csv("activity.csv",stringsAsFactors = FALSE)
+```
+###Total number of steps taken a day
+```{r total number of steps,echo=TRUE}
+activity.hist<-activity%>%filter(!is.na(steps)) %>%group_by(date)%>%summarize(steps=sum(steps,na.rm=TRUE))
+ggplot(activity.hist)+aes(steps)+geom_histogram(fill="firebrick")+labs(x="Number of steps",y="frequency",title="Histogram of number of steps")
+```
+Mean steps taken a day
+```{r mean steps,Echo=TRUE}
+activity.summary<-activity.hist%>%summarize(mean=mean(steps,na.rm=TRUE),median=median(steps,na.rm=TRUE))
+```
+###Average daily activity pattern
+```{r time series,echo=TRUE}
+
+activity.times<-activity%>%filter(!is.na(steps))%>%group_by(interval)%>%summarise(mean=mean(steps))
+ggplot(activity.times)+aes(interval,mean)+geom_line(color="firebrick",size=1)
+
+
+
+```
+```{r maz steps,echo=TRUE}
+ activity.times[which.max(activity.times$mean),]
+```
+
+##Imput missing values
+```{r imput,echo=TRUE}
+data_imput<-activity
+datamiss<-is.na(activity$steps)
+intervalmean<- tapply(data_imput$steps, data_imput$interval, mean, na.rm=TRUE, simplify = TRUE)
+data_imput$steps[datamiss] <- intervalmean[as.character(data_imput$interval[datamiss])]
+
+dataimputnew<-data_imput%>%filter(!is.na(steps))%>%group_by(date)%>%summarise(sumofstep=sum(steps))
+ggplot(dataimputnew)+aes(sumofstep)+geom_histogram()
+dataimputsummary<-dataimputnew%>%summarize(mean=mean(sumofstep,na.rm=TRUE),median=median(sumofstep,na.rm=TRUE))
+```
+
+`
+
+##Weekdays and weekends
+
+```{r weekdays and weekends,echo=TRUE}
+
+data_imput$date<-ymd(data_imput$date)
+week<-data_imput%>%mutate(week=ifelse(weekdays(data_imput$date)=="Saturday"|weekdays(data_imput$date)=="Sunday","weekend","weekday"))
+weeknew<-week%>%group_by(interval,week)%>%summarize(avgsteps=mean(steps,na.rm=TRUE))
+
+ggplot(weeknew)+aes(interval,avgsteps,color=week)+geom_line(size=1)+facet_wrap(~week)
+```
