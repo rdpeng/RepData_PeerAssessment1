@@ -43,23 +43,41 @@ time[which.max(time$mean_interval), ]
 
 ## Imputing missing values
 
-```{r}
+First, calculate the number as the sum of NA
 
+To complete values, I decided to use the mean for that interval, so I defined an auxiliary function to return that value, getMeanForInterval, and call it for every NA in dComplete (new dataframe)
+
+Mean and median increases after filling the values and become EQUAL
+
+```{r}
 sum(is.na(d$steps))
 
-dd<-d
-dd$steps[is.na(dd$steps)]<-merge(dd, time, by = "interval")$mean_interval[is.na(dd$steps)]
-dd
-dd[is.na(dd$steps), ]
-head(merge(dd, time, by = "interval"))
-tail(time)
+dComplete<-d
 
-head(ifelse(is.na(d$steps), time$mean_interval[d$interval], d$steps), 300)
-dd$kk<-ifelse(is.na(d$steps), -9, d$steps)
-newd<-data.frame(steps=ifelse(is.na(d$steps), -9, d$steps), date=d$date, interval=d$interval)
+getMeanForInterval<-Vectorize(function(int) time$mean_interval[time$interval==int])
+dComplete$steps[is.na(d$steps)]<-getMeanForInterval(d$interval[is.na(d$steps)])
+
+totalComp <- dComplete %>% group_by(date) %>% summarize(steps_day=sum(steps))
+hist(totalComp$steps_day, breaks = 10, xlab = "Steps per day", main="Histogram of steps per day including NA")
+
+mean(totalComp$steps_day)
+median(totalComp$steps_day)
+
 ```
 
 
-
-
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Apparently on weekdays people get up early ;)
+```{r}
+
+dComplete$weekday<-factor(ifelse(weekdays(dComplete$date, abbreviate = T) %in% c("sá.", "do.", "sa.", "su"), "weekend", "weekday"))
+
+timeWeek<-dComplete %>% group_by(weekday, interval) %>% summarize(mean_interval=mean(steps, na.rm=T))
+
+library(ggplot2)
+
+qplot(interval, mean_interval, data=timeWeek, geom=c("line"), facets = weekday ~ ., ylab = "Mean of steps", main="")
+
+```
+
