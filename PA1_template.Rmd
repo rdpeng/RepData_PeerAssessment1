@@ -8,18 +8,76 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r}
+unzip("activity.zip")
+d<-read.csv("activity.csv")
+d$date<-as.Date(d$date)
+library(dplyr)
+d<-tbl_df(d)
+
+```
 
 
 ## What is mean total number of steps taken per day?
 
+Before plotting the histogram, I group_by using date and sum the steps
+```{r}
+total <- d %>% group_by(date) %>% summarize(steps_day=sum(steps, na.rm = T))
+hist(total$steps_day, breaks = 10, xlab = "Steps per day", main="Histogram of steps per day")
 
+mean(total$steps_day, na.rm=T)
+median(total$steps_day, na.rm = T)
+```
 
 ## What is the average daily activity pattern?
 
+Now I group by interval and average per day to plot the time series, and using the same data frame, it's easy to calculate which is the maximun 5 minutes interval
+```{r}
+time<-d %>% group_by(interval) %>% summarize(mean_interval=mean(steps, na.rm=T))
+
+plot(time$interval, time$mean_interval, type="l", xlab="Interval", ylab="Mean of steps", main="Daily activity pattern")
+
+time[which.max(time$mean_interval), ]
+```
 
 
 ## Imputing missing values
 
+First, calculate the number as the sum of NA
+
+To complete values, I decided to use the mean for that interval, so I defined an auxiliary function to return that value, getMeanForInterval, and call it for every NA in dComplete (new dataframe)
+
+Mean and median increases after filling the values and become EQUAL
+
+```{r}
+sum(is.na(d$steps))
+
+dComplete<-d
+
+getMeanForInterval<-Vectorize(function(int) time$mean_interval[time$interval==int])
+dComplete$steps[is.na(d$steps)]<-getMeanForInterval(d$interval[is.na(d$steps)])
+
+totalComp <- dComplete %>% group_by(date) %>% summarize(steps_day=sum(steps))
+hist(totalComp$steps_day, breaks = 10, xlab = "Steps per day", main="Histogram of steps per day including NA")
+
+mean(totalComp$steps_day)
+median(totalComp$steps_day)
+
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Apparently on weekdays people get up early ;)
+```{r}
+
+dComplete$weekday<-factor(ifelse(weekdays(dComplete$date, abbreviate = T) %in% c("sá.", "do.", "sa.", "su"), "weekend", "weekday"))
+
+timeWeek<-dComplete %>% group_by(weekday, interval) %>% summarize(mean_interval=mean(steps, na.rm=T))
+
+library(ggplot2)
+
+qplot(interval, mean_interval, data=timeWeek, geom=c("line"), facets = weekday ~ ., ylab = "Mean of steps", main="")
+
+```
+
