@@ -1,25 +1,175 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+author: "Niek Lam"
+date: "3 juni 2016"
+output: html_document
 ---
 
-
 ## Loading and preprocessing the data
+For this assessment three packages were attached:
+```{r echo=TRUE}
+library( dplyr )
+library( ggplot2 )
+library( scales )
+```
 
+Now the libraries are in place, the next step is to read the raw data. For reasons of convenience the string variable 'date' is transformed into a date variable. 
+```{r echo=TRUE}
+#Reading the data
+df <- data.frame( read.csv("activity.csv"), stringsAsFactors = FALSE )
+df$dateAsDate <- as.Date( df$date)
 
-
+```
+  
+  
 ## What is mean total number of steps taken per day?
+For this part of the assignment, the missing values in the dataset were ignore.
 
+To calculate the total number of steps taken per day the next code is applied:
+```{r echo=TRUE}
+stat <-data.frame( date = unique(df$date) )
+stat$date <- as.Date( stat$date )
+stat$Nsteps <- tapply(df$steps, df$date, sum, na.rm = TRUE)
+
+```
+
+The next histogram that shows the total number of steps taken each day.
+```{r echo=TRUE}
+h <- ggplot(stat, aes(x=stat$date, y = stat$Nsteps)) 
+h <- h + geom_bar(stat = "identity")
+h <- h + xlab("day") + ylab("number of steps") + ggtitle("Total number of steps taken each day")  
+h <- h + scale_x_date( labels = date_format("%d-%m"))
+h
+```
+
+The mean and median of the total number of steps taken per day is reported here:
+```{r echo=TRUE}
+stat$Mean_Steps <- tapply(df$steps, df$date, mean, na.rm = TRUE)
+stat$Median_Steps <- tapply(df$steps, df$date, median, na.rm = TRUE)
+stat[, c(1, 3, 4)]
+```
 
 
 ## What is the average daily activity pattern?
+The next plot gives shows the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 
+```{r echo=TRUE}
+#some data preparation
+adap <- data.frame( interval = unique(df$interval) )
+adap$avr <- tapply(df$steps, df$interval, mean, na.rm = TRUE)
+adap$meanStepsAllDay <- mean( df$steps, na.rm = TRUE ) 
+
+#the plot
+with(adap, plot(avr ~ interval, col = "black", type = "l") )
+lines( x = adap$interval, y = adap$meanStepsAllDay, col = "red",   type = "l")
+legend("topright", lty = c(1, 1, 1), col=c("black","red"),
+       legend=c("Average steps per interval","Averaged across all days"))
+```
+
+As illustrated in the plot, the 5-minute interval that contains the maximum number of steps (on average across all the days in the dataset) is number 835. That is 8:35 hour in the morning.
+```{r echo= TRUE}
+#find the interval that contains maximum number of steps
+subset(adap[1], adap$avr == max( adap$avr) )
+```
 
 
 ## Imputing missing values
+There are missing values in the data set, as shown here. 
+```{r echo= TRUE}
+#calculate the total number missing for each variable
+sapply(df, function(x) sum(is.na(x)))
+```
 
+
+The statistics show that missing values are only found for the variable steps. For this variable 2,304/17,568 = 13% is missing. To fix this problem, each missing value is replaced by the mean value of the corresponding 5-minute interval. The results are stored in a new data set called df_new. 
+
+```{r echo=TRUE}
+#replace the missing values by the avr
+# first merge the data sets df and adap (holding the average values), apply an outer join
+df_new <- merge(x = df, y = adap, by= "interval", all.x = TRUE)
+
+# the missing values are replace by mean of 
+df_new <- df_new %>%
+        mutate(steps = ifelse(is.na(steps), avr, steps))
+
+#select the requered columns 
+df_new <- df_new[, names(df)]
+```
+
+the new data set is used to calculate the total number of steps taken each day, as shown in the next histogram.
+```{r echo=TRUE}
+#preparing data for the histogram
+stat_new <-data.frame( date = unique(df_new$date) )
+stat_new$date <- as.Date( stat_new$date )
+stat_new$Nsteps <- tapply(df_new$steps, df_new$date, sum)
+
+#histogram
+h <- ggplot(stat_new, aes(x=stat_new$date, y = stat_new$Nsteps), na.omit()) 
+h <- h + geom_bar(stat = "identity")
+h <- h + xlab("day") + ylab("number of steps") + ggtitle("Total number of steps taken each day")  
+h <- h + scale_x_date( labels = date_format("%d-%m"))
+h
+```
+
+
+The mean and median of total number of steps taken per day are reported here.
+```{r echo=TRUE}
+#calculate the mean and median number steps taken per day
+stat_new$Mean_Steps <- tapply(df_new$steps, df_new$date, mean)
+stat_new$Median_Steps <- tapply(df_new$steps, df_new$date, median)
+stat_new[, c(1, 3, 4)]
+```
+
+At this point several questions raise: Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?  
+Inspecting the figures show that the medians, except for a few cases, are all equal 0. So, to compair the medians doesn't make much sence. On the other hand, the means are harder to compair, therefore both series of means are ploted.    
+
+```{r echo=TRUE}
+#the data sets stacked to introduce 2 categories of means
+stat$mean <- "Means, not corrected"
+stat_new$mean <- "Means, missing values imputed"
+stat_tot <- rbind(stat_new, stat)
+
+
+ggplot(stat_tot, aes(x=date, y=Mean_Steps, color = mean)) + 
+        geom_point() + 
+        geom_smooth() +
+        xlab("day") + ylab("means steps") + ggtitle("Display the means")
+```
+
+Obvious, their are difference. So the main conclusion is that the procedure to impute missing values does make a difference. In addition, in the first 2 weeks the corrected means (red) are less than the means not corrected (blue), later it is the other way round. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+To answer this question, an indicator is needed to discriminate weekdays for weekend days. This gives two data sets. For each of them the average number of steps per day has been calculated. 
+```{r echo= TRUE}
+#calculate for each date the day in the week
+df_new$day          <- weekdays.POSIXt(df_new$dateAsDate)
+
+#sorting out the weekend days, that is saterday (in Dutch: zaterdag) and sundag 
+#(in Dutch: zondag), and week days
+weekenddays         <- filter(df_new,  df_new$day %in% c("zaterdag", "zondag") )
+weekdays            <- filter(df_new, !df_new$day %in% c("zaterdag", "zondag") )
+
+#calculate the means for both data sets
+stat_weekenddays         <- data.frame( interval = unique( weekenddays$interval) )
+stat_weekenddays$avr     <- tapply( weekenddays$steps, weekenddays$interval, mean)
+stat_weekenddays$weekend <- "weekend" 
+
+stat_weekdays         <- data.frame( interval = unique( weekdays$interval) )
+stat_weekdays$avr     <- tapply( weekdays$steps, weekdays$interval, mean)
+stat_weekdays$weekend <- "weekdays" 
+
+stat_interval <- rbind(stat_weekenddays, stat_weekdays)
+```
+
+In the next plot the number of steps are shown.
+```{r echo=TRUE}
+
+ggplot(stat_interval, aes(interval, avr) ) + geom_line() + 
+        facet_grid(weekend~.) + 
+        labs(title = "Activity patterns\nin weekdays and weekends", 
+             x = "Interval", y = "Number of steps")
+```
+
+The plot shows several difference in activity between weekdays and weekends. First, in the weekend the activities start later in the morning. Also, in the morning is the maximum rate of activitities in the weekend less (<175) compared to a weekday (>200). In addition, it striking to see that during during the day (from 10 to 20 o'clock) the rate of the activities is higher for the weekend.  
+So, the conclusion is: The are differences in activity patterns between weekdays and weekends.
