@@ -1,0 +1,70 @@
+---
+title: 'Reproducible Research: Peer Assessment 1'
+author: "Sebastien Henry"
+date: "6 juin 2016"
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+---
+
+
+## Loading and preprocessing the data
+```{r echo=TRUE}
+activity=read.csv("activity.csv")
+totalSteps<-aggregate(steps~date,data=activity,sum,na.rm=TRUE)
+```
+
+## What is mean total number of steps taken per day?
+```{r echo=TRUE}
+hist(totalSteps$steps)
+mean(totalSteps$steps)
+median(totalSteps$steps)
+```
+
+
+## What is the average daily activity pattern?
+
+```{r echo=TRUE}
+stepsInterval<-aggregate(steps~interval,data=activity,mean,na.rm=TRUE)
+plot(steps~interval,data=stepsInterval,type="l")
+stepsInterval[which.max(stepsInterval$steps),]$interval
+```
+
+## Imputing missing values
+
+```{r echo=TRUE}
+sum(is.na(activity$steps))
+
+interval2steps<-function(interval){
+    stepsInterval[stepsInterval$interval==interval,]$steps
+}
+
+activityFilled<-activity   # Make a new dataset with the original data
+count=0           # Count the number of data filled in
+for(i in 1:nrow(activityFilled)){
+    if(is.na(activityFilled[i,]$steps)){
+        activityFilled[i,]$steps<-interval2steps(activityFilled[i,]$interval)
+        count=count+1
+    }
+}
+cat("Total ",count, "NA values were filled.\n\r")
+
+totalSteps2<-aggregate(steps~date,data=activityFilled,sum)
+hist(totalSteps2$steps)
+mean(totalSteps2$steps)
+median(totalSteps2$steps)
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```{r echo=TRUE}
+activityFilled$day=ifelse(as.POSIXlt(as.Date(activityFilled$date))$wday%%6==0,
+                          "weekend","weekday")
+# For Sunday and Saturday : weekend, Other days : weekday 
+activityFilled$day=factor(activityFilled$day,levels=c("weekday","weekend"))
+stepsInterval2=aggregate(steps~interval+day,activityFilled,mean)
+library(lattice)
+xyplot(steps~interval|factor(day),data=stepsInterval2,aspect=1/2,type="l")
+```
+
