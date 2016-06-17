@@ -1,0 +1,162 @@
+---
+title: "Course Project 1"
+author: "Antón Blanco"
+date: "5 de abril de 2016"
+output: html_document
+---
+
+About
+---------------------
+This was the first project for the *Reproducible Research* course in Coursera's Data Science specialization track. The purpose of the project was to answer a series of questions using data collected from a FitBit.
+
+Synopsis
+---------------------
+This project has 3 aims:
+
+1.loading and preprocessing data.
+
+2.imputing missing values.
+
+3.interpreting data to answer research questions.
+
+
+Data
+---------
+
+The variables included in this dataset are:
+
+Steps: Number of steps taking in a 5-minute interval (missing values are coded as NA).
+
+Date: The date on which the measurement was taken in YYYY-MM-DD format.
+
+Interval: Identifier for the 5-minute interval in which measurement was taken.
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+The process of this project is what it follows:
+
+Loading and preprocessing the data
+------------
+Download, unzip and load data into data frame
+```{r}
+if(!file.exists("getdata-projectfiles-UCI HAR Dataset.zip")) {
+        temp <- tempfile()
+        download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+        unzip(temp)
+        unlink(temp)
+}
+
+data <- read.csv("activity.csv")
+```
+
+
+
+```{r}
+stepsday <- aggregate(steps ~ date, data, sum)
+hist(stepsday$steps, main = paste("Total Steps every Day"), col="green", xlab="Steps")
+```
+
+
+```{r}
+dmean <- mean(stepsday$steps)
+dmedian <- median(stepsday$steps)
+```
+The **mean** is `r dmean` and the **median** is `r dmedian`.
+
+What is mean total number of steps taken per day?
+----------
++Calculate average steps for each interval for all days.
+
++Plot the Average Number Steps per Day by Interval.
+
++Find interval with most average steps.
+
+```{r}
+stepsinterval <- aggregate(steps ~ interval, data, mean)
+plot(stepsinterval$interval,stepsinterval$steps, type="l", xlab="Interval", ylab="Steps",main="Average Number of Steps per Day by Interval")
+
+```
+
+```{r}
+max_interval <- stepsinterval[which.max(stepsinterval$steps),1]
+```
+
+The 5-minute interval, on average across all the days in the data set, containing the maximum number of steps is `r max_interval`.
+
+Impute missing values. Compare imputed to non-imputed data
+----------------
+
+
+```{r}
+incompletecases<-sum(!complete.cases(data$steps))
+```
+The number of cases with *NA* is `r incompletecases`.
+```{r}
+imputed_data <- transform(data, steps = ifelse(is.na(data$steps), stepsinterval$steps[match(data$interval, stepsinterval$interval)], data$steps))
+
+imputed_data[as.character(imputed_data$date) == "2012-10-01", 1] <- 0
+```
+Recount total steps by day and create Histogram.
+```{r}
+stepsday_i <- aggregate(steps ~ date, imputed_data, sum)
+hist(stepsday_i$steps, main = paste("Total Steps Every Day"), col="blue", xlab="Steps")
+
+#Create Histogram to show difference. 
+hist(stepsday$steps, main = paste("Total Steps Every Day"), col="red", xlab="Steps", add=T)
+legend("topright", c("Imputed", "Non-imputed"), col=c("blue", "red"), lwd=10)
+```
+Calculate new mean and median for imputed data.
+```{r}
+dmean.i <- mean(stepsday_i$steps)
+dmedian.i <- median(stepsday_i$steps)
+
+
+```
+Calculate difference between imputed and non-imputed data.
+```{r}
+mean_diff <- dmean.i - dmean
+med_diff <- dmedian.i - dmedian
+```
+Calculate total difference.
+```{r}
+total_diff <- sum(stepsday_i$steps) - sum(stepsday$steps)
+```
+
++The imputed data mean is `r dmean.i`.
+
++The imputed data median is `r dmedian.i`.
+
++The difference between the non-imputed mean and imputed mean is `r mean_diff`.
+
++The difference between the non-imputed mean and imputed mean is `r med_diff`.
+
++The difference between total number of steps between imputed and non-imputed data is `r total_diff`. According to this, there were `r total_diff` more steps in the imputed data.
+
+Are there differences in activity patterns between weekdays and weekends?
+--------
+Created a plot to compare and contrast number of steps between the week and weekend. There is a higher peak earlier on weekdays, and more overall activity on weekends.
+
+```{r}
+library(lattice)
+library(reshape2)
+data[,2]<-as.Date(data[,2])
+data[,"days"]<-weekdays(data[,2])
+for (i in 1:nrow(data)) {
+  if (data$days[i] == "sábado" | data$days[i]  == "domingo") {
+    data$dayOfWeek[i] = "weekend"
+  } else {
+    data$dayOfWeek[i] = "weekday"
+  }
+}
+```
+```{r}
+w <- tapply(data$steps,list(data$interval,data$dayOfWeek),mean,na.rm=T)
+
+w <- melt(w)
+
+colnames(w) <- c("interval","day","steps")
+
+library(lattice)
+library(reshape2)
+xyplot(w$steps ~ w$interval | w$day, layout=c(1,2),type="l",main="Time Series Plot of the Average of Total Steps (weekday vs. weekend)",xlab="Time intervals (in minutes)",ylab="Average of Total Steps")
+```
