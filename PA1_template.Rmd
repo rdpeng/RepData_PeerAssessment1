@@ -1,0 +1,81 @@
+---
+title: "Reproducible research project 1"
+author: "Narendra Sahu"
+date: "8 August 2016"
+output: html_document
+keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Loading and preprocessing the data
+
+##checking the structure of variables and converting them after
+```{r }
+activity<-read.csv("activity.csv")
+head(activity)
+str(activity)
+activity<-read.csv("activity.csv",colClasses = c("numeric","Date","numeric"))
+```
+
+#mean total number of steps taken per day
+
+##histogram plot
+```{r}
+totalsteps_by_date<-tapply(activity$steps,activity$date,sum,na.rm=T)
+hist(totalsteps_by_date,main = "Total steps by date",xlab="total steps by date",breaks = 10,col="red")
+```
+##mean and median
+```{r}
+mean(totalsteps_by_date)
+median(totalsteps_by_date)
+```
+
+#average daily activity pattern
+
+```{r}
+interval_mean<-tapply(activity$steps,activity$interval,mean,na.rm=T)
+plot(interval_mean,type="l",xlab="time(min)",ylab="avgerage total steps",main="average total steps")
+max_steps<-max(interval_mean)
+interval_mean[max_steps==interval_mean]
+```
+
+#Imputing missing values
+
+##number of missing value rows
+```{r}
+sum(is.na(activity))
+activity_nomiss<- transform(activity, steps = ifelse(is.na(steps), round(mean(steps, na.rm=TRUE)), steps))
+sum(is.na(activity_nomiss))
+```
+
+##replacing missing value by means and plotting histogram
+```{r}
+new_steps_by_date<-tapply(activity_nomiss$steps,activity_nomiss$date,sum)
+hist(new_steps_by_date,main = "Total steps by date(no missing value",xlab="total steps by date",breaks = 10,col="red")
+```
+
+## mean and median of total sets(no missing values)
+```{r}
+mean(new_steps_by_date)
+median(new_steps_by_date)
+```
+
+#differences in activity patterns between weekdays and weekends
+
+##assigning weekdays and weekend level
+```{r}
+activity_nomiss$days <- weekdays(activity_nomiss$date)
+library(plyr)
+activity_nomiss$days <- revalue(activity_nomiss$days,c("Monday"="weekday","Tuesday"="weekday","Wednesday"="weekday","Thursday"="weekday","Friday"="weekday"))
+activity_nomiss$days <- revalue(activity_nomiss$days,c("Saturday"="weekend","Sunday"="weekend"))
+```
+
+##panel plot containing a time series plot of the 5-minute intervaland the average number of steps taken, averaged across all weekday days or weekend days.
+```{r}
+library(lattice)
+activity_mean <- aggregate(steps ~ days+interval, data=activity_nomiss , FUN=mean)
+xyplot(steps ~ interval | factor(days),data=activity_mean,type="l")
+```
