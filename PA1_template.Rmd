@@ -78,4 +78,3 @@ library(lattice)
 activity_mean <- aggregate(steps ~ days+interval, data=activity_nomiss , FUN=mean)
 xyplot(steps ~ interval | factor(days),data=activity_mean,type="l")
 ```
-
