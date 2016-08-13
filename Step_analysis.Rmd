@@ -1,0 +1,152 @@
+---
+title: "Steps Analysis"
+author: "CF Hainey"
+date: "August 8, 2016"
+output: html_document
+---
+This report is the analysis of an invidual's walking activity collected during the months of October 2012 and November 2012, by a monitoring device.The data comes from Coursera's Reproducible Research Class.   
+
+## 1. The first step in the analysis consists of downloading the data from https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE)
+
+## create file if it does not exist
+if (!file.exists("Rsteps")) {
+  dir.create("Rsteps")
+}
+##Download url
+fileUrl <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(fileUrl, destfile = "./Rsteps/steps.zip", method = "curl")
+dateDownloaded <- date()
+
+##unzip and read file plus change date from factor to POSIXct 
+ss <-unzip("./Rsteps/steps.zip", exdir = "./Rsteps")
+dat <- read.csv("./Rsteps/activity.csv")
+dat$date <-as.POSIXct(dat$date, format="%Y-%m-%d")
+date <- as.Date(dat$date)
+date2 <- unique(date)
+```
+
+## 2. Calculate the number of steps per day and produce a histogram.
+
+```{r }
+knitr::opts_chunk$set(echo = TRUE)
+sum1 <- aggregate(.~date, data=dat, sum, na.action=NULL)
+hist(sum1$steps, main = "Frequency of the Number of Steps per Day", xlab = "Steps per Day", ylab = "Frequency")
+
+
+
+```
+
+## 3. Calculate the median and mean number of steps per day.
+
+```{r pander}
+mean1 <- aggregate(.~date, data=dat, mean, na.action=NULL)
+median1 <- aggregate(.~date, data=dat, median, na.action=NULL)
+median_mean <- cbind(mean1[1:2], median1[2])
+colnames(median_mean)<- c("date","mean-steps","median-steps")
+mean2 <- aggregate(.~interval, data=dat, mean)
+
+
+library(pander)
+panderOptions("digits", 4)
+pander(median_mean)
+
+#library(xtable)
+#print(median_mean, type="html")
+#library(knitr)
+#kable(median_mean)
+```
+
+## 4. Time series plot for the average number of steps taken
+
+```{r }
+
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1), oma = c(0, 0, 2, 0))
+plot(x = median_mean$date, y=median_mean$mean, type = "l", ylab = "average steps taken", xlab = "Individual Day mean")
+plot(x = mean2$interval, y=mean2$steps, type = "l", ylab = "average steps taken", xlab = " consecutive 5 minute intervals \n across the day")
+
+
+
+
+```
+
+## 5. Determine the max interval
+
+```{r}
+
+max(median_mean$`mean-steps`, na.rm=TRUE)
+
+which(median_mean$`mean-steps` == max(median_mean$`mean-steps`, na.rm=TRUE))
+
+
+```
+
+## 6. Imputing missing data by taking the average number of steps across all days and times and replacing the "NA".
+
+```{r}
+
+dat3 <- dat
+dat3$steps[is.na(dat3$steps)] <- as.numeric(37)
+dat3$steps <- as.numeric(as.character(dat3$steps))
+
+#mean_steps_v2 <-tapply(dat3$steps, dat3$interval, FUN=mean)
+#median_steps_v2 <-tapply(dat3$steps, dat3$interval, FUN=median)
+
+mean_steps_v2 <- aggregate(.~date, data=dat3, mean, na.action=NULL)
+median_steps_v2 <- aggregate(.~date, data=dat3, median, na.action=NULL)
+median_mean2 <- cbind(mean_steps_v2[1:2], median_steps_v2[2])
+colnames(median_mean2)<- c("date","mean-steps","median-steps")
+mean3 <- aggregate(.~interval, data=dat3, mean)
+
+
+library(pander)
+panderOptions("digits", 4)
+pander(median_mean2)
+
+#library(xtable)
+#print(median_mean, type="html")
+#library(knitr)
+#kable(median_mean)
+
+
+
+
+
+
+
+
+```
+
+## 7. Plotting the incorparted imputed data with original data
+
+```{r}
+maintitlev2 = "Time Series of 5 minute interval averaged across all days \n with missing data imputed"
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1), oma = c(0, 0, 2, 0))
+plot(x = median_mean2$date, y=median_mean2$mean, type = "l", ylab = "average steps taken", xlab = "Individual Day mean")
+plot(x = mean3$interval, y=mean3$steps, type = "l", ylab = "average steps taken", xlab = " consecutive 5 minute intervals \n across the day")
+
+
+```
+
+## 8. Determining if individual is more active on weekends or weekdays
+
+```{r}
+dat4 <- dat3
+dat4$dayOFweek <- weekdays(as.Date(dat4$date))
+dat7 <- subset(dat4, dayOFweek =="Sunday" | dayOFweek =="Saturday")
+dat8 <- subset(dat4, dayOFweek !="Sunday")
+dat8 <- subset(dat8, dayOFweek !="Saturday")
+wkend <-tapply(dat7$steps, dat7$interval, FUN=mean)
+wkday <-tapply(dat8$steps, dat8$interval, FUN=mean)
+mainmain <- "Comparison of steps for Weekend vs Weekday"
+par(mfrow = c(1, 2), mar = c(4, 4, 2, 1), oma = c(0, 0, 2, 0))
+plot(wkend, type = "l", main = "Weekend Steps", ylab = "steps", xlab = "interval", ylim= c(0,200))
+plot(wkday, type = "l", main = "Weekday Steps", ylab = "steps", xlab = "interval", ylim= c(0,200))
+title(mainmain, outer = TRUE, cex = 0.5)
+
+```
+
+
+
