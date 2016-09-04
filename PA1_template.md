@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 #Loading and preprocessing the data
 
-```{r Load Dataset, echo = TRUE}
+
+```r
 setwd("H:/Documents/GitHub/RepData_PeerAssessment1")
 df<-read.csv("activity/activity.csv")
 ```
@@ -15,51 +11,81 @@ df<-read.csv("activity/activity.csv")
 #What is mean total number of steps taken per day?
 
 ###Histogram Plot - Total number of steps taken per day.
-```{r Histogram, echo = TRUE}
+
+```r
 library(ggplot2)
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 #Creates aggregate dataset of date vs summed step count
 totSteps<-aggregate(steps ~ date,df,sum, na.rm=TRUE)
 ggplot(data=totSteps, aes(totSteps$steps))+geom_histogram(binwidth=1250)+xlab("Mean steps taken per day")+ylab("Frequency")+ggtitle("Mean steps taken per day vs Frequency")
 ```
 
+![](PA1_template_files/figure-html/Histogram-1.png)<!-- -->
+
 ###Mean and Median of Total Steps taken
-```{r Mean and Median steps, echo=TRUE}
+
+```r
 stepsMean<-as.integer(mean(as.numeric(totSteps$steps)))
 stepsMedian<-median(totSteps$steps)
 ```
 
--Mean number of total steps taken per day is `r stepsMean`.
+-Mean number of total steps taken per day is 10766.
 
--Median number of total steps taken per day is `r stepsMedian`.
+-Median number of total steps taken per day is 10765.
 
 #What is the average daily activity pattern?
 
 ###Time Series Plot - Mean number of steps taken per day 
-```{r TimeSeries, echo = TRUE}
+
+```r
 #Creates aggregate dataset based on 5-minute interval vs mean step counts. Then plots time series
 meanSteps<- aggregate(steps ~ interval,df,mean,na.rm=TRUE)
 ggplot(data=meanSteps,mapping=aes(x=meanSteps$interval,y=meanSteps$steps))+geom_line()+xlab("5-Minute Interval")+ylab("Mean Steps")+ggtitle("Average number of steps versus 5-minute interval across all days")
 ```
 
+![](PA1_template_files/figure-html/TimeSeries-1.png)<!-- -->
+
 ###Maximum value of Mean Steps averaged against all days over 5-minute interval
-```{r Max Mean Steps, echo=TRUE}
+
+```r
 stepMax<-max(meanSteps$steps)
 ```
 
--The maximum value of the Mean Steps averaged against all days over 5-minute interval is `r stepMax`.
+-The maximum value of the Mean Steps averaged against all days over 5-minute interval is 206.1698113.
 
 #Imputing missing values
 
 ###Count of missing Step values
-```{r Missing Value Counts, echo=TRUE}
+
+```r
 countNA<- sum(is.na(df$steps))
 ```
 
--Number of missing step values is `r countNA`.
+-Number of missing step values is 2304.
 
 ###Imputation of missing values using mean step value of the day
-```{r Imputation of missing values, echo=TRUE}
+
+```r
 #Creates a table with averaged step values for each 5-minute interval
 meanSteps<- aggregate(steps ~ interval,df,mean,na.rm=TRUE)
 #Creates a copy of the originally loaded dataset
@@ -82,34 +108,40 @@ if (sum(select(filter(imputeDS,flag==1),flag)) == countNA)
   }
 ```
 
-```{r Missing Value Impute Counts, echo=TRUE}
+
+```r
 countNA<- sum(is.na(imputeDS$steps))
 ```
 
--Number of missing step values after imputation is `r countNA`.
+-Number of missing step values after imputation is 0.
 
 ###Imputed Histogram Plot - Total number of steps taken per day
-```{r Imputed Histogram, echo = TRUE}
+
+```r
 totStepsImpute<-aggregate(steps ~ date,imputeDS,sum, na.rm=TRUE)
 totStepsImpute<-setNames(totStepsImpute, c("Date","Steps"))
 hist(totStepsImpute$Steps,xlab="Steps per day",main="Frequency of Total Steps per Day with missing values imputed")
 ```
 
+![](PA1_template_files/figure-html/Imputed Histogram-1.png)<!-- -->
+
 ###Imputed Mean and Median of Total Steps taken
-```{r Imputed Mean and Median steps, echo=TRUE}
+
+```r
 #Creates mean & median variables from above created aggregate dataset
 stepsMean<-as.integer(mean(as.numeric(totSteps$steps)))
 stepsMedian<-median(totSteps$steps)
 ```
 
--Mean number of total steps taken per day is `r stepsMean` after imputing missing answers.
+-Mean number of total steps taken per day is 10766 after imputing missing answers.
 
--Median number of total steps taken per day is `r stepsMedian` after imputing missing answers.
+-Median number of total steps taken per day is 10765 after imputing missing answers.
 
 #Are there differences in activity patterns between weekdays and weekends?
 
 ###Creating weekday & weekend indication variables
-```{r Weekday & Weekend variables, echo = TRUE}
+
+```r
 imputeDS_day<-imputeDS
 
 #Coerces date variable from factor to date type
@@ -124,6 +156,9 @@ imputeDS_dayAgg<- aggregate(steps ~ interval + dayType, imputeDS_day, mean)
 ```
 
 ### Creating time series plots of 5-minute interval vs mean steps for each level of dayType variable.
-```{r Time Series based on dayType, echo = TRUE}
+
+```r
 ggplot(data=imputeDS_dayAgg,mapping=aes(x=imputeDS_dayAgg$interval,y=imputeDS_dayAgg$steps))+geom_line()+xlab("5-Minute Interval")+ylab("Mean Steps")+ggtitle("Average number of steps versus 5-minute interval for Weekday & Weekends") + facet_grid(dayType~.)
 ```
+
+![](PA1_template_files/figure-html/Time Series based on dayType-1.png)<!-- -->
