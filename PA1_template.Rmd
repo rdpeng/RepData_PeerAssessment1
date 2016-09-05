@@ -22,7 +22,7 @@ activityRawData$date <- as.POSIXct(activityRawData$date, format = "%Y-%m-%d")
 
 ## What is mean total number of steps taken per day?
 
-```{r fig1, fig.width = 4, fig.height=4}
+```{r}
 library(dplyr)
 StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
 hist(StepsByDay$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")

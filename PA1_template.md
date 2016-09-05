@@ -57,7 +57,7 @@ StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
 hist(StepsByDay$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
 ```
 
-![](PA1_template_files/figure-html/fig1-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 ## What is the average daily activity pattern?
