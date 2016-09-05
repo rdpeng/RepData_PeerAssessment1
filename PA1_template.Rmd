@@ -4,14 +4,29 @@ output:
   html_document:
     keep_md: true
 ---
-
+## Basic settings
+```{r}
+echo = TRUE  # Always make code visible
+```
 
 ## Loading and preprocessing the data
 
+```{r}
+# Loading the data
+filepath <- "./activity.csv"
+activityRawData <- read.csv(filepath, header = TRUE, sep = ",")
 
+#Convert format of the column "date"
+activityRawData$date <- as.POSIXct(activityRawData$date, format = "%Y-%m-%d") 
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r scatterplot, fig.height=4}
+library(dplyr)
+StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
+hist(StepsByDay$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
+```
 
 
 ## What is the average daily activity pattern?
