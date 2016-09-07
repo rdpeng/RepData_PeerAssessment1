@@ -25,7 +25,7 @@ activityRawData$date <- as.POSIXct(activityRawData$date, format = "%Y-%m-%d")
 ```{r}
 library(dplyr)
 StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
-hist(StepsByDay$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
+hist(StepsByDay$`sum(steps)`, breaks = 20, col = "blue", main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
 ```
 
 
