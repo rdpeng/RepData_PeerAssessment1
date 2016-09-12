@@ -23,7 +23,7 @@
     <meta http-equiv="Content-Language" content="en">
     <meta name="viewport" content="width=device-width">
     
-    <title>Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/PA1_template.Rmd at master · UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera</title>
+    <title>Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/PA1_template.md at master · UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera</title>
     <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="GitHub">
     <link rel="fluid-icon" href="https://github.com/fluidicon.png" title="GitHub">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -43,10 +43,10 @@
       <meta name="browser-stats-url" content="https://api.github.com/_private/browser/stats">
     <meta name="browser-errors-url" content="https://api.github.com/_private/browser/errors">
     <link rel="assets" href="https://assets-cdn.github.com/">
-    <link rel="web-socket" href="wss://live.github.com/_sockets/ODQxNTAzNTo4OTIwNTM1NzEwZDk0MDBiN2RlZmZkNDFmMDUzM2I5ODo5ZmM1Y2VlYmE5M2I4Yzg0MWFmOWU2MGY1MTgyN2Y5NDUwNzJjNTI5NWFjMjM0MmM4YTQ1MTM4NzE2ZThjZTFk--9f0e12144b7c8d18b101d21a8ecb0b19339fc6f4">
+    <link rel="web-socket" href="wss://live.github.com/_sockets/ODQxNTAzNTo4OTIwNTM1NzEwZDk0MDBiN2RlZmZkNDFmMDUzM2I5ODoxNjlkOWQwYWUxOTM1YzdiYzdiMTJhYTFmMDE2NzMyMDRlODI1NmM3YzkwNmZhZGJlZTI4OTY0MDQ5MWJlN2U4--89c60b4ee7496eb024d92c3a2c8bc36cc4bafd12">
     <meta name="pjax-timeout" content="1000">
     <link rel="sudo-modal" href="/sessions/sudo_modal">
-    <meta name="request-id" content="CA87EEC8:0317:354B845:57D644FB" data-pjax-transient>
+    <meta name="request-id" content="CA87EEC8:0317:354BC24:57D64501" data-pjax-transient>
 
     <meta name="msapplication-TileImage" content="/windows-tile.png">
     <meta name="msapplication-TileColor" content="#ffffff">
@@ -56,7 +56,7 @@
 <meta name="google-site-verification" content="ZzhVyEFwb7w3e0-uOTltm8Jsck2F5StVihD0exw2fsA">
     <meta name="google-analytics" content="UA-3769691-2">
 
-<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="CA87EEC8:0317:354B845:57D644FB" name="octolytics-dimension-request_id" /><meta content="8415035" name="octolytics-actor-id" /><meta content="Avighan" name="octolytics-actor-login" /><meta content="435e2a420115695fa151f1d3c4b0212355268e73cf91d3f0ba558177a2cf5902" name="octolytics-actor-hash" />
+<meta content="collector.githubapp.com" name="octolytics-host" /><meta content="github" name="octolytics-app-id" /><meta content="CA87EEC8:0317:354BC24:57D64501" name="octolytics-dimension-request_id" /><meta content="8415035" name="octolytics-actor-id" /><meta content="Avighan" name="octolytics-actor-login" /><meta content="435e2a420115695fa151f1d3c4b0212355268e73cf91d3f0ba558177a2cf5902" name="octolytics-actor-hash" />
 <meta content="/&lt;user-name&gt;/&lt;repo-name&gt;/blob/show" data-pjax-transient="true" name="analytics-location" />
 
 
@@ -69,7 +69,7 @@
     <meta name="user-login" content="Avighan">
 
         <meta name="expected-hostname" content="github.com">
-      <meta name="js-proxy-site-detection-payload" content="NGQ1ZTYzOTU3YjA2ZGFmNWJmNzBjYjBmY2I2MDdkOGU4MTExZjFiNmEzODA1OGViZjAwN2ExODFmZTUwNjMyOXx7InJlbW90ZV9hZGRyZXNzIjoiMjAyLjEzNS4yMzguMjAwIiwicmVxdWVzdF9pZCI6IkNBODdFRUM4OjAzMTc6MzU0Qjg0NTo1N0Q2NDRGQiIsInRpbWVzdGFtcCI6MTQ3MzY2MDE1Nn0=">
+      <meta name="js-proxy-site-detection-payload" content="YjBmYjE4ZjExMThiZjliYzhjZTZlNDdlNmI1YjRmZjFlMzk2ODIwZDk3NjU1Zjk4ZTNmNWFmYzIzOTY0MDMxNXx7InJlbW90ZV9hZGRyZXNzIjoiMjAyLjEzNS4yMzguMjAwIiwicmVxdWVzdF9pZCI6IkNBODdFRUM4OjAzMTc6MzU0QkMyNDo1N0Q2NDUwMSIsInRpbWVzdGFtcCI6MTQ3MzY2MDE2N30=">
 
 
       <link rel="mask-icon" href="https://assets-cdn.github.com/pinned-octocat.svg" color="#4078c0">
@@ -89,7 +89,7 @@
   <link href="https://github.com/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/commits/master.atom" rel="alternate" title="Recent Commits to Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera:master" type="application/atom+xml">
 
 
-      <link rel="canonical" href="https://github.com/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/PA1_template.Rmd" data-pjax-transient>
+      <link rel="canonical" href="https://github.com/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/PA1_template.md" data-pjax-transient>
   </head>
 
 
@@ -229,7 +229,7 @@
           Settings
         </a>
 
-        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/logout" class="logout-form" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="BBfq7WYJ8wBMoSIJPxDQbQ2RsyLsAUjT7DOSFZnftGcbOwtMH4dqDUq7f6JPQgL0YHgVZ1Hw+cPzxRZA9G2ptQ==" /></div>
+        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/logout" class="logout-form" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="8bfpFw3mt9FNKNLJ+TG6EFCp+Ho7Hl9umb0eW7t+JPKgq0SpF5FoUmmtNoZLeV10xAy7Va0Wbq3ZGiiNRmKmMA==" /></div>
           <button class="dropdown-item dropdown-signout" data-ga-click="Header, sign out, icon:logout">
             Sign out
           </button>
@@ -265,7 +265,7 @@
 <ul class="pagehead-actions">
 
   <li>
-        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/notifications/subscribe" class="js-social-container" data-autosubmit="true" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="uZsci9jIzHyBvV9P5HxQ1BkCu+xgk2LfB0tETAzIrj2GioyXvp49giCOB29QmiXsrvDmSKWeYGqbzX3EfrOdLA==" /></div>      <input class="form-control" id="repository_id" name="repository_id" type="hidden" value="25111628" />
+        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/notifications/subscribe" class="js-social-container" data-autosubmit="true" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="TkGb7Os3sa3D2K37XIiMjs1CacTtkKsEAr706rJBB5TCsr7GMWwyvSonjyQRlwjE53wpagmGWafWLREAc9NH5w==" /></div>      <input class="form-control" id="repository_id" name="repository_id" type="hidden" value="25111628" />
 
         <div class="select-menu js-menu-container js-select-menu">
           <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/subscription"
@@ -342,7 +342,7 @@
     
   <div class="js-toggler-container js-social-container starring-container ">
 
-    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/unstar" class="starred" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="Go37b/AyD2ele4zH6zjq06kjpeEnoxbrlYSceg5dmhOwaeTpq/ZOPBB6ZdaWNBCOrguB0vBx+XbI+xJ+p0iqZw==" /></div>
+    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/unstar" class="starred" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="EgPzc9xzbHadG1Op/Es9COkvA6L4v5JxYSRmvL/5+Za5AP8qgbeOZZvTDjJ3fnly4czBAqpvxGNbPMs0fAkxhg==" /></div>
       <button
         class="btn btn-sm btn-with-count js-toggler-target"
         aria-label="Unstar this repository" title="Unstar UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera"
@@ -355,7 +355,7 @@
           0
         </a>
 </form>
-    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/star" class="unstarred" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="GrbGb2M2wfDCxoBnm73hk3feGOzOUSLNr5skWDf+ENhV56dgxNAdQZWYGSaR1QuJO2RChvIwtjK0vJq9OrtqwQ==" /></div>
+    <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/star" class="unstarred" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" data-remote="true" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="LUjliCUgZGYGaljKE48BNFyMUKXuxEpqoLVqJCZgEAvhkWxZ6QGKj81H/3yml3VdAnse+vFJuCQvmW+ARN91lg==" /></div>
       <button
         class="btn btn-sm btn-with-count js-toggler-target"
         aria-label="Star this repository" title="Star UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera"
@@ -372,7 +372,7 @@
   </li>
 
   <li>
-          <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/fork" class="btn-with-count" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="5L2Lv9YalqNrxNgpzxqxXdroGIeOg8ydlVnb0kG3JQYJcWlYtn1dmsRcwOySn0D6CGWJPhFyKOLw72EhdHRoIQ==" /></div>
+          <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/fork" class="btn-with-count" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="XVOcSJKcpl6vz2HL8AkcylGFycJCZBCkbY+lfDgYHN3CFuCinhalP3aiS4ghx/FuKUSCD+zZNPm9zC7OEuydsQ==" /></div>
             <button
                 type="submit"
                 class="btn btn-sm btn-with-count"
@@ -455,9 +455,9 @@
 
     
 
-<a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/86d30498da3a98223ac7d8b02a50448403772274/Project%2001/PA1_template.Rmd" class="d-none js-permalink-shortcut" data-hotkey="y">Permalink</a>
+<a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/86d30498da3a98223ac7d8b02a50448403772274/Project%2001/PA1_template.md" class="d-none js-permalink-shortcut" data-hotkey="y">Permalink</a>
 
-<!-- blob contrib key: blob_contributors:v21:7323aa5c2f3868ffdbdbef190fcf4047 -->
+<!-- blob contrib key: blob_contributors:v21:4432282420ba2c0bcfeae2032ab44d96 -->
 
 <div class="file-navigation js-zeroclipboard-container">
   
@@ -499,7 +499,7 @@
 
 
             <a class="select-menu-item js-navigation-item js-navigation-open selected"
-               href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/PA1_template.Rmd"
+               href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/PA1_template.md"
                data-name="master"
                data-skip-pjax="true"
                rel="nofollow">
@@ -536,66 +536,43 @@
     <button aria-label="Copy file path to clipboard" class="js-zeroclipboard btn btn-sm zeroclipboard-button tooltipped tooltipped-s" data-copied-hint="Copied!" type="button">Copy path</button>
   </div>
   <div class="breadcrumb js-zeroclipboard-target">
-    <span class="repo-root js-repo-root"><span class="js-path-segment"><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera"><span>Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera</span></a></span></span><span class="separator">/</span><span class="js-path-segment"><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/tree/master/Project%2001"><span>Project 01</span></a></span><span class="separator">/</span><strong class="final-path">PA1_template.Rmd</strong>
+    <span class="repo-root js-repo-root"><span class="js-path-segment"><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera"><span>Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera</span></a></span></span><span class="separator">/</span><span class="js-path-segment"><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/tree/master/Project%2001"><span>Project 01</span></a></span><span class="separator">/</span><strong class="final-path">PA1_template.md</strong>
   </div>
 </div>
 
-
-  <div class="commit-tease">
-      <span class="float-right">
-        <a class="commit-tease-sha" href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/commit/8e03c89d2fb8d95fd19bdc07a99b999907ffbc7a" data-pjax>
-          8e03c89
-        </a>
-        <relative-time datetime="2014-10-16T16:09:33Z">Oct 16, 2014</relative-time>
-      </span>
-      <div>
-        <img alt="@UtkarshPathrabe" class="avatar" height="20" src="https://avatars3.githubusercontent.com/u/7246712?v=3&amp;s=40" width="20" />
-        <a href="/UtkarshPathrabe" class="user-mention" rel="author">UtkarshPathrabe</a>
-          <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/commit/8e03c89d2fb8d95fd19bdc07a99b999907ffbc7a" class="message" data-pjax="true" title="Project 01 Final Commit">Project 01 Final Commit</a>
-      </div>
-
-    <div class="commit-tease-contributors">
-      <button type="button" class="btn-link muted-link contributors-toggle" data-facebox="#blob_contributors_box">
-        <strong>1</strong>
-         contributor
-      </button>
-      
-    </div>
-
-    <div id="blob_contributors_box" style="display:none">
-      <h2 class="facebox-header" data-facebox-id="facebox-header">Users who have contributed to this file</h2>
-      <ul class="facebox-user-list" data-facebox-id="facebox-description">
-          <li class="facebox-user-list-item">
-            <img alt="@UtkarshPathrabe" height="24" src="https://avatars1.githubusercontent.com/u/7246712?v=3&amp;s=48" width="24" />
-            <a href="/UtkarshPathrabe">UtkarshPathrabe</a>
-          </li>
-      </ul>
-    </div>
+<include-fragment class="commit-tease" src="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/contributors/master/Project%2001/PA1_template.md">
+  <div>
+    Fetching contributors&hellip;
   </div>
 
+  <div class="commit-tease-contributors">
+    <img alt="" class="loader-loading float-left" height="16" src="https://assets-cdn.github.com/images/spinners/octocat-spinner-32-EAF2F5.gif" width="16" />
+    <span class="loader-error">Cannot retrieve contributors at this time</span>
+  </div>
+</include-fragment>
 <div class="file">
   <div class="file-header">
   <div class="file-actions">
 
     <div class="btn-group">
-      <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/PA1_template.Rmd" class="btn btn-sm " id="raw-url">Raw</a>
-        <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blame/master/Project%2001/PA1_template.Rmd" class="btn btn-sm js-update-url-with-hash">Blame</a>
-      <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/commits/master/Project%2001/PA1_template.Rmd" class="btn btn-sm " rel="nofollow">History</a>
+      <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/PA1_template.md" class="btn btn-sm " id="raw-url">Raw</a>
+        <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blame/master/Project%2001/PA1_template.md" class="btn btn-sm js-update-url-with-hash">Blame</a>
+      <a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/commits/master/Project%2001/PA1_template.md" class="btn btn-sm " rel="nofollow">History</a>
     </div>
 
         <a class="btn-octicon tooltipped tooltipped-nw"
-           href="github-windows://openRepo/https://github.com/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera?branch=master&amp;filepath=Project%2001%2FPA1_template.Rmd"
+           href="github-windows://openRepo/https://github.com/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera?branch=master&amp;filepath=Project%2001%2FPA1_template.md"
            aria-label="Open this file in GitHub Desktop"
            data-ga-click="Repository, open with desktop, type:windows">
             <svg aria-hidden="true" class="octicon octicon-device-desktop" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M15 2H1c-.55 0-1 .45-1 1v9c0 .55.45 1 1 1h5.34c-.25.61-.86 1.39-2.34 2h8c-1.48-.61-2.09-1.39-2.34-2H15c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm0 9H1V3h14v8z"></path></svg>
         </a>
 
-        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/edit/master/Project%2001/PA1_template.Rmd" class="inline-form js-update-url-with-hash" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="nSRRfqDT1+IleZJJQzOccF7acgsfwngQjVUeYCt/7kG061CglqR+S/zlqPQyTGvj+AIhNlO2XofuAN66pskmVg==" /></div>
+        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/edit/master/Project%2001/PA1_template.md" class="inline-form js-update-url-with-hash" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="V+FcCRf0eNsK/uCAwN3eNnNsUO3DjkQ1AtggnRRuFFswBatoOcEV/omo6quUk07+25rbrVtsj2gm/UfZeLY8NQ==" /></div>
           <button class="btn-octicon tooltipped tooltipped-nw" type="submit"
             aria-label="Fork this project and edit the file" data-hotkey="e" data-disable-with>
             <svg aria-hidden="true" class="octicon octicon-pencil" height="16" version="1.1" viewBox="0 0 14 16" width="14"><path d="M0 12v3h3l8-8-3-3-8 8zm3 2H1v-2h1v1h1v1zm10.3-9.3L12 6 9 3l1.3-1.3a.996.996 0 0 1 1.41 0l1.59 1.59c.39.39.39 1.02 0 1.41z"></path></svg>
           </button>
-</form>        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/delete/master/Project%2001/PA1_template.Rmd" class="inline-form" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="EGqz7kXjtEMR8qmXRhvjudL9NW36RAS8rtEL+3SYVBU139uhl/qxvjTTBOKMDE9Lza1gEgOkjZXehmuWMg9/6g==" /></div>
+</form>        <!-- </textarea> --><!-- '"` --><form accept-charset="UTF-8" action="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/delete/master/Project%2001/PA1_template.md" class="inline-form" data-form-nonce="f934ea0f0e02464d419648201788eb473d8c0167" method="post"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /><input name="authenticity_token" type="hidden" value="tWBRV5Hp/8RgKLnxsY1fGOARNh2uIxvjkbUb9GuSguaAyNtCyR2yZZHXsyemfs6t62Y4ycenGhTufgtDYGNQxA==" /></div>
           <button class="btn-octicon btn-octicon-danger tooltipped tooltipped-nw" type="submit"
             aria-label="Fork this project and delete the file" data-disable-with>
             <svg aria-hidden="true" class="octicon octicon-trashcan" height="16" version="1.1" viewBox="0 0 12 16" width="12"><path d="M11 2H9c0-.55-.45-1-1-1H5c-.55 0-1 .45-1 1H2c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1v9c0 .55.45 1 1 1h7c.55 0 1-.45 1-1V5c.55 0 1-.45 1-1V3c0-.55-.45-1-1-1zm-1 12H3V5h1v8h1V5h1v8h1V5h1v8h1V5h1v9zm1-10H2V3h9v1z"></path></svg>
@@ -603,9 +580,9 @@
 </form>  </div>
 
   <div class="file-info">
-      101 lines (87 sloc)
+      158 lines (120 sloc)
       <span class="file-info-divider"></span>
-    3.37 KB
+    3.83 KB
   </div>
 </div>
 
@@ -622,9 +599,19 @@
 
 <div class="highlight highlight-source-r"><pre>library(<span class="pl-smi">ggplot2</span>)
 <span class="pl-smi">total.steps</span> <span class="pl-k">&lt;-</span> tapply(<span class="pl-smi">data</span><span class="pl-k">$</span><span class="pl-smi">steps</span>, <span class="pl-smi">data</span><span class="pl-k">$</span><span class="pl-smi">date</span>, <span class="pl-v">FUN</span><span class="pl-k">=</span><span class="pl-smi">sum</span>, <span class="pl-v">na.rm</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)
-qplot(<span class="pl-smi">total.steps</span>, <span class="pl-v">binwidth</span><span class="pl-k">=</span><span class="pl-c1">1000</span>, <span class="pl-v">xlab</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>total number of steps taken each day<span class="pl-pds">"</span></span>)
-mean(<span class="pl-smi">total.steps</span>, <span class="pl-v">na.rm</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)
-median(<span class="pl-smi">total.steps</span>, <span class="pl-v">na.rm</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)</pre></div>
+qplot(<span class="pl-smi">total.steps</span>, <span class="pl-v">binwidth</span><span class="pl-k">=</span><span class="pl-c1">1000</span>, <span class="pl-v">xlab</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>total number of steps taken each day<span class="pl-pds">"</span></span>)</pre></div>
+
+<p><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/figure/unnamed-chunk-1-1.png" target="_blank"><img src="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/figure/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1" style="max-width:100%;"></a> </p>
+
+<div class="highlight highlight-source-r"><pre>mean(<span class="pl-smi">total.steps</span>, <span class="pl-v">na.rm</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)</pre></div>
+
+<pre><code>## [1] 9354.23
+</code></pre>
+
+<div class="highlight highlight-source-r"><pre>median(<span class="pl-smi">total.steps</span>, <span class="pl-v">na.rm</span><span class="pl-k">=</span><span class="pl-c1">TRUE</span>)</pre></div>
+
+<pre><code>## [1] 10395
+</code></pre>
 
 <h2><a id="user-content-what-is-the-average-daily-activity-pattern" class="anchor" href="#what-is-the-average-daily-activity-pattern" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>What is the average daily activity pattern?</h2>
 
@@ -636,10 +623,16 @@ ggplot(<span class="pl-v">data</span><span class="pl-k">=</span><span class="pl-
     xlab(<span class="pl-s"><span class="pl-pds">"</span>5-minute interval<span class="pl-pds">"</span></span>) <span class="pl-k">+</span>
     ylab(<span class="pl-s"><span class="pl-pds">"</span>average number of steps taken<span class="pl-pds">"</span></span>)</pre></div>
 
+<p><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/figure/unnamed-chunk-2-1.png" target="_blank"><img src="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/figure/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2" style="max-width:100%;"></a> </p>
+
 <p>On average across all the days in the dataset, the 5-minute interval contains
 the maximum number of steps?</p>
 
 <div class="highlight highlight-source-r"><pre><span class="pl-smi">averages</span>[which.max(<span class="pl-smi">averages</span><span class="pl-k">$</span><span class="pl-smi">steps</span>),]</pre></div>
+
+<pre><code>##     interval    steps
+## 104      835 206.1698
+</code></pre>
 
 <h2><a id="user-content-imputing-missing-values" class="anchor" href="#imputing-missing-values" aria-hidden="true"><svg aria-hidden="true" class="octicon octicon-link" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Imputing missing values</h2>
 
@@ -648,6 +641,11 @@ the maximum number of steps?</p>
 <div class="highlight highlight-source-r"><pre><span class="pl-smi">missing</span> <span class="pl-k">&lt;-</span> is.na(<span class="pl-smi">data</span><span class="pl-k">$</span><span class="pl-smi">steps</span>)
 <span class="pl-c"># How many missing</span>
 table(<span class="pl-smi">missing</span>)</pre></div>
+
+<pre><code>## missing
+## FALSE  TRUE 
+## 15264  2304
+</code></pre>
 
 <p>All of the missing values are filled in with mean value for that 5-minute
 interval.</p>
@@ -667,9 +665,19 @@ interval.</p>
 <p>Now, using the filled data set, let's make a histogram of the total number of steps taken each day and calculate the mean and median total number of steps.</p>
 
 <div class="highlight highlight-source-r"><pre><span class="pl-smi">total.steps</span> <span class="pl-k">&lt;-</span> tapply(<span class="pl-smi">filled.data</span><span class="pl-k">$</span><span class="pl-smi">steps</span>, <span class="pl-smi">filled.data</span><span class="pl-k">$</span><span class="pl-smi">date</span>, <span class="pl-v">FUN</span><span class="pl-k">=</span><span class="pl-smi">sum</span>)
-qplot(<span class="pl-smi">total.steps</span>, <span class="pl-v">binwidth</span><span class="pl-k">=</span><span class="pl-c1">1000</span>, <span class="pl-v">xlab</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>total number of steps taken each day<span class="pl-pds">"</span></span>)
-mean(<span class="pl-smi">total.steps</span>)
-median(<span class="pl-smi">total.steps</span>)</pre></div>
+qplot(<span class="pl-smi">total.steps</span>, <span class="pl-v">binwidth</span><span class="pl-k">=</span><span class="pl-c1">1000</span>, <span class="pl-v">xlab</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>total number of steps taken each day<span class="pl-pds">"</span></span>)</pre></div>
+
+<p><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/figure/unnamed-chunk-5-1.png" target="_blank"><img src="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/figure/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5" style="max-width:100%;"></a> </p>
+
+<div class="highlight highlight-source-r"><pre>mean(<span class="pl-smi">total.steps</span>)</pre></div>
+
+<pre><code>## [1] 10766.19
+</code></pre>
+
+<div class="highlight highlight-source-r"><pre>median(<span class="pl-smi">total.steps</span>)</pre></div>
+
+<pre><code>## [1] 10766.19
+</code></pre>
 
 <p>Mean and median values are higher after imputing missing data. The reason is
 that in the original data, there are some days with <code>steps</code> values <code>NA</code> for 
@@ -701,6 +709,8 @@ on weekdays and weekends.</p>
 <div class="highlight highlight-source-r"><pre><span class="pl-smi">averages</span> <span class="pl-k">&lt;-</span> aggregate(<span class="pl-smi">steps</span> <span class="pl-k">~</span> <span class="pl-smi">interval</span> <span class="pl-k">+</span> <span class="pl-smi">day</span>, <span class="pl-v">data</span><span class="pl-k">=</span><span class="pl-smi">filled.data</span>, <span class="pl-smi">mean</span>)
 ggplot(<span class="pl-smi">averages</span>, aes(<span class="pl-smi">interval</span>, <span class="pl-smi">steps</span>)) <span class="pl-k">+</span> geom_line() <span class="pl-k">+</span> facet_grid(<span class="pl-smi">day</span> <span class="pl-k">~</span> .) <span class="pl-k">+</span>
     xlab(<span class="pl-s"><span class="pl-pds">"</span>5-minute interval<span class="pl-pds">"</span></span>) <span class="pl-k">+</span> ylab(<span class="pl-s"><span class="pl-pds">"</span>Number of steps<span class="pl-pds">"</span></span>)</pre></div>
+
+<p><a href="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/blob/master/Project%2001/figure/unnamed-chunk-7-1.png" target="_blank"><img src="/UtkarshPathrabe/Reproducible-Research-Johns-Hopkins-Bloomberg-School-of-Public-Health-Coursera/raw/master/Project%2001/figure/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7" style="max-width:100%;"></a> </p>
 </article>
   </div>
 
@@ -739,7 +749,7 @@ ggplot(<span class="pl-smi">averages</span>, aes(<span class="pl-smi">interval</
       <svg aria-hidden="true" class="octicon octicon-mark-github" height="24" version="1.1" viewBox="0 0 16 16" width="24"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
 </a>
     <ul class="site-footer-links">
-      <li>&copy; 2016 <span title="0.15457s from github-fe165-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
+      <li>&copy; 2016 <span title="0.14824s from github-fe130-cp1-prd.iad.github.net">GitHub</span>, Inc.</li>
         <li><a href="https://github.com/site/terms" data-ga-click="Footer, go to terms, text:terms">Terms</a></li>
         <li><a href="https://github.com/site/privacy" data-ga-click="Footer, go to privacy, text:privacy">Privacy</a></li>
         <li><a href="https://github.com/security" data-ga-click="Footer, go to security, text:security">Security</a></li>
