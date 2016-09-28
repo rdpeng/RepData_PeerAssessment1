@@ -2,11 +2,17 @@
 title: "Peer_Review"
 author: "Rodney Waiters"
 date: "September 22, 2016"
-output: html_document
+output: 
+  html_document: 
+  keep_md: true
+  fig_caption: yes
+        
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, fig.path= "figure/")
+# installing/loading the package:
+
 ```
 ## The Assignment
 This assignment will be described in multiple parts. You will need to write a report that answers the questions detailed below. Ultimately, you will need to complete the entire assignment in a single R markdown document that can be processed by knitr and be transformed into an HTML file.
@@ -19,7 +25,7 @@ Fork/clone the GitHub repository created for this assignment. You will submit th
 
 NOTE: The GitHub repository also contains the dataset for the assignment so you do not have to download the data separately.
 ## Loading and preprocessing the data
-```{r activity}
+```{r}
 # Download the data
 temp <- tempfile()
 download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", destfile = temp )
@@ -29,14 +35,17 @@ data <- read.csv("activity.csv")
 stepsbyday <- tapply(data$steps, data$date, FUN=sum, na.rm=TRUE)
 ```
 ## Make a histogram of steps taken each day
-```{r stepsbyday}
+```{r}
 hist(stepsbyday, breaks = 47,col = "blue",main = "Steps by Day")
+```
+## Mean and Median number of steps taken each day
+```{r}
 # Mean and median number of steps taken each day
 mean(stepsbyday, na.rm = TRUE)
 median(stepsbyday, na.rm = TRUE)
 ```
-## Time Series
-```{r cleandata}
+## Time series plot of the average number of steps taken (averaged across all days) versus the 5-minute intervals
+```{r}
 # Time series plot of the average number of steps taken
 cleandata <- na.omit(data)
 
@@ -98,6 +107,8 @@ ggplot(alldataavg, aes(interval, steps)) +
   geom_line() + facet_grid(daytype ~ .) +
   xlab("5 minute interval") +
   ylab("# of steps")
-
 ```
-
+##Session Information
+```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
+sessionInfo()
+```
