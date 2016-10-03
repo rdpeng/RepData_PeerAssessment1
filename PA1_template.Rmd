@@ -1,13 +1,17 @@
 ---
+output: 
+  html_document: 
+    keep_md: yes
+---
+---
 title: "Peer_Review"
 author: "Rodney Waiters"
 date: "September 22, 2016"
-output: 
-  html_document: 
-  keep_md: true
+output:
+  html_document
   fig_caption: yes
-        
----
+  
+ ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, fig.path= "figure/")
@@ -24,7 +28,9 @@ For the plotting aspects of this assignment, feel free to use any plotting syste
 Fork/clone the GitHub repository created for this assignment. You will submit this assignment by pushing your completed files into your forked repository on GitHub. The assignment submission will consist of the URL to your GitHub repository and the SHA-1 commit ID for your repository state.
 
 NOTE: The GitHub repository also contains the dataset for the assignment so you do not have to download the data separately.
+
 ## Loading and preprocessing the data
+
 ```{r}
 # Download the data
 temp <- tempfile()
@@ -34,17 +40,23 @@ data <- read.csv("activity.csv")
 #Process/transform the data (if necessary) into a format suitable for your analysis
 stepsbyday <- tapply(data$steps, data$date, FUN=sum, na.rm=TRUE)
 ```
+
 ## Make a histogram of steps taken each day
+
 ```{r}
 hist(stepsbyday, breaks = 47,col = "blue",main = "Steps by Day")
 ```
+
 ## Mean and Median number of steps taken each day
+
 ```{r}
 # Mean and median number of steps taken each day
 mean(stepsbyday, na.rm = TRUE)
 median(stepsbyday, na.rm = TRUE)
 ```
+
 ## Time series plot of the average number of steps taken (averaged across all days) versus the 5-minute intervals
+
 ```{r}
 # Time series plot of the average number of steps taken
 cleandata <- na.omit(data)
@@ -58,7 +70,9 @@ plot(averageintervals$interval, averageintervals$steps, type = "l", xlab = "5-mi
 # The 5-minute interval that, on average, contains the maximum number of steps
 averageintervals[which.max(averageintervals$steps),]
 ```
+
 ## Imputing missing values
+
 ```{r baddata}
 baddata <- is.na(data$steps)
 
@@ -84,7 +98,9 @@ mean(stepsbyday)
 
 median(stepsbyday)
 ```
+
 ## Are there differences in activity patterns between weekdays and weekends?
+
 ```{r weekends}
 library(ggplot2)
 
@@ -108,7 +124,9 @@ ggplot(alldataavg, aes(interval, steps)) +
   xlab("5 minute interval") +
   ylab("# of steps")
 ```
+
 ##Session Information
+
 ```{r sessionInfo, include=TRUE, echo=TRUE, results='markup'}
 sessionInfo()
 ```
