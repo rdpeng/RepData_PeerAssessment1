@@ -1,4 +1,4 @@
-Coursera Reproducible Research - Project 1 by Archer Lebron
+Coursera Reproducible Research - Project 1 
 ===========================================================
 ---
 title: "RR_PA1_Archer"
