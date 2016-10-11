@@ -1,9 +1,9 @@
 Coursera Reproducible Research - Project 1 
 ===========================================================
 ---
-Title: "RR_PA1_Archer"
-Author: "Archer Lebron"
-Date: "October 11, 2016"
+Title: RR_PA1_Archer
+Author: Archer Lebron
+Date: October 11, 2016
 Output: html_document
 ---
  
