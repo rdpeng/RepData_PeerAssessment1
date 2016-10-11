@@ -8,8 +8,8 @@ devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
 
 
 **Loading and preprocessing the data
-1. Load the data
-2. Process/transform the data (if necessary) into a format suitable for your analysis
+-1. Load the data
+-2. Process/transform the data (if necessary) into a format suitable for your analysis
 ``` {r}
 activity <- read.csv("activity.csv", header = TRUE)
 head(activity)
