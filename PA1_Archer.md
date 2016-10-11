@@ -1,10 +1,10 @@
 Coursera Reproducible Research - Project 1 
 ===========================================================
 ---
-title: "RR_PA1_Archer"
-author: "Archer Lebron"
-date: "October 11, 2016"
-output: html_document
+Title: "RR_PA1_Archer"
+Author: "Archer Lebron"
+Date: "October 11, 2016"
+Output: html_document
 ---
  
 This is the first assignment for the Coursera Reproducible Research.  This assignment
