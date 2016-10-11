@@ -21,13 +21,13 @@ class(activity$date)
 **What is mean total number of steps taken per day?**
 
 1. Calculate the total number of steps taken per day
+2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 ``` {r}
 # Calculate the total number of steps taken per day
 daysteps <- tapply(activity$steps, activity$date, sum, na.rm=TRUE)
 daysteps
 ```
 
-2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
 ``` {r}
 # Histogram of the total number of steps taken each day
 hist(daysteps, breaks=seq(from=0, to=25000, by=2500), col = "green", xlab="Total number of steps", ylim=c(0,20), main="Histogram of the total number of steps taken each day (NAs removed)")
