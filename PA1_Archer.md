@@ -1,10 +1,10 @@
-Coursera Reproducible Research - Project 1 
+Coursera Reproducible Research - Project 1 by Archer Lebron
 ===========================================================
 ---
-Title: RR_PA1_Archer
-Author: Archer Lebron
-Date: October 11, 2016
-Output: html_document
+title: "RR_PA1_Archer"
+author: "Archer Lebron"
+date: "October 11, 2016"
+output: html_document
 ---
  
 This is the first assignment for the Coursera Reproducible Research.  This assignment
@@ -13,8 +13,7 @@ devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
 
 
 
-**Loading and preprocessing the data**
-
+**Loading and preprocessing the data
 1. Load the data
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 ``` {r}
@@ -24,8 +23,7 @@ class(activity$date)
 ```
 
 
-**What is mean total number of steps taken per day?**
-
+**What is mean total number of steps taken per day?
 1. Calculate the total number of steps taken per day
 ``` {r}
 # Calculate the total number of steps taken per day
@@ -46,48 +44,41 @@ median(daysteps, na.rm = TRUE)
 ```
 
 
-**What is the average daily activity pattern?**
-
+**What is the average daily activity pattern?
 1. Make a time series plot (i.e. type ="1") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ``` {r}
 # Calculate the average number of steps taken by each interval across all days
 avgsteps <- tapply(activity$steps, activity$interval, mean, na.rm=TRUE)
 # Plot a time series for the average number of steps taken, averaged across all days
 plot(avgsteps, type = "l", col = "red", lwd = 2,xlab="Time Series Intervals", ylab = "Average Steps", main = "Average Nubmer of Steps Taken Averaged Across All Days")
 ```
-
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ``` {r}
 # Identify the interval with the maximum number of steps (sort in decreasing order)
 sort(avgsteps, decreasing = TRUE)
 ```
 
 
-**Imputing missing values**
-
+**Imputing missing values
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with 𝙽𝙰s)
-2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
-3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
-4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-
 ``` {r}
 # Calculate the total number of NAs
 Total_NA <- sum(is.na(activity))
 Total_NA
 ```
-
+2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 ``` {r}
 # Identify the index positions of the NAs
 na_ind <- which(is.na(activity$steps))
 # Create a vector the length of total NAs with the average of steps throughout all the days
 meanvec <- rep(mean(activity$steps, na.rm=TRUE), times = length(na_ind))
 ```
-
+3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 ``` {r}
 # Replace missing values (NAs) with the average value of steps 
 activity[is.na(activity)] <- meanvec
 ```
-
+4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 ``` {r}
 # Histogram of the total number of steps taken each day
 hist(daysteps, breaks=seq(from=0, to=25000, by=2500), col = "dark blue", xlab="Total number of steps", ylim=c(0,20), main="Histogram of the total number of steps taken each day (NAs removed)")
@@ -99,11 +90,8 @@ median(daysteps)
 ```
 
 
-**Are there differences in activity patterns between weekdays and weekends?**
-
+**Are there differences in activity patterns between weekdays and weekends?
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
-2. Make a panel plot containing a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
-
 ``` {r}
 # Convert dates factor variable to Date 
 activity$date <- as.Date(activity$date)
@@ -114,7 +102,7 @@ weekdays0 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 activity$Daytype <- factor((weekdays(activity$date) %in% weekdays0), levels=c(FALSE,TRUE), labels=c('weekend', 'weekday'))
 head(activity)
 ```
-
+2. Make a panel plot containing a time series plot (i.e. 𝚝𝚢𝚙𝚎 = "𝚕") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
 ``` {r}
 # Load the lattice graphical library
 library(lattice)
@@ -129,3 +117,8 @@ head(days_mean)
 # Compute the time series plot
 xyplot(mean ~ interval | daytype, days_mean, type="l", lwd=1, xlab="Interval", ylab="Average Number of Steps", layout=c(1,2))
 ```
+
+R.Version()
+packageurl <- "http://cran.r-project.org/src/contrib/Archive/knitr/knitr_1.12.tar.gz"
+install.packages(packageurl, repos=NULL, type="source")
+
