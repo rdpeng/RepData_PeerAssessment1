@@ -7,6 +7,7 @@ date: "October 11, 2016"
 output: 
     html_document:
         keep_md: yes
+        
 ---
  
 This is the first assignment for the Coursera Reproducible Research.  This assignment
