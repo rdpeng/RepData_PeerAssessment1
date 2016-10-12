@@ -5,7 +5,8 @@ title: "RR_PA1_Archer"
 author: "Archer Lebron"
 date: "October 11, 2016"
 output: 
-    html_document 
+    html_document:
+        keep_md: yes
 ---
  
 This is the first assignment for the Coursera Reproducible Research.  This assignment
