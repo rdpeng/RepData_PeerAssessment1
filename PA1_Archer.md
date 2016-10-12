@@ -1,6 +1,18 @@
-# Reproducible Research Peer Assignment 1
-Archer Lebron
-October 10
+Coursera Reproducible Research - Project 1 by Archer Lebron
+===========================================================
+---
+title: "RR_PA1_Archer"
+author: "Archer Lebron"
+date: "October 11, 2016"
+output: 
+    html_document 
+---
+ 
+This is the first assignment for the Coursera Reproducible Research.  This assignment
+consists of the analysis of personal moving activity data that has been collected using monitoring 
+devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
+
+
 
 **Loading and preprocessing the data**
 
@@ -28,7 +40,6 @@ daysteps
 hist(daysteps, breaks=seq(from=0, to=25000, by=2500), col = "green", xlab="Total number of steps", ylim=c(0,20), main="Histogram of the total number of steps taken each day (NAs removed)")
 ```
 
-
 3. Calculate and report the mean and median of the total number of steps per day
 ``` {r}
 # Mean of the total number of steps per day
@@ -47,8 +58,6 @@ avgsteps <- tapply(activity$steps, activity$interval, mean, na.rm=TRUE)
 # Plot a time series for the average number of steps taken, averaged across all days
 plot(avgsteps, type = "l", col = "red", lwd = 2,xlab="Time Series Intervals", ylab = "Average Steps", main = "Average Nubmer of Steps Taken Averaged Across All Days")
 ```
-
-
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 ``` {r}
