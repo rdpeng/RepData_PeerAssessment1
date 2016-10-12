@@ -13,7 +13,7 @@ devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
 
 
 
-**Loading and preprocessing the data
+**Loading and preprocessing the data**
 1. Load the data
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 ``` {r}
@@ -23,7 +23,7 @@ class(activity$date)
 ```
 
 
-**What is mean total number of steps taken per day?
+**What is mean total number of steps taken per day?**
 1. Calculate the total number of steps taken per day
 ``` {r}
 # Calculate the total number of steps taken per day
@@ -44,7 +44,7 @@ median(daysteps, na.rm = TRUE)
 ```
 
 
-**What is the average daily activity pattern?
+**What is the average daily activity pattern?**
 1. Make a time series plot (i.e. type ="1") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ``` {r}
 # Calculate the average number of steps taken by each interval across all days
@@ -59,7 +59,7 @@ sort(avgsteps, decreasing = TRUE)
 ```
 
 
-**Imputing missing values
+**Imputing missing values**
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with 𝙽𝙰s)
 ``` {r}
 # Calculate the total number of NAs
@@ -90,7 +90,7 @@ median(daysteps)
 ```
 
 
-**Are there differences in activity patterns between weekdays and weekends?
+**Are there differences in activity patterns between weekdays and weekends?**
 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 ``` {r}
 # Convert dates factor variable to Date 
