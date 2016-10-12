@@ -10,6 +10,7 @@ output:
            
 ---
  
+ 
 This is the first assignment for the Coursera Reproducible Research.  This assignment
 consists of the analysis of personal moving activity data that has been collected using monitoring 
 devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
