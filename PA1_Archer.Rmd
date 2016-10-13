@@ -1,7 +1,5 @@
-Coursera Reproducible Research - Project 1 by Archer Lebron
-===========================================================
 ---
-title: "RR_PA1_Archer"
+title: "Reproducible Research Peer Assignment 1"
 author: "Archer Lebron"
 date: "October 11, 2016"
 output: 
