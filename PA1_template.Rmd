@@ -1,5 +1,7 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "shanesu"
+date: "2016年10月12日"
 output: 
   html_document:
     keep_md: true
@@ -7,19 +9,71 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
+```{r setup, include=FALSE}
+ knitr::opts_chunk$set(echo = TRUE)
+```
+```{R activity}
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", destfile = temp )
+unzip(temp, "activity.csv")
+activity<-read.csv("activity.csv")
+head(activity)
+```
 
 ## What is mean total number of steps taken per day?
+```{R sumhist}
+stepsum<-tapply(activity$steps,activity$date,sum)
+hist(stepsum)
+```
 
-
+#### the mean
+```{R mean}
+mean(stepsum,na.rm = TRUE)
+```
+#### the median
+```{R median}
+median(stepsum,na.rm = TRUE)
+```
 
 ## What is the average daily activity pattern?
-
-
+```{R plotave}
+stepave<-aggregate(steps~interval,data = activity,FUN = mean,na.rm=TRUE)
+plot(stepave$interval,stepave$steps)
+```
+#### which max
+```{R avemax}
+stepave$interval[which.max(stepave$steps)]
+```
 
 ## Imputing missing values
-
+```{R dealna}
+cleardate<-activity
+addmiss<-function(mystep,myinterval){
+  if(is.na(mystep))
+      newvalue<-stepave$steps[which(stepave$interval==myinterval)]
+  else
+      newvalue<-mystep
+  return(newvalue)
+}
+cleardate$steps<-mapply(addmiss,cleardate$steps,cleardate$interval)
+summary(cleardate)
+```
+#### show the new hist
+```{R histnew}
+hist(tapply(cleardate$steps,cleardate$date,sum))
+```
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{R ggplotnew}
+cleardate$date<-as.Date(cleardate$date)
+library(ggplot2)
+isweekday<-function(idate){
+   if (weekdays(idate) %in% c("星期日", "星期六"))
+       return("weekend")
+   else
+       return("weekday")
+}
+cleardate$daytype<-mapply(isweekday,cleardate$date)
+ggplot(cleardate)+geom_point(aes(x=interval,y=steps,colour=daytype))
+```
