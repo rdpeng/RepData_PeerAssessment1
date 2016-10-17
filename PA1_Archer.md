@@ -1,11 +1,9 @@
-Coursera Reproducible Research - Project 1 by Archer Lebron
-===========================================================
 ---
-title: "RR_PA1_Archer"
+title: "Reproducible Research Peer Assignment 1"
 author: "Archer Lebron"
 date: "October 11, 2016"
 output: 
-    html_document 
+    html_document
 ---
  
 This is the first assignment for the Coursera Reproducible Research.  This assignment
@@ -19,6 +17,8 @@ devices such as Fitbit, Nike Fuelband, and/or Jawbone Up.
 1. Load the data
 2. Process/transform the data (if necessary) into a format suitable for your analysis
 ``` {r}
+getwd()
+setwd("/Users/ArcherJime/Downloads/Archer Folder/Coursera_ReproducibleResearch")
 activity <- read.csv("activity.csv", header = TRUE)
 head(activity)
 class(activity$date)
