@@ -32,7 +32,6 @@ class(activity$date)
 ``` {r}
 # Calculate the total number of steps taken per day
 daysteps <- tapply(activity$steps, activity$date, sum, na.rm=TRUE)
-daysteps
 ```
 
 2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
