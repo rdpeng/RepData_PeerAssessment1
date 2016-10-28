@@ -1,64 +1,33 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-```{r}
 library(dplyr)
 library(ggplot2)
 library(lubridate)
-```
 
-
-## Loading and preprocessing the data
-
-```{r}
+## Loading raw dataset
 filepath <- "./activity.csv"
-activityRawData <- read.csv(filepath, header = TRUE, sep = ",", colClasses = c("numeric","POSIXct","numeric"))
-```
+activityRawData <- read.csv(filepath, header = TRUE, sep = ",")
 
-## What is mean total number of steps taken per day?
+## Convert format of the column "date"
+activityRawData$date <- as.POSIXct(activityRawData$date, format = "%Y-%m-%d")
 
-```{r}
+## Task 1
 StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
-hist(StepsByDay$`sum(steps)`, breaks = 20, col = "green", main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
-```
-```{r}
+hist(StepsByDay$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
+
 meanStepsByDay <- mean(StepsByDay$`sum(steps)`, na.rm = TRUE)
 medianStepsByDay <- median(StepsByDay$`sum(steps)`, na.rm = TRUE)
-```
-The mean value is `r meanStepsByDay`
-The value of median is `r medianStepsByDay`
 
-## What is the average daily activity pattern?
-```{r}
+
+## Task 2
 StepsByInterval <- summarise(group_by(activityRawData, interval), AverageSteps=mean(steps, na.rm = TRUE))
 ggplot(data = StepsByInterval, aes(x = interval, y = AverageSteps)) +
   geom_line() +
   xlab("5-minute interval") +
   ylab("Average number of steps taken")
-```
-```{r}
 maxInterval <- filter(StepsByInterval, AverageSteps == max(AverageSteps))
-```
-* 5-minute interval with the maximum number of steps on average across all the days in the dataset: `r maxInterval$interval`
 
-* The number of cteps for this interval: `r maxInterval$AverageSteps`
 
-## Imputing missing values
-
-```{r}
+## Task 3
 quantNA <- sum(is.na(activityRawData))
-```
-
-Total number of rows with missing data is `r quantNA`.
-
-I used average values of steps for the each 5-minute interval for filling missing values in raw dataset.
-
-
-
-```{r}
 activityWithoutNA <- activityRawData 
 for (i in 1:nrow(activityWithoutNA)) {
   if (is.na(activityWithoutNA$steps[i])) {
@@ -67,20 +36,15 @@ for (i in 1:nrow(activityWithoutNA)) {
 }
 
 StepsByDay_2 <- summarise(group_by(activityWithoutNA, date), sum(steps))
-hist(StepsByDay_2$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day", col = "green")
+hist(StepsByDay_2$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day")
 
 meanStepsByDay_2 <- mean(StepsByDay_2$`sum(steps)`, na.rm = TRUE)
 medianStepsByDay_2 <- median(StepsByDay_2$`sum(steps)`, na.rm = TRUE)
 
 diff_mean <- meanStepsByDay_2 - meanStepsByDay
 diffMedian <- medianStepsByDay_2 - medianStepsByDay
-```
 
-
-
-## Are there differences in activity patterns between weekdays and weekends
-
-```{r}
+## Task 4
 activityWithoutNA$day <-  ifelse(as.POSIXlt(activityWithoutNA$date)$wday %in% c(0,6), 'weekend', 'weekday')
 table(activityWithoutNA$day)
 
@@ -90,5 +54,4 @@ ggplot(StepsByInterval_Days, aes(interval, steps)) +
   facet_grid(day ~ .) +
   xlab("5-minute interval") + 
   ylab("Average number of steps taken")
-```
 
