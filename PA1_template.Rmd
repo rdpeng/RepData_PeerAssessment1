@@ -4,21 +4,20 @@ output:
   html_document:
     keep_md: true
 ---
-```{r}
+## Loading and preprocessing the data
+```{r, results='hide', warning=FALSE, message=FALSE}
 library(dplyr)
 library(ggplot2)
 library(lubridate)
 ```
-
-
-## Loading and preprocessing the data
-
 ```{r}
 filepath <- "./activity.csv"
 activityRawData <- read.csv(filepath, header = TRUE, sep = ",", colClasses = c("numeric","POSIXct","numeric"))
 ```
 
 ## What is mean total number of steps taken per day?
+
+In this case we are ignoring missing values. 
 
 ```{r}
 StepsByDay <- summarise(group_by(activityRawData, date), sum(steps))
@@ -28,10 +27,13 @@ hist(StepsByDay$`sum(steps)`, breaks = 20, col = "green", main = "Histogram of t
 meanStepsByDay <- mean(StepsByDay$`sum(steps)`, na.rm = TRUE)
 medianStepsByDay <- median(StepsByDay$`sum(steps)`, na.rm = TRUE)
 ```
-The mean value is `r meanStepsByDay`
-The value of median is `r medianStepsByDay`
+* The mean value is **`r meanStepsByDay`**
+* The value of median is **`r medianStepsByDay`**
 
 ## What is the average daily activity pattern?
+
+In this case we are ignoring missing values. 
+
 ```{r}
 StepsByInterval <- summarise(group_by(activityRawData, interval), AverageSteps=mean(steps, na.rm = TRUE))
 ggplot(data = StepsByInterval, aes(x = interval, y = AverageSteps)) +
@@ -42,21 +44,21 @@ ggplot(data = StepsByInterval, aes(x = interval, y = AverageSteps)) +
 ```{r}
 maxInterval <- filter(StepsByInterval, AverageSteps == max(AverageSteps))
 ```
-* 5-minute interval with the maximum number of steps on average across all the days in the dataset: `r maxInterval$interval`
-
-* The number of cteps for this interval: `r maxInterval$AverageSteps`
+* 5-minute interval with the maximum number of steps on average across all the days in the dataset: **`r maxInterval$interval`**
+* The number of steps for this interval: **`r maxInterval$AverageSteps`**
 
 ## Imputing missing values
 
+In this case i will change missing values to normal values.
+
+The first step: calculating a total number of missing values in the raw dataset.
 ```{r}
 quantNA <- sum(is.na(activityRawData))
 ```
+Total number of rows with missing data is **`r quantNA`**.
 
-Total number of rows with missing data is `r quantNA`.
-
+The second step: changing values from missing to normal.
 I used average values of steps for the each 5-minute interval for filling missing values in raw dataset.
-
-
 
 ```{r}
 activityWithoutNA <- activityRawData 
@@ -65,7 +67,10 @@ for (i in 1:nrow(activityWithoutNA)) {
     activityWithoutNA$steps[i] <- StepsByInterval[which(activityWithoutNA$interval[i] == StepsByInterval$interval), ]$AverageSteps
   }
 }
+```
 
+The result of imputing missing values.
+```{r}
 StepsByDay_2 <- summarise(group_by(activityWithoutNA, date), sum(steps))
 hist(StepsByDay_2$`sum(steps)`, breaks = 20, main = "Histogram of the total number of steps by day", xlab ="Total steps by day", col = "green")
 
@@ -76,13 +81,30 @@ diff_mean <- meanStepsByDay_2 - meanStepsByDay
 diffMedian <- medianStepsByDay_2 - medianStepsByDay
 ```
 
+For the dataset without missing values:
 
+* The mean value is **`r meanStepsByDay_2`**
+* The median value is **`r medianStepsByDay_2`**
+
+The difference between values for datasets with and without missing values:
+
+* For mean values is **`r diff_mean`**
+* For median values is **`r diffMedian`**
+
+After analysing of results we can see that mean value is the same for datasets with and without missing values.
+Value of median for the dataset without missing values is bigger. But the difference is insignificant and does not have significant impact on the estimates of the total daily number of steps.  
 
 ## Are there differences in activity patterns between weekdays and weekends
 
+In this case we are working with the dataset without missing values. 
+
+For resolving this task I added column "day" (with values "workday" or "weekend") for the dataset.
+I defined values for this column based on the values in the column "date".
+
+Below you can see the graph with comparing of average number of steps for workdays and weekends.
+
 ```{r}
 activityWithoutNA$day <-  ifelse(as.POSIXlt(activityWithoutNA$date)$wday %in% c(0,6), 'weekend', 'weekday')
-table(activityWithoutNA$day)
 
 StepsByInterval_Days <- aggregate(steps ~ interval + day, data = activityWithoutNA, mean)
 ggplot(StepsByInterval_Days, aes(interval, steps)) + 
