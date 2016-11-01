@@ -1,30 +1,49 @@
 
-```{r }
+
+```r
 ---
 title: "Reproducible_research_markdown"
 output: html_document
 ---
+```
 
-```{r setup, include=TRUE}
+```
+## Error: <text>:6:0: unexpected end of input
+## 4: ---
+## 5: 
+##   ^
+```
+
+```r
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
 install the basic packages
-```{r}
+
+```r
 library(ggplot2)
 library(plyr)
 ```
 
 get data
-```{r}
+
+```r
 activity_raw <- read.csv("activity.csv")
 
 str(activity_raw)
 ```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Factor w/ 61 levels "2012-10-01","2012-10-02",..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ interval: int  0 5 10 15 20 25 30 35 40 45 ...
+```
 *get data ready:
 *change date to date
 
-```{r}
+
+```r
 activity_raw$date2 <- as.Date(activity_raw$date)
 ```
 
@@ -35,22 +54,36 @@ Calculate the total number of steps taken per day
 Make a histogram of the total number of steps taken each day
 Calculate and report the mean and median of the total number of steps taken per day
     
-```{r}    
+
+```r
 stepsByDay <- tapply(activity_raw$steps, activity_raw$date, sum, na.rm=TRUE)
 
 qplot(stepsByDay, xlab='Count of days', ylab='Total # steps per day', bins=10)
+```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
+
+```r
 stepsByDayMean <- mean(stepsByDay)
 stepsByDayMedian <- median(stepsByDay)
-
 ```
 Mean: 
-```{r} 
+
+```r
 stepsByDayMean 
 ```
+
+```
+## [1] 9354.23
+```
 Median:
-```{r} 
+
+```r
 print(stepsByDayMean)
+```
+
+```
+## [1] 9354.23
 ```
 
 **What is the average daily activity pattern?
@@ -60,18 +93,29 @@ Which 5-minute interval, on average across all the days in the dataset, contains
 
 
 
-```{r}
+
+```r
 activity_noNA <-na.omit(activity_raw)
 avg_steps_per_interval <-ddply(activity_noNA, .(interval), summarize, avg_steps=mean(steps))
 
 plot(x=avg_steps_per_interval$interval, y=avg_steps_per_interval$avg_steps, type="l", xlab="Interval", ylab="Avg # steps", col="blue")
+```
 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+
+```r
 max_avg_step_data <-avg_steps_per_interval[which.max(avg_steps_per_interval$avg_steps),]
 ```
 
 Maximum Avg Steps occurs at : 
-```{r} 
+
+```r
 print(max_avg_step_data)
+```
+
+```
+##     interval avg_steps
+## 104      835  206.1698
 ```
 
 **Imputing missing values
@@ -86,7 +130,8 @@ What is the impact of imputing missing data on the estimates of the total daily 
 
 * the number of NAs in steps
 
-``` {r}
+
+```r
 total_missing=sum(is.na(activity_raw))
 ```
 
@@ -98,7 +143,8 @@ Rows with NAs: 'r print(total_missing)'
 * 2 calculate the means at every interval without the NAs
 * 3 replace each missing step with the mean as calculated above
 
-``` {r}
+
+```r
 step_nas <- is.na(activity_raw$steps)
 avg_interval_imputed <- tapply(activity_raw$steps, activity_raw$interval, mean, na.rm=TRUE, simplify=TRUE)
 activity_raw$steps[step_nas] <- avg_interval_imputed[as.character(activity_raw$interval[step_nas])]
@@ -106,52 +152,95 @@ activity_raw$steps[step_nas] <- avg_interval_imputed[as.character(activity_raw$i
 
 *histogram - number of steps per day
 
-```{r}
 
+```r
 avg_stepsimputedna_per_day <-tapply(activity_raw$steps, activity_raw$date, sum)
 
 qplot(avg_stepsimputedna_per_day, xlab='Count of days', ylab='Total # steps per day (imputing NAs by mean)', bins=10)
+```
 
+![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+
+```r
 stepsByDayMean_imputed <- mean(avg_stepsimputedna_per_day)
 stepsByDayMedian_imputed <- median(avg_stepsimputedna_per_day)
 
 print(stepsByDayMean_imputed)
-print(stepsByDayMedian_imputed)
+```
 
 ```
-Mean with Imputed NAs:  
-```{r} 
-print(stepsByDayMean_imputed)
+## [1] 10766.19
 ```
-Median with Imputed NAs: 
-```{r} 
+
+```r
 print(stepsByDayMedian_imputed)
 ```
+
+```
+## [1] 10766.19
+```
+Mean with Imputed NAs:  
+
+```r
+print(stepsByDayMean_imputed)
+```
+
+```
+## [1] 10766.19
+```
+Median with Imputed NAs: 
+
+```r
+print(stepsByDayMedian_imputed)
+```
+
+```
+## [1] 10766.19
+```
 Mean removing NAs: 
-```{r} 
+
+```r
 print(stepsByDayMean)
 ```
+
+```
+## [1] 9354.23
+```
 Median removing NAs : 
-```{r} 
+
+```r
 print(stepsByDayMedian)
+```
+
+```
+## [1] 10395
 ```
 
 * calculate the change in mean and median when imputation is used
 
-```{r}
+
+```r
 difference_in_mean <-stepsByDayMean_imputed - stepsByDayMean
 difference_in_median <-stepsByDayMedian_imputed - stepsByDayMedian
-
-
 ```
 
 Imputation has caused the mean to increase by : 
-```{r} 
+
+```r
 print(difference_in_mean)
 ```
+
+```
+## [1] 1411.959
+```
 Imputation has caused the median to increase by : 
-```{r} 
+
+```r
 print(difference_in_median)
+```
+
+```
+## [1] 371.1887
 ```
 
 
@@ -165,17 +254,21 @@ Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minut
 
 *create a new variable that categorises the day as weekday or weekend
 
-```{r}
+
+```r
 activity_raw2 <- mutate(activity_raw, weektype = ifelse(weekdays(activity_raw$date2) == "Saturday" | weekdays(activity_raw$date2) == "Sunday", "weekend", "weekday"))
 activity_raw2$weektype <- as.factor(activity_raw2$weektype)
 ```
 
 *make a panel plot
-```{r}
+
+```r
 aggregated_activity <- aggregate(steps ~ interval+weektype, data=activity_raw2, FUN=mean)
 
 ggplot(aggregated_activity, aes(x=interval, y=steps, color=weektype))+ geom_line() + facet_wrap(~weektype, ncol=1, nrow=2)
 ```
+
+![plot of chunk unnamed-chunk-21](figure/unnamed-chunk-21-1.png)
 ```
 ```
 
