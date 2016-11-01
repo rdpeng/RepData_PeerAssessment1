@@ -53,20 +53,14 @@ df1
 
 
 ```r
-qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day", ylab = "frequency",binwidth=500)
+qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day", ylab = "frequency")
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
-
-```r
-stat_bin(bins = 30)
-```
-
-```
-## geom_bar: na.rm = FALSE
-## stat_bin: binwidth = NULL, bins = 30, center = NULL, boundary = NULL, closed = c("right", "left"), pad = FALSE, na.rm = FALSE
-## position_stack
-```
 
 3. Calculate and report the mean and median of the total number of steps taken per day
 
