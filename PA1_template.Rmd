@@ -136,7 +136,9 @@ gg <- ggplot(data= df5, aes(x=interval, y=steps_perday, color=wkds))
 gg + geom_line() + facet_wrap(~wkds, ncol = 1, nrow=2) + ggtitle("Comparison of average steps between weekdays and weekends")
 ```
 
+```{r}
 knit2html()
+```
 
 
 
