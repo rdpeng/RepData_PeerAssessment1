@@ -60,7 +60,7 @@ qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day",
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-5](http://gihub.com/wangqian2149185/RepData_PeerAssessment1/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-5](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/unnamed-chunk-5-1.png)
 
 3. Calculate and report the mean and median of the total number of steps taken per day
 
