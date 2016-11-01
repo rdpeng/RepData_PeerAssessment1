@@ -53,11 +53,7 @@ df1
 
 
 ```r
-qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day", ylab = "frequency")
-```
-
-```
-## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day", ylab = "frequency",binwidth=500)
 ```
 
 ![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png)
