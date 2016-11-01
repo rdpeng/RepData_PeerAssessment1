@@ -60,7 +60,7 @@ qplot(df1$steps_day,main = "Histogram of steps per day", xlab = "steps per day",
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-5](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/unnamed-chunk-5-1.png)
+![plot of chunk unnamed-chunk-5](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-5-1.png)
 
 3. Calculate and report the mean and median of the total number of steps taken per day
 
@@ -97,7 +97,7 @@ g<- ggplot(data = df2, aes(interval,steps))
 g + geom_line()
 ```
 
-![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
+![plot of chunk unnamed-chunk-8](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-8-1.png)
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -151,7 +151,7 @@ qplot(df3$steps_day,main = "Histogram of steps per day", xlab = "steps per day",
 ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
-![plot of chunk unnamed-chunk-12](figure/unnamed-chunk-12-1.png)
+![plot of chunk unnamed-chunk-12](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-12-1.png)
 The mean of number of steps per day is:
 
 ```r
@@ -215,7 +215,7 @@ gg <- ggplot(data= df5, aes(x=interval, y=steps_perday, color=wkds))
 gg + geom_line() + facet_wrap(~wkds, ncol = 1, nrow=2) + ggtitle("Comparison of average steps between weekdays and weekends")
 ```
 
-![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png)
+![plot of chunk unnamed-chunk-16](https://github.com/wangqian2149185/RepData_PeerAssessment1/blob/master/figures/unnamed-chunk-16-1.png)
 
 
 
