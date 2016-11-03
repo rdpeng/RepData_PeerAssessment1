@@ -1,8 +1,8 @@
 ---
-title: "RepData_PeerAssign1"
-author: "James Ottavi"
-date: "10/31/2016"
-output: html_document
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
