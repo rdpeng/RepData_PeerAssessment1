@@ -2,9 +2,7 @@
 title: "Reproducible Reseach Assignment 1"
 author: Abhishek
 date: November 3, 2016
-output:  
-      html_document:  
-        keep_md: true 
+output: github_document
 
 ---
 
