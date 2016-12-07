@@ -47,7 +47,7 @@ qplot(x, data = number_steps, binwidth = 1000) +
       theme_bw(base_family = "Times New Roman")
 ```
 
-![plot of chunk histogram_total_steps](figure/histogram_total_steps-1.png)
+![plot of chunk histogram_total_steps](instructions_fig/histogram_total_steps-1.png)
 
 
 3. Calculate and report the mean and median of the total number of steps taken per day
@@ -81,7 +81,7 @@ ggplot(ave_steps, aes(Interval, Daily_Average)) +
       labs(title = "Time Series Plot", x = "Daily 5-minute Intervals", y = "Average Steps Taken at Each Interval")
 ```
 
-![plot of chunk time_series_plot](figure/time_series_plot-1.png)
+![plot of chunk time_series_plot](instructions_fig/time_series_plot-1.png)
 
 
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
@@ -180,7 +180,7 @@ qplot(x, data = number_steps2, binwidth = 1000) +
       theme_bw(base_family = "Times New Roman")
 ```
 
-![plot of chunk histogram_total_steps2](figure/histogram_total_steps2-1.png)
+![plot of chunk histogram_total_steps2](instructions_fig/histogram_total_steps2-1.png)
 
 
 ```r
@@ -239,4 +239,4 @@ ggplot(ave_day_end, aes(Group.1, x)) +
       labs(x = "Interval", y = "Total Number of Steps", title = "Time Series Plot: By Day of the Week")
 ```
 
-![plot of chunk time_series_plot2](figure/time_series_plot2-1.png)
+![plot of chunk time_series_plot2](instructions_fig/time_series_plot2-1.png)
