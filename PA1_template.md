@@ -14,7 +14,7 @@ activity <- read.csv("activity.csv",
 
 ```r
 totalStepsbyDay <- with(activity,
-                        tapply(steps, interval, sum,
+                        tapply(steps, date, sum,
                                na.rm = TRUE, simplify = TRUE))
 hist(totalStepsbyDay,
      main = "Histogram of Total Number of Steps Taken Each Day",
@@ -25,19 +25,19 @@ hist(totalStepsbyDay,
 ![](PA1_template_files/figure-html/mean-1.png)<!-- -->
 
 ```r
-mean(totalStepsbyDay, na.rm = TRUE)
+mean(totalStepsbyDay)
 ```
 
 ```
-## [1] 1981.278
+## [1] 9354.23
 ```
 
 ```r
-median(totalStepsbyDay, na.rm = TRUE)
+median(totalStepsbyDay)
 ```
 
 ```
-## [1] 1808
+## [1] 10395
 ```
 
 ## What is the average daily activity pattern?
@@ -84,7 +84,7 @@ activityNew <- with(merged, data.frame(merged[order(date, interval),
                                               c("steps", "date", "interval")],
                                        row.names = 1:nrow(activity)))
 totalStepsbyDayNew <- with(activityNew,
-                           tapply(steps, interval, sum,
+                           tapply(steps, date, sum,
                                   na.rm = TRUE, simplify = TRUE))
 hist(totalStepsbyDayNew,
      main = "Histogram of Total Number of Steps Taken Each Day",
@@ -99,7 +99,7 @@ mean(totalStepsbyDayNew)
 ```
 
 ```
-## [1] 2280.339
+## [1] 10766.19
 ```
 
 ```r
@@ -107,7 +107,7 @@ median(totalStepsbyDayNew)
 ```
 
 ```
-## [1] 2080.906
+## [1] 10766.19
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
