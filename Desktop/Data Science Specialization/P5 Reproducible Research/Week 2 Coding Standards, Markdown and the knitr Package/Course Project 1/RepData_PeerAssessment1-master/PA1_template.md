@@ -13,28 +13,31 @@ activity <- read.csv("activity.csv",
 ## What is mean total number of steps taken per day?
 
 ```r
-with(activity, hist(steps,
-                    main = "Histogram of Total Number of Steps Taken Each Day",
-                    xlab = "Number of Steps",
-                    ylab = "Count"))
+totalStepsbyDay <- with(activity,
+                        tapply(steps, interval, sum,
+                               na.rm = TRUE, simplify = TRUE))
+hist(totalStepsbyDay,
+     main = "Histogram of Total Number of Steps Taken Each Day",
+     xlab = "Number of Steps",
+     ylab = "Count")
 ```
 
 ![](PA1_template_files/figure-html/mean-1.png)<!-- -->
 
 ```r
-mean(activity$steps, na.rm = TRUE)
+mean(totalStepsbyDay, na.rm = TRUE)
 ```
 
 ```
-## [1] 37.3826
+## [1] 1981.278
 ```
 
 ```r
-median(activity$steps, na.rm = TRUE)
+median(totalStepsbyDay, na.rm = TRUE)
 ```
 
 ```
-## [1] 0
+## [1] 1808
 ```
 
 ## What is the average daily activity pattern?
@@ -62,6 +65,7 @@ meanStepsByInterval[which.max(meanStepsByInterval)]
 ```
 
 ## Imputing missing values
+Strategy: Impute the mean of that 5-minute interval
 
 ```r
 sum(is.na(activity$steps))
@@ -79,28 +83,31 @@ merged <- transform(merged, steps = ifelse(is.na(steps), mean, steps))
 activityNew <- with(merged, data.frame(merged[order(date, interval),
                                               c("steps", "date", "interval")],
                                        row.names = 1:nrow(activity)))
-with(activityNew, hist(steps,
-                       main = "Histogram of Total Number of Steps Taken Each Day",
-                       xlab = "Number of Steps",
-                       ylab = "Count"))
+totalStepsbyDayNew <- with(activityNew,
+                           tapply(steps, interval, sum,
+                                  na.rm = TRUE, simplify = TRUE))
+hist(totalStepsbyDayNew,
+     main = "Histogram of Total Number of Steps Taken Each Day",
+     xlab = "Number of Steps",
+     ylab = "Count")
 ```
 
 ![](PA1_template_files/figure-html/impute-1.png)<!-- -->
 
 ```r
-mean(activityNew$steps, na.rm = TRUE)
+mean(totalStepsbyDayNew)
 ```
 
 ```
-## [1] 37.3826
+## [1] 2280.339
 ```
 
 ```r
-median(activityNew$steps, na.rm = TRUE)
+median(totalStepsbyDayNew)
 ```
 
 ```
-## [1] 0
+## [1] 2080.906
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
