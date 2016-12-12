@@ -16,12 +16,15 @@ activity <- read.csv("activity.csv",
 
 ## What is mean total number of steps taken per day?
 ```{r mean}
-with(activity, hist(steps,
-                    main = "Histogram of Total Number of Steps Taken Each Day",
-                    xlab = "Number of Steps",
-                    ylab = "Count"))
-mean(activity$steps, na.rm = TRUE)
-median(activity$steps, na.rm = TRUE)
+totalStepsbyDay <- with(activity,
+                        tapply(steps, interval, sum,
+                               na.rm = TRUE, simplify = TRUE))
+hist(totalStepsbyDay,
+     main = "Histogram of Total Number of Steps Taken Each Day",
+     xlab = "Number of Steps",
+     ylab = "Count")
+mean(totalStepsbyDay, na.rm = TRUE)
+median(totalStepsbyDay, na.rm = TRUE)
 ```
 
 ## What is the average daily activity pattern?
@@ -38,6 +41,7 @@ meanStepsByInterval[which.max(meanStepsByInterval)]
 ```
 
 ## Imputing missing values
+Strategy: Impute the mean of that 5-minute interval
 ```{r impute}
 sum(is.na(activity$steps))
 means <- data.frame(interval = names(meanStepsByInterval),
@@ -47,12 +51,15 @@ merged <- transform(merged, steps = ifelse(is.na(steps), mean, steps))
 activityNew <- with(merged, data.frame(merged[order(date, interval),
                                               c("steps", "date", "interval")],
                                        row.names = 1:nrow(activity)))
-with(activityNew, hist(steps,
-                       main = "Histogram of Total Number of Steps Taken Each Day",
-                       xlab = "Number of Steps",
-                       ylab = "Count"))
-mean(activityNew$steps, na.rm = TRUE)
-median(activityNew$steps, na.rm = TRUE)
+totalStepsbyDayNew <- with(activityNew,
+                           tapply(steps, interval, sum,
+                                  na.rm = TRUE, simplify = TRUE))
+hist(totalStepsbyDayNew,
+     main = "Histogram of Total Number of Steps Taken Each Day",
+     xlab = "Number of Steps",
+     ylab = "Count")
+mean(totalStepsbyDayNew)
+median(totalStepsbyDayNew)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
