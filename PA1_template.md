@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r data}
+
+```r
 activity <- read.csv("activity.csv",
                      colClasses = c("numeric", "Date", "numeric"),
                      na.strings = "NA")
@@ -15,17 +11,35 @@ activity <- read.csv("activity.csv",
 
 
 ## What is mean total number of steps taken per day?
-```{r mean}
+
+```r
 with(activity, hist(steps,
                     main = "Histogram of Total Number of Steps Taken Each Day",
                     xlab = "Number of Steps",
                     ylab = "Count"))
+```
+
+![](PA1_template_files/figure-html/mean-1.png)<!-- -->
+
+```r
 mean(activity$steps, na.rm = TRUE)
+```
+
+```
+## [1] 37.3826
+```
+
+```r
 median(activity$steps, na.rm = TRUE)
 ```
 
+```
+## [1] 0
+```
+
 ## What is the average daily activity pattern?
-```{r dailypattern}
+
+```r
 meanStepsByInterval <- with(activity,
                             tapply(steps, interval, mean,
                                    na.rm = TRUE, simplify = TRUE))
@@ -34,12 +48,30 @@ plot(names(meanStepsByInterval),
      main = "Average Number of Steps Taken by 5-minute Interval",
      xlab = "Interval Number",
      ylab = "Number of Steps Taken")
+```
+
+![](PA1_template_files/figure-html/dailypattern-1.png)<!-- -->
+
+```r
 meanStepsByInterval[which.max(meanStepsByInterval)]
 ```
 
+```
+##      835 
+## 206.1698
+```
+
 ## Imputing missing values
-```{r impute}
+
+```r
 sum(is.na(activity$steps))
+```
+
+```
+## [1] 2304
+```
+
+```r
 means <- data.frame(interval = names(meanStepsByInterval),
                     mean = meanStepsByInterval)
 merged <- merge(activity, means)
@@ -51,12 +83,29 @@ with(activityNew, hist(steps,
                        main = "Histogram of Total Number of Steps Taken Each Day",
                        xlab = "Number of Steps",
                        ylab = "Count"))
+```
+
+![](PA1_template_files/figure-html/impute-1.png)<!-- -->
+
+```r
 mean(activityNew$steps, na.rm = TRUE)
+```
+
+```
+## [1] 37.3826
+```
+
+```r
 median(activityNew$steps, na.rm = TRUE)
 ```
 
+```
+## [1] 0
+```
+
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r difference}
+
+```r
 activityNew$week <- ifelse(weekdays(activityNew$date) %in% c("Saturday", "Sunday"),
                            "Weekend", "Weekday")
 meanStepsByIntervalWeekday <- with(subset(activityNew, week == "Weekday"),
@@ -76,3 +125,5 @@ xyplot(mean ~ interval | week, layout = c(1, 2),
        xlab = "Interval Number",
        ylab = "Number of Steps Taken")
 ```
+
+![](PA1_template_files/figure-html/difference-1.png)<!-- -->
