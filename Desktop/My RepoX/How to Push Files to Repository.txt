@@ -1,7 +1,0 @@
-How to Push Files to Repository
-1. Navigate to the path containing files to be pushed.
-2. git add *
-3. git commit -m "message"
-4. git remote remove origin
-5. git remote add origin "path/to/repository.git"
-6. git push -u origin master
