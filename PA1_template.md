@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 #####Introduction (from the course website)
 ######It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the "quantified self" movement -- a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
 
@@ -21,7 +16,8 @@ output:
 
 #####Loading and Pre-processing the Data.
 
-```{r load, cache = TRUE, results ='hide', echo= TRUE}
+
+```r
 #Reproducable Research Week 1 Project
 #assignment_1.R
 #by Lawrence Tomaziefski
@@ -76,8 +72,16 @@ activity_data = read.csv("./data/activity.csv", header = TRUE, stringsAsFactors 
 
 ######Use str to take a look at the structure of our "activity_data" 
 
-```{r load2, cache = TRUE, echo= TRUE}
+
+```r
 str(activity_data)
+```
+
+```
+## 'data.frame':	17568 obs. of  3 variables:
+##  $ steps   : num  NA NA NA NA NA NA NA NA NA NA ...
+##  $ date    : Date, format: "2012-10-01" "2012-10-01" ...
+##  $ interval: num  0 5 10 15 20 25 30 35 40 45 ...
 ```
 
 ######If the data read in correctly there should be 17568 observations, which there is, so we are ready for further analysis.
@@ -85,7 +89,8 @@ str(activity_data)
 #####What is mean total number of steps taken per day?
 ######In order to determine the total number of steps taken per day, we have to summarize the data with the following code:
 
-```{r mean1, cache = TRUE, results='hide'}
+
+```r
 steps_per_day = activity_data %>%
         filter(!is.na(steps)) %>%
         group_by(date) %>%
@@ -94,13 +99,20 @@ steps_per_day = activity_data %>%
 
 ######The following is a summary where we find the mean and median number of steps taken per day:
 
-```{r mean2, cache = TRUE}
+
+```r
 summary(steps_per_day$steps_day)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      41    8841   10760   10770   13290   21190
 ```
 
 ######Histogram for number of steps per day.
 
-```{r hist_steps, cache = TRUE, results='hide'}
+
+```r
 steps_hist = ggplot(steps_per_day, aes(x = steps_day)) +
         geom_histogram(aes(y =..density..), size = .5, binwidth = 2000, color = "black", fill = "white") + 
         geom_density(alpha = .2, fill = "red") +
@@ -121,14 +133,13 @@ steps_hist = ggplot(steps_per_day, aes(x = steps_day)) +
         geom_rug() +
         scale_x_continuous(breaks = seq(0, 21000, by = 3000)) 
 ```
-```{r hist_steps2, cache = TRUE, echo = FALSE}
-steps_hist
-```
+![](PA1_template_files/figure-html/hist_steps2-1.png)<!-- -->
 
 #####What is the average daily activity pattern?
 ######Create a data frame that groups each five minute interval and takes the mean for each daily interval.  
 
-```{r daily1, cache = TRUE, results='hide'}
+
+```r
 daily_activity = activity_data %>%
         group_by(interval) %>%
         summarize(steps_interval = mean(steps, na.rm = TRUE))
@@ -136,13 +147,20 @@ daily_activity = activity_data %>%
 
 ######The following is a summary of the "daily_activity" data frame created above:
 
-```{r daily2, cache = TRUE}
+
+```r
 summary(daily_activity$steps_interval)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   0.000   2.486  34.110  37.380  52.830 206.200
 ```
 
 ######The following is a graphical representation of the subject's daily activity pattern:
 
-```{r daily_line, cache = TRUE, results = 'hide'}
+
+```r
 daily_activity_line = ggplot(daily_activity, aes(x= interval, y = steps_interval)) +
         geom_line(color = "blue") +
         theme(panel.background = element_rect(fill = "white"),
@@ -162,22 +180,35 @@ daily_activity_line = ggplot(daily_activity, aes(x= interval, y = steps_interval
                    color ="red", linetype = "dashed", size = .5) +
         scale_x_continuous(breaks = seq(0, 2400, by = 600)) 
 ```
-```{r daily_line1, cache = TRUE, echo = FALSE}
-daily_activity_line
-```
+![](PA1_template_files/figure-html/daily_line1-1.png)<!-- -->
 
 #####Imputing missing values.
 ######The number of missing values or NAs can be found by simply taking a summary of "steps" of our data frame "activity_data".
 
-```{r impute1, cache = TRUE}
+
+```r
 summary(activity_data$steps)
+```
+
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##    0.00    0.00    0.00   37.38   12.00  806.00    2304
 ```
 
 ######We see that there are 2304 NA values.  If we filter the NAs from activity_data and put into another data frame named "NA" we can explore a little more clearly where the NAs occur. Using the table function we see that there are 8 days where the data is completely missing. 
 
-```{r impute2, cache = TRUE}
+
+```r
 NAs = filter(activity_data,is.na(steps))
 table(NAs$date)
+```
+
+```
+## 
+## 2012-10-01 2012-10-08 2012-11-01 2012-11-04 2012-11-09 2012-11-10 
+##        288        288        288        288        288        288 
+## 2012-11-14 2012-11-30 
+##        288        288
 ```
 
 ######In order to impute the missing values we are going to take the following steps:
@@ -190,7 +221,8 @@ table(NAs$date)
 ######5. Finally add the imputed data set back into data set.
 ######6. Do a summary of the imputed data set to ensure there are no NAs.
 
-```{r impute3, cache = TRUE}
+
+```r
 #Steps 1 and 2
 activity_day_month = activity_data %>%
         mutate(dayofweek = wday(date,label = TRUE)) %>%
@@ -217,13 +249,17 @@ activity_data_imp = bind_rows(activity_day_month_No_NAs, activity_day_month_imp)
 summary(activity_data_imp$steps)
 ```
 
-######Did imputing values make a difference?  The short answer is yes. We are going to show this both visually and computationally.  First we will create a data set that will help us make a direct comparison between the imputed and original data sets.  
-
-```{r impute6, cache = TRUE, echo = FALSE}
-activity_data_imp$date = as.character(activity_data_imp$date)
+```
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    0.00    0.00    0.00   37.59   17.00  806.00
 ```
 
-```{r impute4, cache = TRUE}
+######Did imputing values make a difference?  The short answer is yes. We are going to show this both visually and computationally.  First we will create a data set that will help us make a direct comparison between the imputed and original data sets.  
+
+
+
+
+```r
 steps_per_day_imp = activity_data_imp %>%
         group_by(date) %>%
         summarize(steps_day = sum(steps)) %>%
@@ -237,12 +273,18 @@ mean_steps = steps_per_day_combined %>%
         group_by(Data) %>%
         summarize(Mean = mean(steps_day, na.rm = TRUE), Median = median(steps_day, na.rm =TRUE))
 ```
-```{r impute5, cache = TRUE, echo = FALSE}
-mean_steps
+
+```
+## # A tibble: 2 × 3
+##       Data     Mean Median
+##      <chr>    <dbl>  <dbl>
+## 1  Imputed 10827.17  11015
+## 2 Original 10766.19  10765
 ```
 ######We see that both the mean and median number of steps per day increased after imputing the data set.  The following graph demonstrates the shift in distribution of the average steps taken per day.  
 
-```{r compare, cache = TRUE, results = 'hide'}
+
+```r
 steps_compare = ggplot(steps_per_day_combined, aes(x = steps_day, group = Data, 
                                                 fill = Data)) +
         geom_density(alpha = .3) +
@@ -267,14 +309,13 @@ steps_compare = ggplot(steps_per_day_combined, aes(x = steps_day, group = Data,
         scale_fill_tableau() +
         scale_color_tableau()
 ```
-```{r compare1, cache = TRUE, echo = FALSE}
-steps_compare
-```
+![](PA1_template_files/figure-html/compare1-1.png)<!-- -->
 
 ####Are there differences in activity patterns between weekdays and weekends?
 ######We will make a new data frame named "activity_level_compare" which will make use of the work we did in the previous section to convert the dates to days of the week.  Use mutate and an ifelse statement to classify each date as either a weekday or weekend.  The following code will allow us to summarize the data and plot it to see what insights we can draw out.
 
-```{r pow1, cache = TRUE}
+
+```r
 activity_level_compare = activity_data_imp %>%
         mutate(partofweek = ifelse(dayofweek == "Sat" | dayofweek == "Sun", "Weekend","Weekday")) %>%
         group_by(partofweek,interval) %>%
@@ -284,10 +325,16 @@ partofweek_steps = activity_level_compare %>%
         group_by(partofweek) %>%
         summarize(Mean = mean(average))
 ```
-```{r pow2, cache = TRUE, echo = FALSE}
-partofweek_steps
+
 ```
-```{r powline, cache = TRUE, results = 'hide'}
+## # A tibble: 2 × 2
+##   partofweek     Mean
+##        <chr>    <dbl>
+## 1    Weekday 35.52869
+## 2    Weekend 43.40394
+```
+
+```r
 activity_compare_line = 
         ggplot(activity_level_compare, aes(x= interval, y = average, group = partofweek, color = partofweek)) +
         geom_line() +
@@ -304,8 +351,6 @@ activity_compare_line =
         scale_x_continuous(breaks = seq(0, 2400, by = 600)) + 
         facet_grid(partofweek~.) 
 ```
-```{r pownline1, cache = TRUE, echo = FALSE}
-activity_compare_line
-```
+![](PA1_template_files/figure-html/pownline1-1.png)<!-- -->
 
 ######The average activity level is higher on the weekend.  However, activity begins earlier during the week, and weekday intervals see the highest levels of activity.  On the weekends activity levels are relatively stable, and are generally higher durign later intervals as compared to weekdays.   
