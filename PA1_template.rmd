@@ -125,3 +125,27 @@ print(median_new)
 Comparatively to the mean results, we achieve exactly the same value for both imputted data and non imputted, which is 10766.19 steps . 
 
 We only see changes occurring at median level, once median takes into consideration the exactly the middle point of a number set, in which half the numbers are above the median and half are below, we have achieved exactly the same value for mean and median in the Imputted Dataset,of 10766.19 steps as well.
+
+####
+impute<-act ## To create an empty DF with same dimensions
+index<-is.na(impute$steps) ## To find the index of missing values
+mis<-tapply(act$steps,act$interval,mean,na.rm=TRUE,simplify = TRUE) ##calculate new values
+impute$steps[index]<-mis[as.character(impute$interval[index])]##replace them through index
+
+new <- tapply(impute$steps,impute$date, sum, na.rm=TRUE, simplify=T)
+
+impute$date<-as.Date(impute$date,format="%Y-%m-%d")
+weekdays1<-c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+
+
+#Great input here from the ifelse conditions which very simply shows me how to tackle this matter, by using mutate to generate this extra column)
+#ifelse(test, yes, no)
+impute<-mutate(impute, weektype=ifelse(weekdays(impute$date) == "Saturday"| weekdays(impute$date) =="Sunday","weekend","weekday"))
+# creating the factor variable
+impute$weektype<-as.factor(impute$weektype)
+# double checked with grep('weekend',impute$weektype) if it was working 
+
+# we need now to summarize once more so we can plot the time series 
+week<-aggregate(impute$steps,by=list(impute$weektype),FUN=mean,na.rm=TRUE)
+colnames(week)<-c("weektype","steps")
+p<-ggplot(week,aes(x=steps))+geom_line()+ facet_grid(~weektype)
