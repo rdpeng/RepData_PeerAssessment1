@@ -39,8 +39,8 @@ colnames(total)<-c("Days","Steps")
 ### Histogram of the total steps taken per day
 
 ```{r, echo=TRUE}
-hist(total$Steps,main="Histogram of number of steps taken per day",xlab="Total steps taken per day", col="skyblue")
-
+st<-hist(total$Steps,main="Histogram of number of steps taken per day",xlab="Total steps taken per day", col="skyblue")
+print(st)
 ```
 
 ######**Calculating the mean of the total steps taken per day**
@@ -64,7 +64,7 @@ avera<-aggregate(rem$steps,by= list(rem$interval),FUN=mean)
 colnames(avera)<-c("interval","steps")
 ```
 
-### Time-series plot of the average steps taken per day in a 5 minute interval
+2. Time-series plot of the average steps taken per day in a 5 minute interval
 
 ```{r}
 h<-ggplot(avera,aes(x=interval,y=steps))+geom_line(color="skyblue")+
@@ -74,7 +74,7 @@ h<-ggplot(avera,aes(x=interval,y=steps))+geom_line(color="skyblue")+
 print(h)
 ```
 
-2. Which 5 minute interval accross all days contains the maximum number of steps
+3. Which 5 minute interval accross all days contains the maximum number of steps
 
 ```{r}
 avera$steps<-round(avera$steps,2)
@@ -100,10 +100,11 @@ impute$steps[index]<-mis[as.character(impute$interval[index])]##replace them thr
 new <- tapply(impute$steps,impute$date, sum, na.rm=TRUE, simplify=T)
 ```
 
-### Histogram, Median and Mean
+#### Histogram, Median and Mean
+
 ```{r}
 par(mfrow = c(1,2))
-hist(new, col = "pink",xlim=c(0,25000),ylim = c(0,40),main = paste("Histogram (Imputed)"),xlab= "Total steps taken per day",adj=0.5)
+hist(new, col = "dark blue",xlim=c(0,25000),ylim = c(0,40),main = paste("Histogram (Imputed)"),xlab= "Total steps taken per day",adj=0.5)
 hist(total$Steps, col = "light blue",xlim=c(0,25000),ylim = c(0,40),main = paste("Histogram (Non-Imputed)"),xlab = "Total steps taken per day", adj=0.5)
 ```
 
@@ -126,26 +127,34 @@ Comparatively to the mean results, we achieve exactly the same value for both im
 
 We only see changes occurring at median level, once median takes into consideration the exactly the middle point of a number set, in which half the numbers are above the median and half are below, we have achieved exactly the same value for mean and median in the Imputted Dataset,of 10766.19 steps as well.
 
-####
-impute<-act ## To create an empty DF with same dimensions
-index<-is.na(impute$steps) ## To find the index of missing values
-mis<-tapply(act$steps,act$interval,mean,na.rm=TRUE,simplify = TRUE) ##calculate new values
-impute$steps[index]<-mis[as.character(impute$interval[index])]##replace them through index
 
-new <- tapply(impute$steps,impute$date, sum, na.rm=TRUE, simplify=T)
+## *Are there differences in activity patterns between weekdays and weekends?*
 
-impute$date<-as.Date(impute$date,format="%Y-%m-%d")
-weekdays1<-c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
+1. This are the steps to create the new factor variable in the imputted dataframe.
 
+```{r}
+#Great input here from the ifelse conditions which very simply shows me how to tackle this matter, by using mutate to generate this extra column) ifelse(test, yes, no)
+impute$date<-as.Date(impute$date,format="%Y-%m-%d") 
+days<-c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")
 
-#Great input here from the ifelse conditions which very simply shows me how to tackle this matter, by using mutate to generate this extra column)
-#ifelse(test, yes, no)
-impute<-mutate(impute, weektype=ifelse(weekdays(impute$date) == "Saturday"| weekdays(impute$date) =="Sunday","weekend","weekday"))
-# creating the factor variable
+impute<-mutate(impute, weektype=ifelse(weekdays(impute$date) == "Saturday"|weekdays(impute$date) =="Sunday","weekend","weekday"))
+
+#creating the factor variable
+
 impute$weektype<-as.factor(impute$weektype)
-# double checked with grep('weekend',impute$weektype) if it was working 
 
-# we need now to summarize once more so we can plot the time series 
-week<-aggregate(impute$steps,by=list(impute$weektype),FUN=mean,na.rm=TRUE)
-colnames(week)<-c("weektype","steps")
-p<-ggplot(week,aes(x=steps))+geom_line()+ facet_grid(~weektype)
+#oduble checked with grep('weekend',impute$weektype) if it was working
+#[p-0we need now to summarize once more so we can plot the time series
+
+week<-aggregate(steps~weektype+interval,data=impute,FUN=mean) 
+```
+
+2. Time series plot about activity based on the weektype
+
+```{r}
+p<-ggplot(week,aes(x=interval, y=steps, color = weektype))+geom_line()+ facet_grid(weektype~.)
+print(p)
+```
+
+```
+Thank you for your attention!
