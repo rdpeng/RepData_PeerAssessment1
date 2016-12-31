@@ -66,7 +66,7 @@ colnames(avera)<-c("interval","steps")
 
 2. Time-series plot of the average steps taken per day in a 5 minute interval
 
-```{r}
+```{r,echo=TRUE}
 h<-ggplot(avera,aes(x=interval,y=steps))+geom_line(color="skyblue")+
   ggtitle("Time series of the average number of steps taken per 5-minute interval")+
   xlab("5 minute interval identifiers")+
@@ -102,7 +102,7 @@ new <- tapply(impute$steps,impute$date, sum, na.rm=TRUE, simplify=T)
 
 #### Histogram, Median and Mean
 
-```{r}
+```{r,echo=TRUE}
 par(mfrow = c(1,2))
 hist(new, col = "dark blue",xlim=c(0,25000),ylim = c(0,40),main = paste("Histogram (Imputed)"),xlab= "Total steps taken per day",adj=0.5)
 hist(total$Steps, col = "light blue",xlim=c(0,25000),ylim = c(0,40),main = paste("Histogram (Non-Imputed)"),xlab = "Total steps taken per day", adj=0.5)
@@ -151,7 +151,7 @@ week<-aggregate(steps~weektype+interval,data=impute,FUN=mean)
 
 2. Time series plot about activity based on the weektype
 
-```{r}
+```{r,echo=TRUE}
 p<-ggplot(week,aes(x=interval, y=steps, color = weektype))+geom_line()+ facet_grid(weektype~.)
 print(p)
 ```
