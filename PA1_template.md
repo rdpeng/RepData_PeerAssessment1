@@ -1,5 +1,3 @@
-VERY IMPORTANT ONLY .md FILE DOES SHOW THE PLOTS
-
 Assignment
 ================
 
