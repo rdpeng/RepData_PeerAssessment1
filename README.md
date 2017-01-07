@@ -1,3 +1,5 @@
+VERY IMPORTANT ONLY PA1_template.md SHOWS THE PLOTS
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
