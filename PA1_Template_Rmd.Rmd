@@ -1,0 +1,118 @@
+---
+title: "Peer Assessment1"
+output: html_document
+---
+
+#Load data, previously unziped at working directory, ie ds/repro
+```{r aload}
+setwd("C:/ds/repro")
+MyData <- read.csv(file="activity.csv", header=TRUE, sep=",")
+```
+
+##What is mean total number of steps taken per day?
+```{r mean}
+#Calculating the number of steps by Day and ploting
+StepsbyDay<-aggregate(steps ~ date , data=MyData ,sum)
+StepsbyDay$DiaMano <- strptime(StepsbyDay$date, "%Y-%m-%d")
+plot(StepsbyDay$DiaMano,StepsbyDay$steps, main="Steps By Day - Mean ", xlab="Date (October to November 2012)", ylab="Steps", type="h", lwd=5, col="green")
+
+#Median and mean
+summary(StepsbyDay$steps)
+```
+##What is the average daily activity pattern?
+``` {r plot2}
+#Plot mean by interval
+StepsbyDayMean<-aggregate(steps ~ interval , data=MyData ,mean)
+plot(StepsbyDayMean, main="Steps by Interval  - Mean", xlab="Intervals", ylab="Steps", type="l", lwd=5, col="blue")
+
+
+```
+
+####   .Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```` {r top mean}
+# Find  max
+# find row with max of steps
+max_steps_row <- which.max(StepsbyDayMean$steps)
+
+# find interval with this max
+StepsbyDayMean[max_steps_row, ]
+````
+##Inputing missing values
+
+####   .The total number of Missing values is:
+```` {r totalna}
+#Calculate missing values
+sum(is.na(MyData))
+
+````
+
+
+#### .Strategy adopted to replace NAS : Use 5 minute mean interval
+```` {r replace NA}
+#New vector to replace NAS
+Matrixdatemedian<-aggregate(steps ~ date , data=MyData ,mean)
+No_Na_data<-MyData
+
+for (i in 1:nrow(No_Na_data)) {
+        if (is.na(No_Na_data$steps[i])) {
+                No_Na_data$steps[i] <- StepsbyDayMean[which(No_Na_data$interval[i] == StepsbyDayMean$interval), ]$steps
+        }
+}
+
+
+````
+
+#### Check NA absence
+
+```` {r check na and new graphic}
+#Top rows  no NA
+head(No_Na_data)
+
+#Proving the Replace operation
+sum(is.na(No_Na_data))
+
+No_Na_data$DiaMano <- strptime(No_Na_data$date, "%Y-%m-%d")
+
+plot(No_Na_data$DiaMano, No_Na_data$steps, main="Histogram - Total Number of Steps Each Day (no missing data)",xlab = "Date", ylab = "Total Number of Steps",type="h", lwd=5, col="red")
+
+````
+
+####   .Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```` {r Comparing means}
+#Compare medians and means
+#Post NA Purge
+mean(No_Na_data$steps)
+median(No_Na_data$steps)
+
+
+#Pre NA Purge
+
+mean(StepsbyDayMean$steps)
+median(StepsbyDayMean$steps)
+
+````
+
+####   .Means are the same, medians change, possible wrong results if persisted without cleanse
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```` {r plotduo}
+#Weekdays
+No_Na_data$DataporExtenso <-weekdays(as.Date(No_Na_data$date))
+No_Na_data$ISWE<-ifelse(No_Na_data$DataporExtenso %in% c("s??bado","domingo"),"WeekEnds", "WeekDays")
+
+## s??bado and domingo stands for Saturday and Sunday
+
+avgSteps <- aggregate(No_Na_data$steps, 
+                      list(interval = as.numeric(as.character(No_Na_data$interval)), 
+                           weekdays = No_Na_data$ISWE),
+                      FUN = "mean")
+names(avgSteps)[3] <- "meanOfSteps"
+library(lattice)
+xyplot(avgSteps$meanOfSteps ~ avgSteps$interval | avgSteps$weekdays, 
+       layout = c(1, 2), type = "l", 
+       xlab = "Interval", ylab = "Steps")
+
+````
+
