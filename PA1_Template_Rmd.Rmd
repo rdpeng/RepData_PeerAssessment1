@@ -5,6 +5,7 @@ output: html_document
 
 #Load data, previously unziped at working directory, ie ds/repro
 ```{r aload}
+echo = TRUE
 setwd("C:/ds/repro")
 MyData <- read.csv(file="activity.csv", header=TRUE, sep=",")
 ```
