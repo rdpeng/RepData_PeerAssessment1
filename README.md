@@ -1,4 +1,12 @@
-## Introduction
+
+## Instructions
+This repository contains my submission for course Reproducable Data Course Project One. 
+
+You can view the results by clicking the PA1_template.md. There is also a .Rmd file. The .html and .Rmd file is also included. Read the header of .Rmd file for instructions on how the process the document.
+
+Below you find a description of the assignment.
+
+## Introduction assigment
 
 It is now possible to collect a large amount of data about personal
 movement using activity monitoring devices such as a
