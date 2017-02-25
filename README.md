@@ -1,3 +1,8 @@
+RepData_PeerAssessment1
+===============================================================
+
+author: Tianhong
+
 ## Introduction
 
 It is now possible to collect a large amount of data about personal
