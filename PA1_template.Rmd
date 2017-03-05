@@ -143,8 +143,8 @@ weekday <- as.character(weekday)
 ```{r}
 activity4 <- data.frame(activity,weekday)
 mmm <- ddply(activity4,c("interval","weekday"), summarise, steps = mean(steps))
-nnn <- mmm[which(activity4$weekday == "weekday"),]
-nn <- mmm[which(activity4$weekday == "weekend"),]
+nnn <- mmm[which(mmm$weekday == "weekday"),]
+nn <- mmm[which(mmm$weekday == "weekend"),]
 activity5 <- t(data.frame(t(nnn),t(nn)))
 activity5 <- as.data.frame(activity5)
 activity5$steps <- as.numeric(as.character(activity5$steps))
