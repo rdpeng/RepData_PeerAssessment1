@@ -1,0 +1,89 @@
+---
+title: "Reproducable Research"
+date: "2/8/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Download Data and Make it Available in R
+
+The first step is to acquire teh data and put it into a usable format.
+
+```{r load data}
+temp <- tempfile()
+download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip", temp)
+data <- read.csv(unz(temp, "activity.csv"))
+unlink(temp)
+```
+
+## Transform Data
+
+You can also embed plots, for example:
+
+```{r transform}
+library(dplyr)
+daily_steps <- data %>% group_by(date) %>% summarise(daily_steps = sum(steps, na.rm=TRUE))
+```
+
+## Create Histogram & Report Median
+
+
+
+
+```{r histogram}
+library(ggplot2)
+ggplot(daily_steps, aes(daily_steps)) + 
+  geom_histogram(binwidth=2500, fill ='blue', color='black') + 
+  ggtitle("Distribution of Daily steps")
+
+median(daily_steps$daily_steps)
+mean(daily_steps$daily_steps)
+```
+
+## Create Time Series & Identify Period with Highest Number of Steps
+
+```{r time series}
+time_series <- data %>% group_by(interval) %>% summarise(median_steps = median(steps, na.rm=TRUE))
+with(time_series, plot(x=interval, y=median_steps, type='l'), title='Number of Steps Over Time')
+
+max(time_series$median_steps)
+```
+
+## Impute Missing Values
+
+Here are the total missing data points
+```{r impute missing values}
+sum(is.na(data$steps))
+sum(data$steps, na.rm=TRUE)
+data2 <- data
+for(i in 1:nrow(data2)){
+  if(is.na(data2$steps[i])==TRUE){ data2$steps[i] <-time_series$median_steps[time_series$interval==data2$interval[i]]}
+  
+}
+distribution <- data2 %>% 
+  group_by(date) %>% 
+  summarise(daily_step = sum(steps))
+
+ggplot(distribution, aes(daily_step)) + geom_histogram(binwidth=2500, color='black', fill='blue') 
+
+median(distribution$daily_step)
+mean(distribution$daily_step)
+```
+
+## Weekdays versus Weekends
+
+```{r Day of Week}
+library(lubridate)
+data2$day_of_week <- ifelse(weekdays(ymd(data2$date))=='Saturday' | weekdays(ymd(data2$date))=='Sunday', 'Weekend', 'Weekday')
+time_series2 <- data2 %>%
+  group_by(interval, day_of_week) %>%
+  summarise(daily_steps = mean(steps))
+library(lattice)
+xyplot(daily_steps ~ interval|day_of_week, 
+       data=time_series2, 
+       type='l', 
+       layout=c(1,2),
+       main = 'Average Steps Taken Over Time')
