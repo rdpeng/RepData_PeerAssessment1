@@ -15,7 +15,6 @@ library(dplyr)
 
 ```
 
-=====================================================================================
 
 ## What is mean total number of steps taken per day?
 
@@ -47,8 +46,6 @@ MedianStepSum <- format(median(StepSumByDate$StepSum), digits=7, nsmall=2)  ## c
 ####The MEDIAN for the total number of steps taken each day is **`r MedianStepSum`**
 
 
-=====================================================================================
-
 ## What is the average daily activity pattern?
 
 ### Step 1: Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
@@ -74,7 +71,6 @@ IntMaxStep <- StepAvgByInt[which(StepAvgByInt$StepAvg == max(StepAvgByInt$StepAv
 ####Interval ID # `r IntMaxStep$interval` has the most steps at **`r format(IntMaxStep$StepAvg, nsmall=2)`** average number of steps
 
 
-=====================================================================================
 
 ## Imputing missing values
 
@@ -118,8 +114,6 @@ MedianStepSumFull <- median(StepSumByDateFull$StepSum)  ## calc median
 ####By filling in the missing values in the dataset, there seems to be no discernible difference with the other histogram except for the 10,000 to 15,000 total step count limit.  
 ####The addition of the data has increased the frequency of the 10,000 to 15,000 total step count from approximately 29 to 36 and the mean and medium are now exactly the same.
 
-
-=====================================================================================
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
