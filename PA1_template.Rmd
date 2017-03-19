@@ -66,7 +66,7 @@ print (paste("Median daily steps is:",median(activityDataByDay$Sum_Steps)))
 print (paste("Mean daily steps is:",mean(activityDataByDay$Sum_Steps)))
 ```
 
-##3 Time series plot of steps by interval & max 5-min interval
+## 3 Time series plot of steps by interval & max 5-min interval
 Time series plot  
 
 ```{r}
@@ -74,7 +74,7 @@ Time series plot
 maxIndex <- which.max(activityDataByInt$Avg_Steps)
 print(paste("Max Avg. steps happen at interval:",activityDataByInt[maxIndex,1]))
 ```
-##4 Missing Values
+## 4 Missing Values
 
 First populate missing values with average of the interval  
 
@@ -93,7 +93,7 @@ print (paste("Mean daily steps is:",mean(New_activityDataByDay$Sum_Steps)))
 ```
 Here, median has changed since the missing values are populated. The Mean has not changed since the default value was the mean for the interval
 
-##5 Weekday vs. Weekend analysis
+## 5 Weekday vs. Weekend analysis
 
 Are there any difference by weekend and weekdays  
 
