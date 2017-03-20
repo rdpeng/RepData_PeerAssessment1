@@ -2,7 +2,7 @@
 title: "Reproducible Research  -- Activity Monitoring"
 author: "SMenon"
 date: "March 18, 2017"
-output: html_document
+output: md_document
 ---
 
 ```{r setup, include=FALSE}
