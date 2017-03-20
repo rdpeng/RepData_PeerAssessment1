@@ -1,0 +1,220 @@
+---
+title: "Reproducible Research: Peer Project 1"
+output:
+    html_document:
+      keep_md: yes
+---
+Packages needed to run code in this report are knitr, ggplot2, and lattice.
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Intro to Project
+This project is for the Reproducible Research course, a Coursera Data Science 
+program through John Hopkins University. More information about this program is
+available [here](https://www.coursera.org/specializations/jhu-data-science).
+
+The data for our project comes from the data accumulated through a personal 
+activity monitoring device collected for a single individual during October and
+November 2012. The data includes the number of steps taken in five minute
+intervals each day.
+
+## Loading and Preprocessing the Data
+* Download the data from the github account.
+
+```{r Getting the Data}
+## Set working directory.
+## Then download data.
+URL <- "https://github.com/VickieBailey/RepData_PeerAssessment1/blob/master/activity.zip?raw=true"
+temp <- tempfile()
+download.file(URL, temp)
+ActMonitorData <- read.csv("activity.csv")
+dateDownloaded <- date()
+unlink(temp)
+```
+
+* A Little Look Around
+
+Data Structure
+```{r Structure of data}
+str(ActMonitorData)
+```
+
+Summary of the Variables
+```{r Summary of Variables}
+summary(ActMonitorData)
+```
+
+Information on NAs. From summary, we see NAs only occur in steps column.
+```{r Information on NAs }
+## How many NAs
+NAcount <- sum(is.na(ActMonitorData$steps))
+## The percent of NAs as a decimal
+evalNA <- mean(is.na(ActMonitorData$steps))
+## Convert the decimal to a percent
+percentNA <- format(evalNA*100, digits = 3)
+```
+There are `r NAcount` NAs in the step variable.
+This represents a `r percentNA`%.
+
+* Process the data. Make a copy of the raw dataframe to use for processing.
+```{r New Dataframe and Date Class}
+## Create a copy of the raw dataframe.
+process1 <- ActMonitorData
+process1$date <- as.Date(process1$date, "%Y-%m-%d")
+```
+
+## What is the mean total of steps taken per day?
+
+* Calculate the number of steps taken per day.
+```{r Steps per day, results = 'asis'}
+perday1 <- aggregate(steps ~ date, process1, FUN = sum)
+library(knitr)
+kable(perday1, caption = "Mean Total Steps Per Day")
+```
+
+
+
+* Create a histogram of the total number of steps taken each day.
+```{r Number of Steps per Day, fig.height = 4}
+## Set up and create histogram. Add a rug to show number of actual steps.
+par(mar = c(5, 4, 1, 1))
+with(perday1, {
+ hist(perday1$steps, col = "deepskyblue", 
+      main = "Total Steps per Day (excluding NAs)",
+      xlab = "Number of Steps", ylab = "Count of Days" , las = 1)
+rug(perday1$steps)   
+})
+```
+
+* Find the mean and median number of steps taken each day.
+```{r Mean and Median}
+meansteps1 <- mean(perday1$steps)
+mediansteps1 <- median(perday1$steps)
+```
+The mean steps per day without imputing of NAs is `r meansteps1`.
+The median steps per day without imputing of NAs is `r mediansteps1`.
+
+
+## What is the average daily activity pattern?
+* Make a time series plot of the 5-minute interval (x-axis) and the average 
+number of steps taken, averaged across all days (y-axis).
+```{r Time Series Plot 1, fig.height = 4}
+perinterval1 <- aggregate(steps ~ interval, data = process1, FUN = mean)
+library(ggplot2)
+par(mar = c(5, 4, 1, 1))
+perintplot <- ggplot(perinterval1, aes(interval, steps)) +
+    geom_line(color = "purple") +
+    labs(x = "Interval", y = "Average Number of Steps",
+         title = "Average Steps per Interval")
+perintplot
+```
+
+* Which 5-minute interval, on average across all the days in the dataset, 
+contains the maximum number of steps?
+```{r Max Steps Interval}
+## Find the maximum average steps.
+MaxSteps <- max(perinterval1$steps)
+## Subset the interval and max average steps.
+submax <- subset(perinterval1, steps == MaxSteps)
+## Pull out the interval.
+maxinterval <- submax$interval
+```
+The 5-minute interval, on average across all days in the dataset, that contains 
+the maximum average number of steps is `r maxinterval`.
+
+
+## Imputing Missing Values
+* Information on NAs. From original summary, we see NAs only occur in steps column.
+```{r Count and Percent of NAs}
+NAcount <- mean(is.na(process1$steps))
+percentNA <- format(evalNA*100, digits = 3)
+```
+There are `r NAcount` NAs in the step variable.
+This represents a `r percentNA`%.
+
+* Impute missing values based on average of steps for the day of week and interval.
+```{r Give values to NAs}
+## Copy of process1 datafram.
+process2 <- process1
+## Create variable for day of week.
+process2$day <- weekdays(as.Date(process2$date))
+## Impute NAs by using average of steps based on interval and day of week.
+process2$steps <- with(process2, ave(steps, day, interval,
+                           FUN = function(x) replace(x, is.na(x), 
+                                                     mean(x, na.rm = TRUE))))
+```
+
+* Create a histogram of the total number of steps taken each day.
+```{r Histogram for Imputed Steps per Day, fig.height = 4}
+## Compute number of steps per day.
+perday2 <- aggregate(steps ~ date, process2, FUN = sum)
+## Set up and create histogram. Add a rug to show number of actual steps.
+par(mar = c(5, 4, 1, 1))
+with(perday2, {
+ hist(perday2$steps, col = "green2", 
+      main = "Total Steps per Day with Imputing of NAs", 
+      xlab = "Number of Steps", ylab = "Count of Days" , las = 1)
+rug(perday2$steps)   
+})
+```
+
+* Find the mean and median number of steps taken each day.
+```{r Mean and Median with Imputed NAs}
+meansteps2 <- mean(perday2$steps)
+mediansteps2 <- median(perday2$steps)
+```
+The mean steps per day with imputing of NAs is `r meansteps2`.
+The median steps per day with imputing of NAs is `r mediansteps2`.
+
+* These values do differ from the estimates from the first part of the assignment.
+``` {r Impact of Imputing}
+meandif <- meansteps2 - meansteps1
+meandif2 <- abs(meandif)
+meanresult <- if(meandif > 0) {
+    "increased"
+}  else if (meandif < 0) {
+    "decreased"
+}  else {
+    "did not change"
+}
+mediandif <- mediansteps2 - mediansteps1
+mediandif2 <- abs(mediandif)
+medianresult <- if(mediandif > 0) {
+    "increased"
+}  else if (mediandif < 0) {
+    "decreased"
+}  else {
+    "did not change"
+}
+```
+By imputing missing data, the estimates of the mean daily number of 
+steps `r meanresult` by `r meandif2`.
+The estimates for the median daily number of steps `r medianresult` by `r mediandif2`.
+
+
+## Are there differences in activity patterns between weekdays and weekends?
+* Create a new factor variable in the dataset with two levels - "weekday" and 
+"weekend" indicating whether a given date is a weekday day or weekend day.
+``` {r Weekday or Weekend}
+weekends <- c('Saturday', 'Sunday')
+process2$dayorend <- factor((weekdays(process2$date) %in% weekends), 
+         levels=c(FALSE, TRUE), labels=c('weekday', 'weekend'))
+```
+
+* Make a panel plot containing a time series plot of the 5-minute interval and 
+the average number of steps taken, averaged across all weekday days or weekend days.
+``` {r Time Series Plot 2, fig.height = 4}
+par(mar = c(5, 4, 1, 1))
+panelplot <- xyplot(steps ~ interval | dayorend, data = process2, 
+       layout = c(1,2),
+       xlab = "Interval", 
+       ylab = "Number of Steps",
+       ylim = c(-25, 250),
+       panel = function(x, y, ...) {
+           panel.average(x, y, type = "l", horizontal = FALSE, col = "blue")
+       }
+)
+panelplot
+```
+
