@@ -161,3 +161,5 @@ xyplot(StepAvg ~ interval | week,
 ```
 
 ![](PA1_template_files/figure-html/plot activityweek-1.png)<!-- -->
+
+
