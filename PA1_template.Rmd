@@ -1,25 +1,108 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible Research  -- Activity Monitoring"
+author: "SMenon"
+date: "March 18, 2017"
+output: md_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+## Read Activity Dataset and Inspect  
 
+Activity data is in a csv file with headers. The file contains three variables:  
 
+* *steps*: Number of steps taking in a 5-minute interval (missing values are coded as **NA**)  
+* *date*: The date on which the measurement was taken in YYYY-MM-DD format  
+* *interval*: Identifier for the 5-minute interval in which measurement was taken  
 
-## What is mean total number of steps taken per day?
+```{r}
+activityData <- read.csv(file="C:/Users/samenon/Documents/Coursera/ReproResearch/activity.csv",header=TRUE,sep=",")
+head(activityData)
+```
 
+## 1. Data preparation
 
+Here data is processed for charting and analysis  
 
-## What is the average daily activity pattern?
+### a.First step to remove NA from the steps readings:  
 
+Read and omit missing values  
+```{r}
+activityDataNoNA = na.omit(activityData)
+head(activityDataNoNA)
+```
 
+### b. create data set where steps are aggregated by day
 
-## Imputing missing values
+Data aggregation  
 
+```{r}
+library(dplyr)
+activityDataByDay = group_by(activityDataNoNA,date)
+activityDataByDay = summarise(activityDataByDay,Sum_Steps=sum(steps))
+head(activityDataByDay)
+```
 
+### c. create data set where steps are aggregated by interval
 
-## Are there differences in activity patterns between weekdays and weekends?
+Data aggregation  
+
+```{r}
+library(dplyr)
+activityDataByInt = group_by(activityDataNoNA,interval)
+activityDataByInt = summarise(activityDataByInt,Avg_Steps=mean(steps))
+head(activityDataByInt)
+```
+
+## 2. Histogram of daily steps & print mean/median
+Charting  
+
+```{r}
+library(ggplot2)
+qplot(activityDataByDay$Sum_Steps,geom = "histogram",xlab="Num of steps", ylab="frequency")
+print (paste("Median daily steps is:",median(activityDataByDay$Sum_Steps)))
+print (paste("Mean daily steps is:",mean(activityDataByDay$Sum_Steps)))
+```
+
+## 3 Time series plot of steps by interval & max 5-min interval
+Time series plot  
+
+```{r}
+ plot.ts(activityDataByInt$interval,activityDataByInt$Avg_Steps,main="Steps by Interval",type="l",xlab="Interval", ylab="Average Steps")
+maxIndex <- which.max(activityDataByInt$Avg_Steps)
+print(paste("Max Avg. steps happen at interval:",activityDataByInt[maxIndex,1]))
+```
+## 4 Missing Values
+
+First populate missing values with average of the interval  
+
+```{r activityData}
+activityDataAugment <- merge(activityData,activityDataByInt,by="interval")
+  activityDataAugment[is.na(activityDataAugment[,2]),2] <- activityDataAugment[is.na(activityDataAugment[,2]),4]
+```
+  Now create the histogram and estimate mean/medians
+```{r}
+library(ggplot2)
+New_activityDataByDay = group_by(activityDataAugment,date)
+New_activityDataByDay = summarise(New_activityDataByDay,Sum_Steps=sum(steps))
+qplot(New_activityDataByDay$Sum_Steps,geom = "histogram",xlab="Num of steps", ylab="frequency")
+print (paste("Median daily steps is:",median(New_activityDataByDay$Sum_Steps)))
+print (paste("Mean daily steps is:",mean(New_activityDataByDay$Sum_Steps)))
+```
+Here, median has changed since the missing values are populated. The Mean has not changed since the default value was the mean for the interval
+
+## 5 Weekday vs. Weekend analysis
+
+Are there any difference by weekend and weekdays  
+
+```{r}
+activityDataAugment$DOW <- weekdays(as.Date(activityDataAugment$date))
+activityDataAugment$DOW <- ifelse(activityDataAugment$DOW %in% c("Saturday","Sunday"),"Weekend","Weekday")
+activityDataByNewInt = group_by(activityDataAugment,interval,DOW)
+activityDataByNewInt = summarise(activityDataByNewInt,Avg_Steps=mean(steps))
+ggplot(data=activityDataByNewInt,aes(interval,Avg_Steps))+stat_summary(fun.y=mean,geom="line") + facet_grid(~DOW)
+```
+  
+Here, we see higher volatility in weekday activity
