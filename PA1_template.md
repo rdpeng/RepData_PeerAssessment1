@@ -1,6 +1,5 @@
 # Reproducible Research: Peer Assessment 1
 
-
 ## Loading and preprocessing the data
 
 ```r
@@ -87,8 +86,6 @@ with(StepAvgByInt, {
 IntMaxStep <- StepAvgByInt[which(StepAvgByInt$StepAvg == max(StepAvgByInt$StepAvg)), ]
 ```
 ####Interval ID # 835 has the most steps at **206.1698** average number of steps
-
-
 
 ## Imputing missing values
 

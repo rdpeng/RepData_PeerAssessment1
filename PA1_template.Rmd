@@ -5,14 +5,12 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
 ```{r loading,echo=TRUE}
 Activity <- read.csv(unz("./activity.zip", "activity.csv"))
 AnoNA <- complete.cases(Activity)
 ActivityNoNA <- Activity[AnoNA, ]
 library(dplyr)
-
 ```
 
 ## What is mean total number of steps taken per day?
@@ -68,8 +66,6 @@ IntMaxStep <- StepAvgByInt[which(StepAvgByInt$StepAvg == max(StepAvgByInt$StepAv
 
 ```
 ####Interval ID # `r IntMaxStep$interval` has the most steps at **`r format(IntMaxStep$StepAvg, nsmall=2)`** average number of steps
-
-
 
 ## Imputing missing values
 
