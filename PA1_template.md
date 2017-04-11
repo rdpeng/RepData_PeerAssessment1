@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
@@ -14,19 +19,12 @@ step_data$date <- strptime(step_data$date, "%Y-%m-%d")
 
 ```r
 library(plyr)
-```
-
-```
-## Warning: package 'plyr' was built under R version 3.3.2
-```
-
-```r
 complete_steps <- step_data[complete.cases(step_data$steps),]
 totaldailysteps <- ddply(complete_steps, .(date), summarise, total = max(steps))
 hist(totaldailysteps$total, main = "Total number of steps each day", xlab = "Number of Steps")
 ```
 
-![](PA1_template_files/figure-html/mean total steps-1.png)<!-- -->
+![plot of chunk mean total steps](figure/mean total steps-1.png)
 
 ```r
 meansteps <- mean(totaldailysteps$total,na.rm = TRUE)
@@ -42,7 +40,7 @@ avgsteps <- ddply(complete_steps, .(interval), summarise, average_steps = mean(s
 plot(x = avgsteps$interval, y = avgsteps$average_steps, type = "l", main = "Average Daily Activity Pattern", xlab = "Daily Interval", ylab = "Average Number of steps")
 ```
 
-![](PA1_template_files/figure-html/avg by interval-1.png)<!-- -->
+![plot of chunk avg by interval](figure/avg by interval-1.png)
 
 ```r
 maxinterval <- avgsteps[which.max(avgsteps$average_steps),]$interval
@@ -72,7 +70,7 @@ totaldailysteps_imputed <- ddply(step_dataimputed, .(date), summarise, total = m
 hist(totaldailysteps_imputed$total, main = "Total number of steps each day", xlab = "Number of Steps")
 ```
 
-![](PA1_template_files/figure-html/mean total steps imputed-1.png)<!-- -->
+![plot of chunk mean total steps imputed](figure/mean total steps imputed-1.png)
 
 ```r
 # calculate the mean with the imputed values
@@ -117,4 +115,4 @@ avgsteps_imputed <- ddply(step_dataimputed, .(interval, DayType), summarise, ave
 xyplot(average_steps~interval | as.factor(DayType), data = avgsteps_imputed, layout = c(1,2), type="l", xlab = "Interval", ylab = "Number of steps" )
 ```
 
-![](PA1_template_files/figure-html/weekend diffs-1.png)<!-- -->
+![plot of chunk weekend diffs](figure/weekend diffs-1.png)

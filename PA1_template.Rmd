@@ -7,7 +7,7 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r preprocessing}
+```{r preprocessing, echo=TRUE}
 # Load the csv data from the zip file into a data frame
 step_data <- read.table(unz("activity.zip", "activity.csv"), header=T, quote="\"", sep=",")
 # ensure that the date column is a date data type
@@ -15,7 +15,7 @@ step_data$date <- strptime(step_data$date, "%Y-%m-%d")
 ```
 
 ## What is mean total number of steps taken per day?
-```{r mean total steps}
+```{r mean total steps, echo=TRUE}
 library(plyr)
 complete_steps <- step_data[complete.cases(step_data$steps),]
 totaldailysteps <- ddply(complete_steps, .(date), summarise, total = max(steps))
@@ -28,7 +28,7 @@ The mean number of total daily steps is `r meansteps`. The median number of tota
 
 ## What is the average daily activity pattern?
 
-```{r avg by interval}
+```{r avg by interval, echo=TRUE}
 avgsteps <- ddply(complete_steps, .(interval), summarise, average_steps = mean(steps))
 plot(x = avgsteps$interval, y = avgsteps$average_steps, type = "l", main = "Average Daily Activity Pattern", xlab = "Daily Interval", ylab = "Average Number of steps")
 maxinterval <- avgsteps[which.max(avgsteps$average_steps),]$interval
@@ -37,19 +37,19 @@ The daily 5-minute interval containing the max number of steps on average is `r 
 
 ## Imputing missing values
 
-```{r missing vals}
+```{r missing vals, echo=TRUE}
 missingrows <- sum(is.na(step_data$steps))
 ```
 The Total number of missing values (coded as NA) is `r missingrows`.
 
-```{r impute missing vals}
+```{r impute missing vals, echo=TRUE}
 #Create a copy of the step_data dataset which will be used to fill in missing values
 step_dataimputed <- step_data
 #Impute the missing values by using the average steps by interval
 step_dataimputed$steps[is.na(step_dataimputed$steps)] <- ave(step_dataimputed$steps, step_dataimputed$interval, FUN = function(x)mean(x, na.rm=TRUE))[c(which(is.na(step_dataimputed$steps)))]
 ```
 
-```{r mean total steps imputed}
+```{r mean total steps imputed, echo=TRUE}
 library(plyr)
 totaldailysteps_imputed <- ddply(step_dataimputed, .(date), summarise, total = max(steps))
 hist(totaldailysteps_imputed$total, main = "Total number of steps each day", xlab = "Number of Steps")
@@ -84,7 +84,7 @@ Imputing the missing data has `r meanresult` on the mean and a `r medianresult` 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r weekend diffs}
+```{r weekend diffs, echo=TRUE}
 step_dataimputed$weekday <- weekdays(step_dataimputed$date,abbreviate = TRUE)
 step_dataimputed$DayType <- "weekday"
 step_dataimputed$DayType[step_dataimputed$weekday == "Sat" | step_dataimputed$weekday == "Sun"] <- "weekend"
