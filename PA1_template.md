@@ -1,48 +1,53 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
   
 ## Loading and preprocessing the data
 
-```{r Code for reading in the dataset and/or processing the data}
+
+```r
 data_steps<-read.csv2("activity.csv", sep=",",colClasses=c("integer","Date","integer"))
 ```
   
-```{r Histogram of the total number of steps taken each day}
+
+```r
 steps_sum<-aggregate(steps~date,data = data_steps,sum)
 hist(steps_sum$steps,breaks=5,col="red",main ="Steps histogram",ylab="Number of days",xlab="Steps")
 ```
+
+![](PA1_template_files/figure-html/Histogram of the total number of steps taken each day-1.png)<!-- -->
   
 ## What is mean total number of steps taken per day?  
   
-```{r Mean and median number of steps taken each day}
+
+```r
 mean_steps<-as.character(floor(mean(steps_sum$steps)))
 median_steps<-as.character(floor(median(steps_sum$steps)))
 ```
   
-Mean is `r mean_steps` steps per day.  
-Median is `r median_steps` steps per day.  
+Mean is 10766 steps per day.  
+Median is 10765 steps per day.  
   
 ## What is the average daily activity pattern?  
   
-```{r Time series plot of the average number of steps taken}
+
+```r
 steps_during_day<-aggregate(steps~interval,data = data_steps,mean)
 plot(steps_during_day$steps,type="l",xlab="Time of the day (hour)",main ="Average steps during day",ylab="Number of steps",xaxt = "n")
 axis(1, at=seq(from=0, to=288, by=12), labels=c(0:24))
 ```
+
+![](PA1_template_files/figure-html/Time series plot of the average number of steps taken-1.png)<!-- -->
   
-```{r The 5-minute interval that, on average, contains the maximum number of steps}
+
+```r
 max_interval<-steps_during_day[steps_during_day$steps==max(steps_during_day$steps),1]
 ```
   
-The interval with the max steps is: `r max_interval`  
+The interval with the max steps is: 835  
   
 ## Imputing missing values  
   
-```{r Strategy for imputing missing data}
+
+```r
 #Number of missing values
 nb_missing_values<-sum(is.na(data_steps[,1]))
 
@@ -54,18 +59,22 @@ if (is.na(data_steps[i,1])==TRUE)
 }
 ```
   
-There were `r nb_missing_values` missing values  
+There were 2304 missing values  
   
-```{r Histogram of the total number of steps taken each day after missing values are imputed}
+
+```r
 steps_sum2<-aggregate(steps~date,data = data_completed,sum)
 hist(steps_sum2$steps,breaks=5,col="red",main ="Steps histogram",ylab="Number of days",xlab="Steps")
 ```
+
+![](PA1_template_files/figure-html/Histogram of the total number of steps taken each day after missing values are imputed-1.png)<!-- -->
   
 The histogram is the same the one we ploted before => that's reassuring  
     
 ## Are there differences in activity patterns between weekdays and weekends?  
   
-```{r Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends}
+
+```r
 data_steps$isweekday<-(as.POSIXlt(data_steps$date)$wday %in% 1:5)
 data_steps_week<-data_steps[data_steps$isweekday==TRUE,]
 data_steps_weekend<-data_steps[data_steps$isweekday==FALSE,]
@@ -79,6 +88,8 @@ par(new=T)
 plot(steps_sum_weekend$steps,type="l",xlab="",main ="",ylab="",xaxt = "n",yaxt = "n",col="blue", ylim=c(0.0,300.0))
 legend("topright",legend=c("week","weekend"),col=c("red", "blue"),lty=1)
 ```
+
+![](PA1_template_files/figure-html/Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends-1.png)<!-- -->
   
 People tend to wake up later on week end  
   
