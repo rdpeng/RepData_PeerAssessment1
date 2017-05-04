@@ -1,7 +1,9 @@
 ---
 title: "Activity Monitoring Data"
-output: md_document
-author: Michelle Fukunaga
+author: "Michelle Fukunaga"
+output:
+  html_document: 
+        keep_md: true
 ---
 
 ```{r setup, include=FALSE}
