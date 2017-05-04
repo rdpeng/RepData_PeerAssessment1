@@ -5,9 +5,7 @@ date: "4 de Maio de 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
  keep_md: true
 
 ## R Markdown
