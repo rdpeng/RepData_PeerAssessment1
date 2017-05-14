@@ -199,7 +199,7 @@ pl_int <- ggplot( data_int, aes( Category, x ) )
 pl_int + geom_line() + labs( x = "5-min Interval", y = "Number of steps")
 ```
 
-![](PA1_template_files/figure-html/interval mean days-1.png)<!-- -->
+![](PA1_template_files/figure-html/interval-1.png)<!-- -->
 
 2) Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -246,7 +246,7 @@ hist_na_day <- hist_na_day + geom_histogram( binwidth = 10, fill = "navy", color
 hist_na_day
 ```
 
-![](PA1_template_files/figure-html/NA histogram-1.png)<!-- -->
+![](PA1_template_files/figure-html/NAHist-1.png)<!-- -->
 
 and Calculate and report the mean and median total number of steps taken per day. 
 
@@ -422,4 +422,4 @@ pl_int_week <- ggplot( week, aes( Category, x ) )
 pl_int_week + geom_line() + facet_grid(week$weekday ~. ) + labs( x = "5-min Interval", y = "Number of steps")
 ```
 
-![](PA1_template_files/figure-html/weekdays plot-1.png)<!-- -->
+![](PA1_template_files/figure-html/weekdays-1.png)<!-- -->

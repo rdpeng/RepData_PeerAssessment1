@@ -3,7 +3,7 @@ title: "Course Project 1 - Reproducible Research"
 author: "Ivana"
 date: "9 May 2017"
 output: 
-  html_document: 
+  html_document:
     keep_md: yes
 ---
 ```{r setup, include=FALSE}
@@ -118,7 +118,7 @@ What is the impact of imputing missing data on the estimates of the total daily 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
-```{r weekdays, cache= TRUE  }
+```{r weekdays data, cache= TRUE  }
 data_na$weekday <- weekdays(as.Date( data_na$date ) )
 data_na[ is.element(data_na$weekday, c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")), ]$weekday <- "weekday"
 data_na[ is.element(data_na$weekday, c("Saturday", "Sunday")), ]$weekday <- "weekend"
