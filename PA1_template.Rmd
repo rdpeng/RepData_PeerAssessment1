@@ -2,7 +2,9 @@
 title: "Course Project 1 - Reproducible Research"
 author: "Ivana"
 date: "9 May 2017"
-output: html_document
+output: 
+  html_document: 
+    keep_md: yes
 ---
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -57,7 +59,7 @@ aggregate( x = data$steps, by = list(Category = data$date), FUN = function( x ) 
 ## What is the average daily activity pattern?
 
 1) Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
-```{r interval mean days }
+```{r interval }
 data_int <- aggregate( data$steps, by = list(Category = data$interval), FUN = function( x ) { mean( x, na.rm = TRUE ) })
 pl_int <- ggplot( data_int, aes( Category, x ) )
 pl_int + geom_line() + labs( x = "5-min Interval", y = "Number of steps")
@@ -87,7 +89,7 @@ for(int in intervals){ data_na[ (data_na$interval == int) & (is.na( data_na$step
 ```
 
 4) Make a histogram of the total number of steps taken each day
-```{r NA histogram, cache= TRUE  }
+```{r NAHist, cache= TRUE  }
 data_na_day <- aggregate( data_na$steps, by = list(Category = data_na$date), FUN = sum )
 hist_na_day <- ggplot( data_na, aes( steps ) )
 hist_na_day <- hist_na_day + labs( x = "Number of steps per day", y = "Frequency")
@@ -123,7 +125,7 @@ data_na[ is.element(data_na$weekday, c("Saturday", "Sunday")), ]$weekday <- "wee
 ```
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
-```{r weekdays plot, cache = TRUE }
+```{r weekdays, cache = TRUE }
 data_na_week <- data_na[ data_na$weekday == "weekday", ]
 weekday <- aggregate( data_na_week$steps, by = list(Category = data_na_week$interval), FUN = function( x ) { mean( x, na.rm = TRUE ) })
 data_na_week <- data_na[ data_na$weekday == "weekend", ]
