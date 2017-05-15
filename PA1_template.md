@@ -24,7 +24,7 @@ names(totalstepsperday) <- c("Date", "Total_steps")
 
 2. Plotting a Histogram 
 
-(PA1_template_files/figure-html/Histogram of the total number of steps taken each day-1.png)<!-- -->
+![GitHub Logo](/PA1_template_files/figure-html/Histogram of the total number of steps taken each day-1.png)<!-- -->
 
 3. Calculate mean and medium of steps taken per day
 
