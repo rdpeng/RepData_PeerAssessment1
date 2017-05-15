@@ -24,7 +24,7 @@ names(totalstepsperday) <- c("Date", "Total_steps")
 
 2. Plotting a Histogram 
 
-![](PA1_template_files/figure-html/Histogram of the total number of steps taken each day-1.png)<!-- -->
+![](PA1_template_files/figure-html/Histogram of the total number of steps taken each day-1.png?raw=true)<!-- -->
 
 3. Calculate mean and medium of steps taken per day
 
@@ -52,7 +52,7 @@ data_5m <- aggregate(steps ~ interval, data = data, FUN = mean, na.rm = T)
 with(data_5m,plot(x = interval, y = steps, type = "l", col = "orange", xlab = "5-minute Intervals", ylab = "Average Steps Taken per Days",main = "Average Daily Activity Pattern"))
 ```
 
-![](PA1_template_files/figure-html/Line chart-1.png)<!-- -->
+![](PA1_template_files/figure-html/Line chart-1.png?raw=true)<!-- -->
 - On average across all the days in the dataset, which 5-minute interval contains the maximum number of steps?
 
 ```r
@@ -113,7 +113,7 @@ names(totalstepsperday_filled) <- c("Date", "Total_steps")
 hist(totalstepsperday_filled$Total_steps,main="Total Steps per Day with new data filled in",xlab="Number of Steps per Day", ylab = "Interval",col="blue")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png?raw=true)<!-- -->
 
 - Calculate mean and medium of steps taken per day with new data
 
@@ -148,4 +148,4 @@ library(lattice)
 xyplot(steps ~ interval | factor(day), data = steps_Interval, aspect = 1/2, ylab = "Number of steps", xlab="Interval", type = "l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png?raw=true)<!-- -->
