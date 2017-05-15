@@ -24,7 +24,7 @@ names(totalstepsperday) <- c("Date", "Total_steps")
 
 2. Plotting a Histogram 
 
-![](PA1_template_files/figure-html/Histogram-of-the-total-umber-of-steps-taken-each-day-1.png?raw=true)<!-- -->
+![](PA1_template_files/figure-html/Histogram_of_the_total_number_of_steps_taken_each_day-1.png?raw=true)<!-- -->
 
 3. Calculate mean and medium of steps taken per day
 
@@ -52,7 +52,7 @@ data_5m <- aggregate(steps ~ interval, data = data, FUN = mean, na.rm = T)
 with(data_5m,plot(x = interval, y = steps, type = "l", col = "orange", xlab = "5-minute Intervals", ylab = "Average Steps Taken per Days",main = "Average Daily Activity Pattern"))
 ```
 
-![](PA1_template_files/figure-html/Line-chart-1.png?raw=true)<!-- -->
+![](PA1_template_files/figure-html/Line_chart-1.png?raw=true)<!-- -->
 - On average across all the days in the dataset, which 5-minute interval contains the maximum number of steps?
 
 ```r

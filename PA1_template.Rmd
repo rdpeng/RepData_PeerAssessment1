@@ -38,7 +38,7 @@ names(totalstepsperday) <- c("Date", "Total_steps")
 
 2. Plotting a Histogram 
 
-```{r Histogram of the total number of steps taken each day, echo=F}
+```{r Histogram_of_the_total_number_of_steps_taken_each_day, echo=F}
 hist(totalstepsperday$Total_steps,main="Total Steps per Day",xlab="Number of Steps per Day", ylab = "Interval",col="blue")
 ```
 
@@ -59,7 +59,7 @@ step_median<-median(totalstepsperday$Total_steps)
 ## What is the average daily activity pattern?
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r Line chart}
+```{r Line_chart}
 #get data average number of steps taken per 5 minutes
 data_5m <- aggregate(steps ~ interval, data = data, FUN = mean, na.rm = T)
 #plotting
