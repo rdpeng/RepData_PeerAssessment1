@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="C.J. van Eijden" />
+
+
+<title>activity monitor</title>
+
+<script src="PA1_template_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="PA1_template_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="PA1_template_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="PA1_template_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="PA1_template_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="PA1_template_files/navigation-1.1/tabsets.js"></script>
+<link href="PA1_template_files/highlightjs-1.1/default.css" rel="stylesheet" />
+<script src="PA1_template_files/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">activity monitor</h1>
+<h4 class="author"><em>C.J. van Eijden</em></h4>
+<h4 class="date"><em>2/22/2017</em></h4>
+
+</div>
+
+
+<div id="activity-monitor-introduction-and-preparations" class="section level2">
+<h2>Activity Monitor: introduction and preparations</h2>
+<p>It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.</p>
+<p>In this assignment of the course <strong>Reproducible Research</strong> (peer graded assingment Cours Project 1) we make use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.</p>
+<div id="preparations-before-executing-this-r-markdown-document-with-knit" class="section level3">
+<h3>Preparations before executing this R Markdown document with Knit</h3>
+<p>Download <a href="https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip">Activity Monitor dataset</a> and unzip the file. Change the working directory of of your IDE (e.g. RStudio) to the directory where the dataset resides.</p>
+</div>
+<div id="loading-libraries-loading-data-and-preprocessing-data" class="section level3">
+<h3>Loading libraries, loading data and preprocessing data</h3>
+<pre class="r"><code>library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(ggplot2)
+
+a &lt;- read.csv(&quot;activity.csv&quot;, sep=&quot;,&quot;, header=TRUE)</code></pre>
+<p>See what data we have!</p>
+<pre class="r"><code>head(a, 20)</code></pre>
+<pre><code>##    steps       date interval
+## 1     NA 2012-10-01        0
+## 2     NA 2012-10-01        5
+## 3     NA 2012-10-01       10
+## 4     NA 2012-10-01       15
+## 5     NA 2012-10-01       20
+## 6     NA 2012-10-01       25
+## 7     NA 2012-10-01       30
+## 8     NA 2012-10-01       35
+## 9     NA 2012-10-01       40
+## 10    NA 2012-10-01       45
+## 11    NA 2012-10-01       50
+## 12    NA 2012-10-01       55
+## 13    NA 2012-10-01      100
+## 14    NA 2012-10-01      105
+## 15    NA 2012-10-01      110
+## 16    NA 2012-10-01      115
+## 17    NA 2012-10-01      120
+## 18    NA 2012-10-01      125
+## 19    NA 2012-10-01      130
+## 20    NA 2012-10-01      135</code></pre>
+<pre class="r"><code>summary(a)</code></pre>
+<pre><code>##      steps                date          interval     
+##  Min.   :  0.00   2012-10-01:  288   Min.   :   0.0  
+##  1st Qu.:  0.00   2012-10-02:  288   1st Qu.: 588.8  
+##  Median :  0.00   2012-10-03:  288   Median :1177.5  
+##  Mean   : 37.38   2012-10-04:  288   Mean   :1177.5  
+##  3rd Qu.: 12.00   2012-10-05:  288   3rd Qu.:1766.2  
+##  Max.   :806.00   2012-10-06:  288   Max.   :2355.0  
+##  NA&#39;s   :2304     (Other)   :15840</code></pre>
+<p>We see:</p>
+<ul>
+<li>The variable <em>interval</em> needs some inspection: how are the values of <em>interval</em> coded?</li>
+<li><em>Date</em> is of class <strong>character</strong>. <em>Date</em> will be converted to <strong>POSIXct</strong>.</li>
+<li>There are a lot of missing values (NA’s) in variable <em>steps</em>. Is there a pattern?</li>
+</ul>
+<p>To start with the first question. In the listing of <code>head(a, 20)</code> we see increments of 5 but at 55 there is a jump to 100. The last to digits are minutes and, if there are more digits, those in front stand for hours. We convert the value to minutes.</p>
+<pre class="r"><code>a &lt;- mutate(a, interval = (floor(a$interval/100)*60) + (a$interval%%100))
+
+a &lt;- mutate(a, date = as.POSIXct(date))
+summary(a)</code></pre>
+<pre><code>##      steps             date                        interval     
+##  Min.   :  0.00   Min.   :2012-10-01 00:00:00   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16 00:00:00   1st Qu.: 358.8  
+##  Median :  0.00   Median :2012-10-31 00:00:00   Median : 717.5  
+##  Mean   : 37.38   Mean   :2012-10-30 23:32:27   Mean   : 717.5  
+##  3rd Qu.: 12.00   3rd Qu.:2012-11-15 00:00:00   3rd Qu.:1076.2  
+##  Max.   :806.00   Max.   :2012-11-30 00:00:00   Max.   :1435.0  
+##  NA&#39;s   :2304</code></pre>
+<p>Now we investigate the missing values in <em>steps</em>. We want to see on which days they occur.</p>
+<pre class="r"><code>missing_values &lt;- filter(a, is.na(a$steps))
+missing_values &lt;- mutate(missing_values, steps_na = 1) #now we can count missing values
+summary_missing_values &lt;- summarize(group_by(missing_values, date), sum(steps_na))
+summary_missing_values &lt;- mutate(summary_missing_values, weekday = weekdays(date))
+head(summary_missing_values, 10)</code></pre>
+<pre><code>## # A tibble: 8 × 3
+##         date `sum(steps_na)`   weekday
+##       &lt;dttm&gt;           &lt;dbl&gt;     &lt;chr&gt;
+## 1 2012-10-01             288    Monday
+## 2 2012-10-08             288    Monday
+## 3 2012-11-01             288  Thursday
+## 4 2012-11-04             288    Sunday
+## 5 2012-11-09             288    Friday
+## 6 2012-11-10             288  Saturday
+## 7 2012-11-14             288 Wednesday
+## 8 2012-11-30             288    Friday</code></pre>
+<p>We see that on eight days there were no recordings at all. All other days have no missing value at all. The non-recording days are fairly spread over the week: not one or two specific days, not all workdays or during the weekend. For the time being we can savely ignore (meaning na.rm=TRUE) the rows with NA’s. As we are instructed to do! The days with only NA’s wille show up as days with no activity at all.</p>
+<pre class="r"><code>activity &lt;- a</code></pre>
+</div>
+</div>
+<div id="what-is-mean-total-number-of-steps-taken-per-day" class="section level2">
+<h2>What is mean total number of steps taken per day?</h2>
+<p>We calculate the total number of steps for each day. Those totals will be averaged across the whole period and also the mean will be calculated. Next we draw a histogram with bins of 500 steps.</p>
+<pre class="r"><code>day_total &lt;- summarize(group_by(activity, date), steps= sum(steps, na.rm= TRUE))
+
+period_mean  = mean(day_total$steps, na.rm=TRUE)
+period_median = median(day_total$steps, na.rm=TRUE)
+print(paste(&quot;Average steps a day over the two months period is&quot;, as.character(round(period_mean)), &quot;and the median is&quot;, as.character(round(period_median))))</code></pre>
+<pre><code>## [1] &quot;Average steps a day over the two months period is 9354 and the median is 10395&quot;</code></pre>
+<pre class="r"><code>qplot(x= day_total$steps, main= &quot;Mean total number of steps taken per day&quot;, geom=&quot;blank&quot;) +
+    geom_histogram(breaks= seq(0, 24000, 500), color=&quot;black&quot;, fill=&quot;white&quot;) +
+    scale_x_continuous(name = &quot;Number of steps taken per day&quot;, breaks = seq(0, 25000, 5000), limits=c(0, 25000)) +
+    scale_y_continuous(name=&quot;Number of days&quot;, breaks=seq(0, 12, 2), limits=c(0,12)) +
+    geom_vline(mapping=aes(xintercept=c(period_mean, period_median), linetype=factor(c(&quot;mean&quot;, &quot;median&quot;))), show.legend=TRUE) +
+    scale_linetype_manual(values=c(2,3)) +
+    labs(linetype=&quot;Legend&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-7-1.png" /><!-- --></p>
+<p>The person wearing this device walked approximately 7 kilometers a day during the recording period. The average stepsize is of a human is 0.7 meter. The 8 days with no recordings show up at the left as days with no activity. But there are still two days with very little activity. Illness?</p>
+</div>
+<div id="what-is-the-average-daily-activity-pattern" class="section level2">
+<h2>What is the average daily activity pattern?</h2>
+<p>Across all intervalls we calculate the mean number of steps. Also the mean and median across the whole period is determined. A times series plot will show the average daily activity pattern</p>
+<pre class="r"><code>activity_mean &lt;- summarize(group_by(activity, interval), steps= mean(steps, na.rm= TRUE))
+
+day_mean &lt;- mean(activity_mean$steps)
+day_median &lt;- median(activity_mean$steps)
+
+
+qplot(x=activity_mean$interval/60, y=activity_mean$steps, geom=&quot;line&quot;, main = &quot;Average daily activity pattern&quot;) +
+    scale_x_continuous(name=&quot;5-minutes intervals (ticks are hours)&quot;, breaks=seq(0,24,2), limits=c(0,24)) +
+    scale_y_continuous(name= &quot;Average number of steps per interval&quot;, breaks = seq(0,250,50), limits=c(0,250)) +
+    geom_hline(mapping=aes(yintercept=c(day_mean, day_median), linetype=factor(c(&quot;mean&quot;, &quot;median&quot;))), show.legend=TRUE) +
+    scale_linetype_manual(values=c(2,3)) +
+    labs(linetype=&quot;Legend&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-8-1.png" /><!-- --></p>
+<p>From the plot we can see that the maximum activity is around 8 o’clock in the morning. Showering, breakfast, the kids to scholl, etc. At lunch and dinner time we also see increased activity levels. We will compute the exact interval with the maximum number of steps computed across all days</p>
+<pre class="r"><code>max_interval &lt;- filter(activity_mean, steps == max(steps))
+
+print(paste(&quot;The 5-minute interval with the maximum number of steps starts at&quot;, as.character(floor(max_interval$interval/60)), &quot;h&quot;, as.character(max_interval$interval%%60), &quot;min and has&quot;, as.character(round(max_interval$steps)), &quot;steps&quot;)
+)</code></pre>
+<pre><code>## [1] &quot;The 5-minute interval with the maximum number of steps starts at 8 h 35 min and has 206 steps&quot;</code></pre>
+</div>
+<div id="imputing-missing-values" class="section level2">
+<h2>Imputing missing values</h2>
+<p>In the raw dataset there were quite a few rows with missing data. We have already seen that on eight days there were no values at all. All other days had complete recordings.</p>
+<p>In stead of ignoring the NA’s we are going to impute the NA’s with reasonable estimates for those missing values. We choose to impute the missing data with the average of the corresponding interval. First, we calculate those impute values and then impute the estimates.</p>
+<pre class="r"><code>impute_values &lt;- summarize(group_by(activity, interval),  steps=mean(steps, na.rm=TRUE))
+summary(impute_values)</code></pre>
+<pre><code>##     interval          steps        
+##  Min.   :   0.0   Min.   :  0.000  
+##  1st Qu.: 358.8   1st Qu.:  2.486  
+##  Median : 717.5   Median : 34.113  
+##  Mean   : 717.5   Mean   : 37.383  
+##  3rd Qu.:1076.2   3rd Qu.: 52.835  
+##  Max.   :1435.0   Max.   :206.170</code></pre>
+<pre class="r"><code>n &lt;- 0
+for (i in 1:nrow(activity)) {
+    if (is.na(activity$steps[i])) {
+        for (j in 1:nrow(impute_values)) {
+            if (impute_values$interval[j] == activity$interval[i]) {
+                activity$steps[i] = impute_values$steps[j]
+                n &lt;- n+1
+            }
+        }
+    }
+}
+print(paste(&quot;Number of imputations:&quot;, as.character(n)))</code></pre>
+<pre><code>## [1] &quot;Number of imputations: 2304&quot;</code></pre>
+<pre class="r"><code>summary(activity)</code></pre>
+<pre><code>##      steps             date                        interval     
+##  Min.   :  0.00   Min.   :2012-10-01 00:00:00   Min.   :   0.0  
+##  1st Qu.:  0.00   1st Qu.:2012-10-16 00:00:00   1st Qu.: 358.8  
+##  Median :  0.00   Median :2012-10-31 00:00:00   Median : 717.5  
+##  Mean   : 37.38   Mean   :2012-10-30 23:32:27   Mean   : 717.5  
+##  3rd Qu.: 27.00   3rd Qu.:2012-11-15 00:00:00   3rd Qu.:1076.2  
+##  Max.   :806.00   Max.   :2012-11-30 00:00:00   Max.   :1435.0</code></pre>
+<p>The NA’s are gone. Now we calculate the new mean and median and draw a new plot (histogram)</p>
+<pre class="r"><code>day_total &lt;- summarize(group_by(activity, date), steps= sum(steps, na.rm= TRUE))
+
+period_mean = mean(day_total$steps)
+period_median = median(day_total$steps)
+print(paste(&quot;Average steps a day over the two months period is&quot;, as.character(round(period_mean)), &quot;and the median is&quot;, as.character(round(period_median))))</code></pre>
+<pre><code>## [1] &quot;Average steps a day over the two months period is 10766 and the median is 10766&quot;</code></pre>
+<p>As espected the mean has gone up, because the days with missing values where previously considered as days with zero steps for all intervals. All imputations have contributeted to a higher mean. The median has gone up less, because lots of intervals have stayed on the lower side of the mean after imputations. We can not explain why the mean and median have the same value.</p>
+<pre class="r"><code>qplot(x= day_total$steps, main= &quot;Mean total number of steps per day&quot;, geom=&quot;blank&quot;) +
+    geom_histogram(breaks= seq(0, 24000, 500), color=&quot;black&quot;, fill=&quot;white&quot;) +
+    scale_x_continuous(name = &quot;Number of steps taken per day&quot;,
+                           breaks = seq(0, 24000, 4000),
+                           limits=c(0, 24000)) +
+    scale_y_continuous(name=&quot;Number of days&quot;, breaks=seq(0, 12, 2), limits=c(0,12)) +
+    geom_vline(mapping=aes(xintercept=c(period_mean, period_median), linetype=factor(c(&quot;mean&quot;, &quot;median&quot;))), show.legend=TRUE) +
+    scale_linetype_manual(values=c(2,3)) +
+    labs(linetype=&quot;Legend&quot;)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-13-1.png" /><!-- --></p>
+</div>
+<div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
+<h2>Are there differences in activity patterns between weekdays and weekends?</h2>
+<p>First we add two variables to dataset <em>activity</em>: <em>weekday</em> (sun, mon, etc) and <em>daytype</em> (weekday or weekend)</p>
+<pre class="r"><code>activity &lt;- mutate(activity, day_type = &quot;weekday&quot;, weekday= weekdays(date))
+for (i in 1:nrow(activity)) { 
+    if (activity[i, &quot;weekday&quot;] == &quot;Saturday&quot;) { activity[i, &quot;day_type&quot;] = &quot;weekend&quot;}
+    if (activity[i, &quot;weekday&quot;] == &quot;Sunday&quot;) { activity[i, &quot;day_type&quot;] = &quot;weekend&quot;}
+}</code></pre>
+<pre class="r"><code>activity_pattern &lt;- group_by(activity, interval, day_type) %&gt;% summarize(steps= mean(steps, na.rm=TRUE))
+summary(activity_pattern)</code></pre>
+<pre><code>##     interval        day_type             steps        
+##  Min.   :   0.0   Length:576         Min.   :  0.000  
+##  1st Qu.: 358.8   Class :character   1st Qu.:  2.047  
+##  Median : 717.5   Mode  :character   Median : 28.133  
+##  Mean   : 717.5                      Mean   : 38.988  
+##  3rd Qu.:1076.2                      3rd Qu.: 61.263  
+##  Max.   :1435.0                      Max.   :230.378</code></pre>
+<pre class="r"><code>activity_pattern &lt;- mutate(activity_pattern, day_type = factor(day_type))
+summary(activity_pattern)</code></pre>
+<pre><code>##     interval         day_type       steps        
+##  Min.   :   0.0   weekday:288   Min.   :  0.000  
+##  1st Qu.: 358.8   weekend:288   1st Qu.:  2.047  
+##  Median : 717.5                 Median : 28.133  
+##  Mean   : 717.5                 Mean   : 38.988  
+##  3rd Qu.:1076.2                 3rd Qu.: 61.263  
+##  Max.   :1435.0                 Max.   :230.378</code></pre>
+<pre class="r"><code>ggplot(data= activity_pattern, aes(x=interval/60, y = steps), main = &quot;Average daily activity pattern&quot;) +
+          geom_line() +
+   scale_x_continuous(name=&quot;5-minutes interval (ticks are hours)&quot;, breaks=seq(0, 24, 4), limits=c(0, 24)) +
+    scale_y_continuous(name= &quot;Average number of steps per interval&quot;, breaks = seq(0,240,50), limits=c(0,240)) +
+    facet_grid(. ~ day_type)</code></pre>
+<p><img src="PA1_template_files/figure-html/unnamed-chunk-16-1.png" /><!-- --></p>
+<p>The panel plot shows clearly different activity patterns for normal weekdays and weekends. In the weeken the person wakes up a little later and has more activities in the aftenoon.</p>
+<pre class="r"><code>max_interval &lt;- summarize(group_by(activity_pattern, day_type), steps = max(steps))
+
+max_steps_weekend &lt;- max_interval$steps[max_interval$day_type == &quot;weekend&quot;]
+max_interval_weekend &lt;- activity_pattern$interval[activity_pattern$steps == max_steps_weekend]
+print(paste(&quot;Maximum weekend day activity of&quot;, format(max_steps_weekend, digits=0), &quot;steps&quot;,
+            &quot;at&quot;, format(floor(max_interval_weekend/60), digits=0), &quot;hours&quot;, format(max_interval_weekend%%60), &quot;min&quot;))</code></pre>
+<pre><code>## [1] &quot;Maximum weekend day activity of 167 steps at 9 hours 15 min&quot;</code></pre>
+<pre class="r"><code>max_steps_weekday &lt;- max_interval$steps[max_interval$day_type == &quot;weekday&quot;]
+max_interval_weekday &lt;- activity_pattern$interval[activity_pattern$steps == max_steps_weekday]
+print(paste(&quot;Maximum weekday activity of&quot;, format(max_steps_weekday, digits=0), &quot;steps&quot;,
+            &quot;at&quot;, format(floor(max_interval_weekday/60), digits=0), &quot;hours&quot;, format(max_interval_weekday%%60), &quot;min&quot;))</code></pre>
+<pre><code>## [1] &quot;Maximum weekday activity of 230 steps at 8 hours 35 min&quot;</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
