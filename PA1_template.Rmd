@@ -90,7 +90,8 @@ p
 summary(perDayData$step)[3:4]
  
 ```
-![plot1](figures/hist1)   
+![plot1](figures/hist1.png) 
+
  
 ### What is the average daily activity pattern?
  
@@ -105,7 +106,7 @@ p1
 
 byIntervalData[which.max(byIntervalData$step),]
 ```
- ![plot2](figures/time1)  
+ ![plot2](figures/time1.png)  
  
 ### Imputing missing values
  
@@ -141,7 +142,7 @@ p2
 summary(newperDayData$step)[3:4]
 
 ```
-![plot3](figures/hist2)   
+![plot3](figures/hist2.png)   
  
 The missing values were replaced by the mean steps of the interval. The results are very similar to the previous results. The means of "steps" for both data sets, with and imputing missing value, are same while the medians of the first data set (with) is a little less than the second data set. For the second data set (after imputing missing value), the mean and median are the same. 
  
@@ -168,7 +169,7 @@ p3 = p3 + geom_line()
 p3 = p3 + facet_grid(type ~ .)
 p3
 ```
-![plot4](figures/time2)  
+![plot4](figures/time2.png)  
 
  
 
