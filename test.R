@@ -1,0 +1,8 @@
+name <- c("a", "a", "b", "b")
+class <- c("c1", "c1", "c3", "c3")
+year <- c("2010", "2010", "2008", "2008")
+value <- c(100, 33, 100, 90)
+valueMessage <-c(NA, "meh", NA, NA)
+df <- data.frame(name, class, year, value, valueMessage)
+M1 <- aggregate(value ~ year + name + class, df, mean)
+M2 <- aggregate(as.character(valueMessage) ~ year + name + class,df, unique, na.action = na.pass)
