@@ -9,7 +9,7 @@ output:
 Here is where I load the data.
 ```{r loadData, echo=TRUE, results='asis'}
 library(knitr)
-
+library(ggplot2)
 dados <- read.csv("activity.csv")
 ```
 
@@ -29,7 +29,24 @@ The mean of steps is `r meanSteps` and the median of steps is `r medianSteps`
 
 
 ## What is the average daily activity pattern?
+Plotting time serie
+```{r timeSeries, echo=TRUE}
+passosInt <- aggregate(dados$steps ~ dados$interval, dados, mean)
 
+graf <- ggplot(data = passosInt, aes(x=passosInt$`dados$interval`, y=passosInt$`dados$steps`))
+
+graf <- graf + geom_line() + geom_point(color = "red")
+
+graf <- graf + labs(title = "Time Serie 5-Minute Interval - Average Steps", x = "Interval" , y = "Average Steps")
+
+print(graf)
+```
+
+```{r calcMax, echo=TRUE}
+maximo <- passosInt[which.max(passosInt$`dados$steps`), 1]
+```
+
+The 5-Minute interval with the maximum number of steps is `r maximo `.
 
 
 ## Imputing missing values
