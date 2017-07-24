@@ -10,6 +10,8 @@ Here is where I load the data.
 ```{r loadData, echo=TRUE, results='asis'}
 library(knitr)
 library(ggplot2)
+library(lubridate)
+library(lattice)
 dados <- read.csv("activity.csv")
 ```
 
@@ -80,3 +82,38 @@ The mean of steps is `r meanSteps2` and the median of steps is `r medianSteps2`
 We can observe an increase in media and median values by adding sample values replacing NA's.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+First, we declare a function **tipoDia** which categorize weekdays in "weekend" or "weekday":
+```{r tipoDia}
+tipoDia <- function(dia){
+        if (wday(dia) %in% c(1,7)){
+                resultado <- 0
+        } else {
+                resultado <- 1
+        }
+        
+        resultado
+}
+```
+
+After that, we insert a new field called dayType in dataset:
+```{r includeDayType, echo=TRUE}
+passosInt <- aggregate(dados$steps ~ dados$interval, dados, mean)
+dados$dayType <- sapply(dados$date, tipoDia)
+```
+
+Then, we make a new dataset which will be used for plot:
+```{r newDataSet, echo=TRUE}
+passosTipoDia <- aggregate(dados$steps ~ dados$interval + dados$dayType, dados, mean)
+```
+
+Factor variable called **fatores** 
+```{r factorVariable, echo=TRUE}
+fatores <- factor(passosTipoDia$`dados$dayType`, labels = c("weekend", "weekday"))
+
+```
+
+At least, we plot the time series:
+```{r plottingChart, echo=TRUE}
+xyplot(passosTipoDia$`dados$steps`~ passosTipoDia$`dados$interval` | fatores, type = "l", layout = c(1,2), main = "Average Steps by 5-Minute Interval", xlab = "Inteval", ylab = "mean(Steps)")
+```
+
