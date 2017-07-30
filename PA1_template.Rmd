@@ -10,15 +10,15 @@ output: html_document
 
 ##______________________________________________________
 ##Set working directory and work data path.
-```{r}
-setwd("C:\\Users\\Dawid J Duvenhage\\Desktop\\Coursera Courses\\Data Scientist Specialization\\5_Reproducible Research\\Week 2 Lectures_RR\\Project 1")
-```
+###```{r}
+###setwd("Set your working directory here and remove ### in the R-code block to execute the code")
+###```
 
 ##Important:
 ####Set correct file path below, before the "\\Project1"
-```{r}
-filepath <- "C:\\Users\\Dawid J Duvenhage\\Desktop\\Coursera Courses\\Data Scientist Specialization\\5_Reproducible Research\\Week 2 Lectures_RR\\Project 1\\Project1"
-```
+###```{r}
+###filepath <- "Set your working directory here and remove ### in the R-code block to execute the code\\Project1"
+###```
 ####Create work folder to extract and write data to.
 ```{r}
 if(!file.exists("./Project1")){dir.create("./Project1")}
