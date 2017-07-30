@@ -10,12 +10,14 @@ output: html_document
 
 ##______________________________________________________
 ##Set working directory and work data path.
+
 ###```{r}
 ###setwd("Set your working directory here and remove ### in the R-code block to execute the code")
 ###```
 
 ##Important:
 ####Set correct file path below, before the "\\Project1"
+
 ###```{r}
 ###filepath <- "Set your working directory here and remove ### in the R-code block to execute the code\\Project1"
 ###```
