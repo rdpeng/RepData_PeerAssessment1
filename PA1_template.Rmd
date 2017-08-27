@@ -71,7 +71,7 @@ size_df<- as.numeric(count(df))
   steps_per_day_NA_replaced <- with(df_new, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
   hist(steps_per_day_NA_replaced$x,xlab =  "steps" ,main= "Total number of steps  ( NA replaced )")
 ```
-
+  
 
 
 #Do these values differ from the estimates from the first part of the assignment?
