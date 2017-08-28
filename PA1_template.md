@@ -3,16 +3,9 @@ sabine
 27 August 2017  
 
 
-```r
-knitr::opts_chunk$set(echo = TRUE)
-```
 
  
 
-
-```r
-library(dplyr)
-```
 
 ```
 ## Warning: package 'dplyr' was built under R version 3.4.1
@@ -40,144 +33,42 @@ library(dplyr)
 ##     intersect, setdiff, setequal, union
 ```
 
-```r
-library(ggplot2)
-```
-
 ```
 ## Warning: package 'ggplot2' was built under R version 3.4.1
 ```
 
-```r
-df <- read.csv("C:/Users/Sabine/Downloads/ass1/activity.csv")
-df$date <- as.Date(df$date, format= "%Y-%m-%d")
-my_df <- subset(df,  !(is.na(steps) |  is.na(interval)  ))
-```
-
 
 
 #What is mean total number of steps taken per day?
-
-```r
-steps_per_day <- with(my_df, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
-hist(steps_per_day$x, ylim = c(0,30), xlab= "steps",main= "Total number of steps taken per day")
-abline(v=mean(steps_per_day$x), col="red", lwd=5)
-abline(v=median(steps_per_day$x), col="black",lty="longdash", lwd=3)
-```
-
-![](PA1_template_files/figure-html/yy-1.png)<!-- -->
-
-
-
-```r
-  library(dplyr)
-  library(ggplot2)
-  df <- read.csv("C:/Users/Sabine/Downloads/ass1/activity.csv")
-  df$date <- as.Date(df$date, format= "%Y-%m-%d")
-  my_df <- subset(df,  !(is.na(steps) |  is.na(interval)  ))
-```
-
-
-
-#What is mean total number of steps taken per day?
-
-```r
-  steps_per_day <- with(my_df, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
-  hist(steps_per_day$x, ylim = c(0,30), xlab= "steps",main= "Total number of steps taken per day")
-  abline(v=mean(steps_per_day$x), col="red", lwd=5)
-  abline(v=median(steps_per_day$x), col="black",lty="longdash", lwd=3)
-```
-
-![](PA1_template_files/figure-html/yyy-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 
 
 #What is the average daily activity pattern?
-
-```r
-  average_daily_activity <- aggregate(df$steps, by=list(df$interval), FUN=mean, na.rm=TRUE)
-  names(average_daily_activity) <- c("interval", "mean")
-  plot(average_daily_activity$interval, average_daily_activity$mean,type = "l",xlab="Interval", ylab="Average number of steps", main="Average number of steps per intervals")
- 
-  val<-subset(average_daily_activity, average_daily_activity$mean==max(average_daily_activity$mean))
-  abline(v=val$interval, col="red", lwd=2)
-```
-
-![](PA1_template_files/figure-html/zz-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 
 
 #Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
-
-```r
-size_df<- as.numeric(count(df))
-  size_my_dfx<- as.numeric(count(subset(df,  (is.na(steps) |  is.na(interval)  ))))
-  MissingValues<-c(size_my_dfx,size_df)
-  barplot(MissingValues, ylim = c(0,20000), main ="Number of datasets with missing values  /  Number of complete datasets")
-```
-
-![](PA1_template_files/figure-html/aa-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 
 
 #Devise a strategy for filling in all of the missing values 
 #Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```r
-  df_new<-df
-  df_new$input_steps <- average_daily_activity$mean[match(df_new$interval, average_daily_activity$interval)]
-  ind <- is.na(df_new$steps)
-  df_new$steps[ind] <- df_new$input_steps[ind] 
-  df_new$input_steps<-NULL
-```
 
 
 
 #Make a histogram of the total number of steps
-
-```r
-  steps_per_day_NA_replaced <- with(df_new, aggregate(steps, by = list(date), FUN = sum, na.rm = TRUE))
-  hist(steps_per_day_NA_replaced$x,xlab =  "steps" ,main= "Total number of steps  ( NA replaced )")
-```
-
-![](PA1_template_files/figure-html/cc-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 
 
 #Do these values differ from the estimates from the first part of the assignment?
-
-```r
-  par(mfrow=c(1,2))
-  hist(steps_per_day$x, ylim = c(0,35), xlab = "steps" , main= "Total nr. of steps ")
-  abline(v=mean(steps_per_day$x),col="red", lwd=2)
-  hist(steps_per_day_NA_replaced$x, ylim = c(0,35), xlab = "steps", main= "Total nr. of steps(NA replaced)")
-  abline(v=mean(steps_per_day_NA_replaced$x),col="red", lwd=2)
-```
-
-![](PA1_template_files/figure-html/dd-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 
 
 #Are there differences in activity patterns between weekdays and weekends?
-
-```r
-  weekday<-subset(df_new, ((weekdays(date)=="Montag")|(weekdays(date)=="Dienstag")|(weekdays(date)=="Mittwoch")|(weekdays(date)=="Donnerstag")|(weekdays(date)=="Freitag")))
-  weekend<-subset(df_new, ((weekdays(date)=="Samstag")|(weekdays(date)=="Sonntag")))
-  w1<-subset(df_new, ((weekdays(date)=="Sonntag")))
-  
-  par(mfrow=c(2,1),mar=c(0.0,4.1,4.1,0.0))
-    average_weekday <- aggregate(weekday$steps, by=list(weekday$interval), FUN=mean, na.rm=TRUE)
-    names(average_weekday) <- c("interval", "mean")
-    plot(average_weekday$interval, average_weekday$mean,type = "l",xlab="", ylab= " Weekday", main="Average number of steps")
-    val<-subset(average_weekday, average_weekday$mean==max(average_weekday$mean))
- 
-    average_weekend <- aggregate(weekend$steps, by=list(weekend$interval), FUN=mean, na.rm=TRUE)
-    names(average_weekend) <- c("interval", "mean")
-    plot(average_weekend$interval, average_weekend$mean,type = "l",xlab="Interval", ylab="Weekend", main="")
-```
-
-![](PA1_template_files/figure-html/ee-1.png)<!-- -->
-
-```r
-    val<-subset(average_weekend, average_weekend$mean==max(average_weekend$mean))
-```
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
