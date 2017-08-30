@@ -8,18 +8,205 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r readdata}
+activitydata <- read.csv("/home/susannah/Statistics/JH_Reproducible/Week_2/data/activity.csv")
+```
+Summarise the data to see what we're working with.
+
+```{r summary}
+summary(activitydata)
+```
 
 
 ## What is mean total number of steps taken per day?
 
+Calculate total number of steps per day. Using dplyr rather than, say, aggregate(), because 
+it would be more efficient, were the dataset sufficiently large for this to be noticeable.
+
+```{r stepsperday, message=FALSE}
+library(dplyr)
+activityperday <- na.omit(activitydata) %>%
+    group_by(date) %>%
+    summarise(steps = sum(steps)) %>%
+    as.data.frame()
+```
+
+Using ggplot2 to create the histogram of number of steps per day because it is highly customisable, and because 
+it looks smart to have all the figures matching in style.
+
+```{r histsteps, fig.height=4}
+library(ggplot2)
+ggplot(data=activityperday, aes(steps)) +
+    geom_histogram(binwidth = 400,
+                   col = "navy",
+                   fill = "skyblue4",
+                   alpha = 0.6) +
+    labs(title = "Histogram of Number of Steps per Day") +
+    labs (x = "Number of steps", y = "Frequency (days)")
+```
+
+```{r avsteps, results="hide"}
+stepmean <- as.integer(mean(activityperday$steps))
+stepmedian <- as.integer(median(activityperday$steps))
+```
+The (rounded) mean number of steps per day is `r stepmean`, and the median is `r stepmedian`.
+These are both close to 10000 steps, the default target per day on a Fitbit.
 
 
 ## What is the average daily activity pattern?
 
+Similarly, group the data by interval and calculate the average (mean, in this case).
+
+```{r stepsperinterval, message=FALSE}
+library(dplyr)
+intervalav <- na.omit(activitydata) %>%
+    group_by(interval) %>%
+    summarise(steps = mean(steps)) %>%
+    as.data.frame()
+```
+
+```{r dominutes, message=FALSE}
+library(dplyr)
+minutes <- sort(c(seq(0, 1435, 5)))
+intervalav <- intervalav %>%
+    mutate(minutes)
+```
+
+By plotting the average number of steps taken against the interval, we can see the pattern of 
+activity, as measured by step count, throughout the day.
+
+```{r timeinterval, fig.height=4}
+library(ggplot2)
+ggplot(data=intervalav, aes(minutes, steps)) +
+    geom_line(col="navy") +
+    labs(title = "Time Series Plot of Average Number of Steps") +
+    labs (x = "Time", y = "Average Number of Steps") +
+    scale_x_continuous(breaks=c(seq(0, 1440, 120)), labels=paste0(c(seq(0,22,2),0), rep(":00", 12))) 
+```
+
+```{r avstepsmax, results='hide'}
+maxsteps <- which.max(intervalav$steps)
+maxstepsint <- intervalav$interval[maxsteps]
+```
+
+The 5 minute time interval containing the maximum number of steps (averaged across all days) 
+is `r maxstepsint`.
 
 
 ## Imputing missing values
 
+```{r missingdatacount, results='hide'}
+isna <- is.na(activitydata)
+misseddata <- sum(isna)
+misseddatasteps <- sum(is.na(activitydata$steps))
+```
+
+There are `r misseddata` pieces of missing data in this dataset, `r misseddatasteps` of which are
+in the steps column.
+
+We propose to impute the missing data using means (crude, but functional). As we have seen, all
+the missing data are steps values, and there is considerable variation in the mean number of steps 
+per interval, according to the time of day.  It therefore makes most sense to fill in missing 
+datapoints using the mean number of steps for that interval, not the mean for that individual. The
+data including the imputed results are stored in a new dataset, newactivdata.
+
+```{r missingdata}
+newactivdata <- activitydata
+# Loop over the indices of the missing data
+for(index in which(isna)) {
+    # What is the interval value for the missing datapoint?
+    intmissing <- activitydata$interval[index]
+    # What is the index of that interval in the averaged steps per interval dataset?
+    intav <- which(intervalav$interval == intmissing)
+    # Use the steps value from the averaged dataset to impute the missing value
+    newactivdata$steps[index] <- intervalav$steps[intav]
+}
+```
+
+Let's verify that there's no missing data left.
+
+```{r verifynona}
+newisna <- sum(is.na(newactivdata))
+```
+
+There are `r newisna` missing datapoints remaining.
+
+Next we group the data by day, as we did previously for the unimputed data.
+
+```{r newstepsperday, message=FALSE}
+library(dplyr)
+newactivityperday <- newactivdata %>%
+    group_by(date) %>%
+    summarise(steps = sum(steps, na.rm=TRUE)) %>%
+    as.data.frame()
+```
+
+Then we display the data in a histogram, as before.
+
+```{r newhiststeps, fig.height=4}
+library(ggplot2)
+ggplot(data=newactivityperday, aes(steps)) +
+    geom_histogram(binwidth = 400,
+                   col = "navy",
+                   fill = "skyblue4",
+                   alpha = 0.6) +
+    labs(title = "Histogram of Number of Steps per Day using Imputed Data") +
+    labs (x = "Number of steps", y = "Frequency (days)")
+```
+
+```{r newavsteps, results="hide"}
+newstepmean <- as.integer(mean(newactivityperday$steps))
+newstepmedian <- as.integer(median(newactivityperday$steps))
+```
+
+The (rounded) mean number of steps per day is `r newstepmean`, and the median is `r newstepmedian`.
+Both have increased, the mean (unsuprisingly) more than the median. Apart from a small peak at zero, 
+the data are looking more symmetric, which is reflected in the equal mean and median. These are 
+close to 10000 steps, which is the default suggested target number of steps per day on a Fitbit. 
+This suggests that the target is to some degree inspirational; it would be interesting to conduct a 
+further randomised controlled study using Fitbits whose suggested targets were customised to different 
+levels. The control could be 10000 steps as here, or no target set (if that is possible).
+
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Common work schedules suggest that there might be a difference between activity patterns in
+the week and those at the weekend. To investigate this we need to generate an indicator variable which
+tells us whether a day is a weekday or not. I capitalised and pluralised the level names as 
+these labels will be later used as panel plot subheadings.
+
+```{r weekday, results='hide'}
+library(dplyr)
+isweekend <- as.factor(grepl("S.+",weekdays(as.Date(newactivdata$date))))
+levels(isweekend) <- c("Weekdays", "Weekends")
+newactivdata <- newactivdata %>%
+    mutate(isweekend)
+```
+
+
+
+```{r newstepsperinterval, message=FALSE}
+library(dplyr)
+newintervalav <- newactivdata %>%
+    group_by(interval, isweekend) %>%
+    summarise(steps = mean(steps, na.rm=TRUE)) %>%
+    as.data.frame()
+```
+
+```{r donewminutes, message=FALSE}
+library(dplyr)
+newminutes <- sort(c(seq(0, 1435, 5), seq(0, 1435, 5)))
+newintervalav <- newintervalav %>%
+    mutate(newminutes)
+```
+
+```{r panelplot, fig.height=8}
+library(ggplot2)
+ggplot(data=newintervalav, aes(x=newminutes, y=steps)) +
+    geom_line(col="navy") +
+    labs(title = "Average Number of Steps by Interval on Weekdays and Weekends") +
+    labs (x = "Time", y = "Average Number of Steps") +
+    scale_x_continuous(breaks=c(seq(0, 1440, 120)), labels=paste0(c(seq(0,22,2),0), rep(":00", 12))) +
+    facet_wrap(~isweekend, nrow=2)
+```
