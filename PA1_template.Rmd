@@ -1,5 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: Alejandro
 output: 
   html_document:
     keep_md: true
@@ -7,15 +8,48 @@ output:
 
 
 ## Loading and preprocessing the data
+Load the necessary R packages.
+```{r loadpackages}
+library(dplyr)
+library(xtable)
+```
 
+1. Load data from zipfile.
+```{r loaddata}
+zip_file = unzip("activity.zip")
+dat = read.csv(zip_file)
+```
 
+2. Transfrom data for analysis.
+```{r transformdata}
+dat = transform(dat, date = as.Date(date))
+```
 
 ## What is mean total number of steps taken per day?
+Compute total and average numbers of steps per day using *group_by()* and *summarize()* functions from *dplyr* package.
+```{r meanstepsbydaytable, results='asis'}
+dat = group_by(dat, date)
+steps.by.day = summarise(dat, 
+                              total.steps = sum(steps) / 1000,
+                                mean.steps = mean(steps, na.rm = TRUE),
+                                median.steps = median(steps, na.rm = TRUE))
+```
+1. Make a histogram of the total number of steps by day
+```{r totalstepshistogram}
+with(steps.by.day, hist(total.steps, breaks = 30, col = "light blue",
+                        border = "white", 
+                        main = "Histogram of Total Steps per Day",
+                        xlab = "Number of Steps (in thousands)"))
+```
 
-
+2. Create a table to report the mean, median, and total number of steps taken per day
+```{r stepstable, results='asis'}
+steps.by.day %>% xtable(type = "html") %>% print(comment = FALSE)
+```
 
 ## What is the average daily activity pattern?
-
+dat = group_by(dat, interval)
+steps.by.interval = summarise()
 
 
 ## Imputing missing values
