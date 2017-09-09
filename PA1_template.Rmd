@@ -1,5 +1,6 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: Alejandro
 output: 
   html_document:
     keep_md: true
@@ -7,19 +8,165 @@ output:
 
 
 ## Loading and preprocessing the data
+Load the necessary R packages.
+```{r loadPackages}
+library(dplyr)
+library(knitr)
+library(ggplot2)
+```
 
+### 1. Load data from zipfile.
+```{r loadData}
+zip_file = unzip("activity.zip")
+dat = read.csv(zip_file)
+```
 
+### 2. Transfrom data for analysis.
+```{r transformData}
+dat = transform(dat, date = as.Date(date))
+```
 
 ## What is mean total number of steps taken per day?
+Compute total and average numbers of steps per day using *group_by()* and *summarize()* functions from *dplyr* package.
+```{r meanStepsByDayTable, results='asis'}
+dat2 = group_by(dat, date)
+steps.by.day = summarise(dat2, 
+                              total.steps = sum(steps) / 1000,
+                                mean.steps = mean(steps, na.rm = TRUE),
+                                median.steps = median(steps, na.rm = TRUE))
+```
+### 1. Make a histogram of the total number of steps by day
+```{r totalStepsHistogram}
+with(steps.by.day, {
+        hist(total.steps, breaks = 30, col = "light blue",
+                        border = "white", 
+                        main = "Figure 1: Histogram of Total Steps per Day",
+                        xlab = "Number of Steps (in thousands)")
+        abline(v = mean(total.steps, na.rm = T), col = "blue", lwd = 2,
+               lty = 4)
+        text(16, 8, 
+             labels = paste("Mean Total Steps =",
+                                   mean(total.steps, na.rm = T) %>%
+                                           round(1),
+                                   "(in thousands)"),
+             cex = 0.8)
+})
+```
 
-
+### 2. Create a table to report the mean, median, and total number of steps taken per day
+```{r stepsTable, results='asis'}
+steps.by.day %>% 
+        kable(digits = 2, caption = "Table 1. Steps taken per day",
+              type = "html") %>%
+        print
+```
 
 ## What is the average daily activity pattern?
+### 1. Time series plot of daily average per 5-min intervals
+```{r averageStepsPerInterval}
+dat3 = group_by(dat, interval)
+steps.by.interval = summarise(dat3, mean.steps = mean(steps, na.rm = TRUE))
+with(steps.by.interval, {
+        plot(y = mean.steps, x = dat3$interval %>% unique,
+             type = "l", col = "light blue", lwd = 2,
+             main = "Figure 2: Average Number of Steps per Interval",
+             xlab = "Interval",
+             ylab = "Average steps taken")
+        abline(v = dat3$interval[which.max(mean.steps)], 
+               col = "blue", lwd = 2, lty = 4)
+        text(1400, 170, 
+             labels = paste("Interval =",
+                                   dat3$interval[which.max(mean.steps)],
+                            ", Max Mean Steps =", max(mean.steps) %>%
+                                    round(1)),
+             cex = 0.8)
+})
+```
 
-
+### 2. Maximum 5-min mean steps interval
+```{r maxMeanStepsInterval}
+cat("Interval =",
+        dat3$interval[which.max(steps.by.interval$mean.steps)])
+cat("Max mean steps =",
+        max(steps.by.interval$mean.steps))
+```
 
 ## Imputing missing values
 
+### 1. Total missing values in data set
+```{r missingTotal}
+apply(dat, 2, function(x) is.na(x) %>% sum) 
+```
 
+### 2. Filling in missing values using 5-min daily average
+```{r fillingInMissing}
+dat4 = merge(dat, steps.by.interval, by = "interval")
+head(dat4)
+```
+
+### 3. Create new dataset equal to original dataset with missing data filled in
+```{r newDataNonMissing}
+dat4 = transmute(dat4, steps = ifelse(is.na(steps), mean.steps, steps),
+                 date = date, interval = interval)
+dat4 = dat4[order(dat4$date),]
+head(dat4)
+apply(dat4, 2, function(x) is.na(x) %>% sum)
+```
+
+### 4. Histogram of total number of steps
+```{r totalStepsHistogramNonMissing}
+dat5 = group_by(dat4, date)
+steps.by.day = summarise(dat5, 
+                              total.steps = sum(steps) / 1000,
+                                mean.steps = mean(steps, na.rm = TRUE),
+                                median.steps = median(steps, na.rm = TRUE))
+with(steps.by.day, {
+        hist(total.steps, breaks = 30, col = "light blue",
+                        border = "white", 
+                        main = "Figure 3: Histogram of Total Steps per Day",
+                        xlab = "Number of Steps (in thousands)")
+        abline(v = mean(total.steps, na.rm = T), col = "blue", lwd = 2,
+               lty = 4)
+        text(16, 8, 
+             labels = paste("Mean Total Steps =",
+                                   mean(total.steps, na.rm = T) %>%
+                                           round(1),
+                                   "(in thousands)"),
+             cex = 0.8)
+})
+```
+
+Mean and median number of steps taken per day
+```{r stepsTableNonMissing, results = "asis"}
+steps.by.day %>% 
+        kable(digits = 2, caption = "Table 2. Steps taken per day") %>%
+        print
+```
+
+#### Comparing new and original datasets
+Values from the new dataset (with no missing values) differ from the original (with missing values) in that the variability has been reduced.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+### 1. Create a new factor variable indicating week and weekdays
+```{r weekends}
+dat6 = mutate(dat4, weekday = ifelse(weekdays(date) == "Saturday" |
+                              weekdays(date) == "Sunday", 
+                              "weekend",
+                              "weekday"))
+```
+
+### 2. Panel plot of daily average 5-min interval by weekday
+```{r weekendsPlot}
+dat7 = group_by(dat6, weekday, interval)
+steps.by.interval = summarise(dat7, mean.steps = mean(steps, na.rm = TRUE))
+p = ggplot(data = steps.by.interval,
+           aes(y = mean.steps, 
+               x = interval,
+               group = weekday, color = weekday)
+)
+p + geom_line(color = "light blue", lwd = 1.25) + 
+        facet_grid(. ~ weekday) + theme_bw() +
+        ggtitle("Figure 4: Average Number of Steps per Interval") +
+        labs(x = "Interval",
+             y = "Average steps taken")
+```
