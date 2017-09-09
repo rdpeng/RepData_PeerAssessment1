@@ -56,7 +56,8 @@ with(steps.by.day, {
 ### 2. Create a table to report the mean, median, and total number of steps taken per day
 ```{r stepsTable, results='asis'}
 steps.by.day %>% 
-        kable(digits = 2, caption = "Table 1. Steps taken per day") %>%
+        kable(digits = 2, caption = "Table 1. Steps taken per day",
+              type = "html") %>%
         print
 ```
 

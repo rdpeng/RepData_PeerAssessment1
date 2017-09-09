@@ -175,7 +175,8 @@ steps.by.day = summarise(dat2,
 <div id="create-a-table-to-report-the-mean-median-and-total-number-of-steps-taken-per-day" class="section level3">
 <h3>2. Create a table to report the mean, median, and total number of steps taken per day</h3>
 <pre class="r"><code>steps.by.day %&gt;% 
-        kable(digits = 2, caption = &quot;Table 1. Steps taken per day&quot;) %&gt;%
+        kable(digits = 2, caption = &quot;Table 1. Steps taken per day&quot;,
+              type = &quot;html&quot;) %&gt;%
         print</code></pre>
 <table>
 <caption>Table 1. Steps taken per day</caption>

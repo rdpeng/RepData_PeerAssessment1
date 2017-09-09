@@ -79,7 +79,8 @@ with(steps.by.day, {
 
 ```r
 steps.by.day %>% 
-        kable(digits = 2, caption = "Table 1. Steps taken per day") %>%
+        kable(digits = 2, caption = "Table 1. Steps taken per day",
+              type = "html") %>%
         print
 ```
 
