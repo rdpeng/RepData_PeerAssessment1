@@ -135,6 +135,7 @@ $(document).ready(function () {
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
 <pre class="r"><code>library(knitr)
+library(xtable)
 library(ggplot2)</code></pre>
 <div id="load-data-from-zipfile." class="section level3">
 <h3>1. Load data from zipfile.</h3>
@@ -175,7 +176,8 @@ steps.by.day = summarise(dat2,
 <div id="create-a-table-to-report-the-mean-median-and-total-number-of-steps-taken-per-day" class="section level3">
 <h3>2. Create a table to report the mean, median, and total number of steps taken per day</h3>
 <pre class="r"><code>steps.by.day %&gt;% 
-        kable(digits = 2, caption = &quot;Table 1. Steps taken per day&quot;,
+        kable(digits = 2, 
+              caption = &quot;Table 1. Steps taken per day&quot;,
               type = &quot;html&quot;) %&gt;%
         print</code></pre>
 <table>
@@ -557,6 +559,13 @@ steps.by.day = summarise(dat2,
 </tr>
 </tbody>
 </table>
+<pre class="r"><code>steps.by.day %&gt;%
+        xtable(digits = 2, 
+              caption = &quot;Table 1. Steps taken per day&quot;,
+              type = &quot;html&quot;) %&gt;%
+        print</code></pre>
+% latex table generated in R 3.4.1 by xtable 1.8-2 package % Sat Sep 9 14:24:59 2017
+
 </div>
 </div>
 <div id="what-is-the-average-daily-activity-pattern" class="section level2">
