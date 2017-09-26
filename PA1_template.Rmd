@@ -29,6 +29,7 @@ str(mdata)
 require(lubridate)
 mdata$date <- ymd(mdata$date)
 require(dplyr)
+require(ggplot2)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -38,11 +39,10 @@ For this part of the assignment, you can ignore the missing values in the datase
 ```{r data exploration on daily steps, echo=TRUE, cache=TRUE}
 mdata_by_day <- mdata %>% group_by(date) %>% summarize(total_steps = sum(steps))
 summary(mdata_by_day)
-mean_total_steps <- format(mean(mdata_by_day$total_steps, na.rm = T), nsmall = 2)
-median_total_steps <- median(mdata_by_day$total_steps, na.rm = T)
-require(ggplot2)
 q <- ggplot(mdata_by_day, aes(total_steps))
 q + geom_histogram(na.rm = T, binwidth = 1000, color = 'blue') + theme_bw()
+mean_total_steps <- format(mean(mdata_by_day$total_steps, na.rm = T), nsmall = 2)
+median_total_steps <- median(mdata_by_day$total_steps, na.rm = T)
 ```
 
 The mean total number of steps taken per day is `r mean_total_steps` 

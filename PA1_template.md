@@ -34,6 +34,7 @@ str(mdata)
 require(lubridate)
 mdata$date <- ymd(mdata$date)
 require(dplyr)
+require(ggplot2)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -58,14 +59,16 @@ summary(mdata_by_day)
 ```
 
 ```r
-mean_total_steps <- format(mean(mdata_by_day$total_steps, na.rm = T), nsmall = 2)
-median_total_steps <- median(mdata_by_day$total_steps, na.rm = T)
-require(ggplot2)
 q <- ggplot(mdata_by_day, aes(total_steps))
 q + geom_histogram(na.rm = T, binwidth = 1000, color = 'blue') + theme_bw()
 ```
 
 ![](PA1_template_files/figure-html/data exploration on daily steps-1.png)<!-- -->
+
+```r
+mean_total_steps <- format(mean(mdata_by_day$total_steps, na.rm = T), nsmall = 2)
+median_total_steps <- median(mdata_by_day$total_steps, na.rm = T)
+```
 
 The mean total number of steps taken per day is 10766.19 
 and median total number of steps taken per day is 10765
