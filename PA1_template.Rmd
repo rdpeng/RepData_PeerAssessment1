@@ -97,6 +97,7 @@ g <- ggplot(data = summary_steps, aes(date, steps_mean))
         ggtitle("Average number of steps taken per day") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
+![timesseries1i-1](figure/timesseries1i-1.png) 
 
 ## 5. The 5-minute interval that, on average, contains the maximum number of steps
 
@@ -124,7 +125,7 @@ g <- ggplot(data = summary_interval, aes(interval, steps_mean))
         ggtitle("Average number of steps taken in every 5-minute interval") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
-
+![timesseries2i-1](figure/timesseries2i-1.png) 
 
 ```{r maxi, echo = TRUE}
 max_int <- summary_interval[which.max(summary_interval$steps_mean), 1]
@@ -211,6 +212,7 @@ g <- ggplot(data = steps_sum_c, aes(steps_sum))
         ggtitle("Histogram of the total number of steps taken each day") +
         theme(plot.title = element_text(hjust = 0.5))
 ```
+![histogramf-1](figure/histogramf-1.png) 
 
 ## 8.  Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
@@ -235,6 +237,7 @@ g <- ggplot(data = Activity_monitoring_c, aes(interval, steps))
         ggtitle("Total number of steps taken in every 5-minute interval") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
+![panel-1](figure/panel-1.png) 
 
 ### As shown there are differences in activity patterns between weekdays and weekends
 
