@@ -60,7 +60,7 @@ names(steps_sum) <- c("date", "steps_sum")
 head(steps_sum, 10)
 ```
 
-### Histrogram
+### Histogram
 
 ```{r histogrami, echo = TRUE}
 g <- ggplot(data = steps_sum, aes(steps_sum))
@@ -69,6 +69,7 @@ g <- ggplot(data = steps_sum, aes(steps_sum))
         ggtitle("Histogram of the total number of steps taken each day") +
         theme(plot.title = element_text(hjust = 0.5))
 ```
+![histogrami-1](figure/histogrami-1.png) 
 
 ## 3. Mean and median of the number of steps taken each day
 
