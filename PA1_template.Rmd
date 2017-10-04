@@ -1,25 +1,248 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  keep_md: yes
+  html_document: default
+  pdf_document: default
 ---
+# Reproducible Research: Peer Assessment 1
+
+## 0. Loading the libraries required to run the script
+
+```{r, echo = TRUE, results = 'hide'}
+library(data.table)
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+```
+
+## 1. Code for reading in the dataset and/or processing the data
+
+```{r loadandprep, echo = TRUE}
+## Downloading the file
+
+url <-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+dest <- paste0(getwd(), "/" , "Activity_monitoring_data.zip")
+download.file(url, dest)
+zipF <- "./Activity_monitoring_data.zip"
+outDir <-"./Activity_monitoring_data"
+unzip(zipF, exdir = outDir)
+setwd("./Activity_monitoring_data")
+
+## Reading data set
+
+Activity_monitoring <- read.table("activity.csv", sep = ",", header = TRUE)
+setwd("..")
+
+## Date format
+
+Activity_monitoring$date <- as.Date(as.character(Activity_monitoring$date))
+ndate <- as.POSIXlt(Activity_monitoring$date)
+ndate$hour <- ndate$hour + Activity_monitoring$interval%/%100
+ndate$min <- ndate$min + Activity_monitoring$interval%%100
+Activity_monitoring$int_label <- paste(paste(Activity_monitoring$interval%/%100, 
+                                 "h", sep = " "), 
+                                 paste(Activity_monitoring$interval%%100, "min", 
+                                 sep = " "), sep = ":")
+head(Activity_monitoring, 10)
+```
+
+## 2. Histogram of the total number of steps taken each day
+
+### Here is the summary of the steps taken per day
+
+```{r totali, echo = TRUE}
+## Steps taken each day
+
+steps_sum <- aggregate(steps ~ date, data = Activity_monitoring, FUN = sum, na.rm = TRUE)
+names(steps_sum) <- c("date", "steps_sum")
+head(steps_sum, 10)
+```
+
+### Histrogram
+
+```{r histogrami, echo = TRUE}
+g <- ggplot(data = steps_sum, aes(steps_sum))
+        g + 
+        geom_histogram(bins = 30, aes(fill = ..count..)) + 
+        ggtitle("Histogram of the total number of steps taken each day") +
+        theme(plot.title = element_text(hjust = 0.5))
+```
+
+## 3. Mean and median of the number of steps taken each day
+
+```{r meanmediani, echo = TRUE}
+summary_steps <- Activity_monitoring[!is.na(Activity_monitoring$steps), ]
+summary_steps <- group_by(summary_steps, date)
+summary_steps <- summarize(summary_steps, 
+                           steps_sum = sum(steps, na.rm = TRUE), 
+                           steps_mean = mean(steps, na.rm = TRUE), 
+                           steps_median = median(steps, na.rm = TRUE))
+head(summary_steps)
+```
+
+## 4. Time series plot of the average number of steps taken
+
+```{r timesseries1i, echo = TRUE}
+g <- ggplot(data = summary_steps, aes(date, steps_mean))
+        g + 
+        scale_x_date(date_labels = "%b %d", 
+                     date_breaks = "5 days", 
+                     date_minor_breaks = "1 day") +       
+        geom_line(na.rm = TRUE, color = "steelblue", size = 0.8) +
+        geom_point(na.rm = TRUE, color = "steelblue", size = 0.9, alpha = 0.5) + 
+        xlab("Date") + 
+        ylab("Average number of steps taken") +
+        ggtitle("Average number of steps taken per day") +
+        theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+## 5. The 5-minute interval that, on average, contains the maximum number of steps
+
+### First the data frame is grouped by interval
+
+```{r intervali, echo = TRUE}
+summary_interval <- group_by(Activity_monitoring, interval)
+summary_interval <- summarize(summary_interval, 
+                              steps_sum = sum(steps, na.rm = TRUE), 
+                              steps_mean = mean(steps, na.rm = TRUE), 
+                              steps_median = median(steps, na.rm = TRUE))
+head(summary_interval, 10)
+```
+
+### Time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+```{r timesseries2i, echo = TRUE}
+g <- ggplot(data = summary_interval, aes(interval, steps_mean))
+        g + 
+        geom_line(na.rm = TRUE, color = "steelblue", size = 0.8) +
+        geom_point(na.rm = TRUE, color = "steelblue", size = 0.9, alpha = 0.5) + 
+        scale_x_continuous(breaks = seq(0, 2360, 100)) +
+        xlab("Interval") + 
+        ylab("Average number of steps taken") +
+        ggtitle("Average number of steps taken in every 5-minute interval") +
+        theme(plot.title = element_text(hjust = 0.5)) 
+```
 
 
-## Loading and preprocessing the data
+```{r maxi, echo = TRUE}
+max_int <- summary_interval[which.max(summary_interval$steps_mean), 1]
+max_int <- paste(paste(max_int%/%100, "h", sep = " "), 
+                 paste(max_int%%100, "min", sep = " "), sep = ":")
+```
 
+### The 5-minute interval that, on average, contains the maximum number of steps is at `r max_int`.
 
+## 6. Code describing and showing the strategy for imputing missing data
 
-## What is mean total number of steps taken per day?
+### Total number of missing values in the dataset
 
+```{r missing, echo = TRUE}
+data.na <- sum(!complete.cases(Activity_monitoring))
+```
 
+### The total number of missing values in the dataset is `r data.na`. 
 
-## What is the average daily activity pattern?
+### As a strategy for filling in all of the missing values in the datase I used the mean for each that 5-minute interval
 
+```{r replacem, echo = TRUE}
+## Function to replace the na values with the mean
 
+fill_mean <- function(x) {
+        replace(x, is.na(x), mean(x, na.rm = TRUE))
+}
 
-## Imputing missing values
+## Create a new dataset that is equal to the original dataset but with the 
+## missing data filled in.
 
+Activity_monitoring_c <- Activity_monitoring %>%
+        group_by(interval) %>%
+        mutate(steps = fill_mean(steps))
+Activity_monitoring_c <- ungroup(Activity_monitoring_c)
+head(Activity_monitoring_c, 10)
+```
 
+### Steps taken each day after missing values are imputed
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r totalf, echo = TRUE}
+## Steps taken each day
+steps_sum_c <- aggregate(Activity_monitoring_c$steps, 
+                by = list(Category = Activity_monitoring_c$date), 
+                FUN = sum, na.rm = TRUE)
+names(steps_sum_c) <- c("date","steps_sum")
+head(steps_sum_c)
+```
+
+### Mean and median of the number of steps taken each day after missing values are imputed
+
+```{r meanmedianf, echo = TRUE}
+## Calculate and report the mean and median total number of steps taken per day
+summary_steps_c <- group_by(Activity_monitoring_c, date)
+summary_steps_c <- summarize(summary_steps_c, 
+                             steps_sum = sum(steps, na.rm = TRUE), 
+                             steps_mean = mean(steps, na.rm = TRUE), 
+                             steps_median = median(steps, na.rm = TRUE))
+head(summary_steps_c)
+```
+
+### Comparison with the values from the estimates from the first part of the assignment
+
+```{r comparison, echo = TRUE}
+summary_steps_a <- group_by(Activity_monitoring, date)
+summary_steps_a <- summarize(summary_steps_a, 
+                           steps_sum = sum(steps, na.rm = TRUE), 
+                           steps_mean = mean(steps, na.rm = TRUE), 
+                           steps_median = median(steps, na.rm = TRUE))
+comparison <- data.frame(summary_steps_a$date, 
+                         summary_steps_a$steps_sum, 
+                         summary_steps_c$steps_sum,
+                         summary_steps_a$steps_mean, 
+                         summary_steps_c$steps_mean, 
+                         summary_steps_a$steps_median, 
+                         summary_steps_c$steps_median)
+names(comparison) <- c("date", "sum_steps_i", "sum_steps_f", 
+                       "mean_steps_i", "mean_steps_f",
+                       "median_steps_i", "median_steps_f")
+head(comparison, 61)
+```
+
+## 7. Histogram of the total number of steps taken each day after missing values are imputed
+
+```{r histogramf, echo = TRUE}
+g <- ggplot(data = steps_sum_c, aes(steps_sum))
+        g + 
+        geom_histogram(bins = 30, aes(fill = ..count..)) + 
+        ggtitle("Histogram of the total number of steps taken each day") +
+        theme(plot.title = element_text(hjust = 0.5))
+```
+
+## 8.  Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+
+### New factor variable in the dataset (after missing values are imputed) with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+
+```{r day, echo = TRUE}
+Weekday <- c("Monday", "Tuesday", "Wednesday", "Tuesday", "Friday")
+Activity_monitoring_c$day <- ifelse(weekdays(Activity_monitoring_c$date) %in% 
+                                            Weekday, 'weekday', 'weekend')
+```
+
+### Panel plot
+
+```{r panel, echo = TRUE}
+g <- ggplot(data = Activity_monitoring_c, aes(interval, steps))
+        g + 
+        facet_wrap(~ day, nrow = 2, ncol = 1) +    
+        stat_summary(fun.y = "sum", geom = "line", col = "blue") + 
+        scale_x_continuous(breaks = seq(0, 2360, 100)) +
+        xlab("Interval") + 
+        ylab("Total number of steps taken") +
+        ggtitle("Total number of steps taken in every 5-minute interval") +
+        theme(plot.title = element_text(hjust = 0.5)) 
+```
+
+### As shown there are differences in activity patterns between weekdays and weekends
+
+```{r final, echo = TRUE}
+summary_all <- Activity_monitoring_c %>% group_by(interval, day) %>% summarise(sum = sum(steps))
+head(summary_all)
+```
