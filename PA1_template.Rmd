@@ -1,9 +1,9 @@
 ---
-
-title: "Reproducible Research: Peer Assessment 1"
-output: html_document
-keep_md: true
-
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  keep_md: yes
+  html_document: default
+  pdf_document: default
 ---
 # Reproducible Research: Peer Assessment 1
 
@@ -24,8 +24,8 @@ library(dplyr)
 url <-"https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
 dest <- paste0(getwd(), "/" , "Activity_monitoring_data.zip")
 download.file(url, dest)
-zipF<- "./Activity_monitoring_data.zip"
-outDir<-"./Activity_monitoring_data"
+zipF <- "./Activity_monitoring_data.zip"
+outDir <-"./Activity_monitoring_data"
 unzip(zipF, exdir = outDir)
 setwd("./Activity_monitoring_data")
 
@@ -54,27 +54,26 @@ head(Activity_monitoring, 10)
 ```{r totali, echo = TRUE}
 ## Steps taken each day
 
-steps_sum <- aggregate(Activity_monitoring$steps, by = list(Category = 
-                       Activity_monitoring$date), FUN=sum, na.rm = TRUE)
+steps_sum <- aggregate(steps ~ date, data = Activity_monitoring, FUN = sum, na.rm = TRUE)
 names(steps_sum) <- c("date", "steps_sum")
 head(steps_sum, 10)
 ```
 
-### Histogram
+### Histrogram
 
 ```{r histogrami, echo = TRUE}
 g <- ggplot(data = steps_sum, aes(steps_sum))
         g + 
-        geom_histogram(bins = 61, aes(fill = ..count..)) + 
+        geom_histogram(bins = 30, aes(fill = ..count..)) + 
         ggtitle("Histogram of the total number of steps taken each day") +
         theme(plot.title = element_text(hjust = 0.5))
 ```
-![histogrami-1](figure/histogrami-1.png) 
 
 ## 3. Mean and median of the number of steps taken each day
 
 ```{r meanmediani, echo = TRUE}
-summary_steps <- group_by(Activity_monitoring, date)
+summary_steps <- Activity_monitoring[!is.na(Activity_monitoring$steps), ]
+summary_steps <- group_by(summary_steps, date)
 summary_steps <- summarize(summary_steps, 
                            steps_sum = sum(steps, na.rm = TRUE), 
                            steps_mean = mean(steps, na.rm = TRUE), 
@@ -90,14 +89,13 @@ g <- ggplot(data = summary_steps, aes(date, steps_mean))
         scale_x_date(date_labels = "%b %d", 
                      date_breaks = "5 days", 
                      date_minor_breaks = "1 day") +       
-        geom_line(na.rm = TRUE, color = "blue") +
-        geom_point(na.rm = TRUE, color = "blue", size = 1, alpha = 0.5) + 
+        geom_line(na.rm = TRUE, color = "steelblue", size = 0.8) +
+        geom_point(na.rm = TRUE, color = "steelblue", size = 0.9, alpha = 0.5) + 
         xlab("Date") + 
         ylab("Average number of steps taken") +
         ggtitle("Average number of steps taken per day") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
-![timesseries1i-1](figure/timesseries1i-1.png) 
 
 ## 5. The 5-minute interval that, on average, contains the maximum number of steps
 
@@ -117,15 +115,15 @@ head(summary_interval, 10)
 ```{r timesseries2i, echo = TRUE}
 g <- ggplot(data = summary_interval, aes(interval, steps_mean))
         g + 
-        geom_line(na.rm = TRUE, color = "blue") +
-        geom_point(na.rm = TRUE, color = "blue", size = 1, alpha = 0.5) + 
+        geom_line(na.rm = TRUE, color = "steelblue", size = 0.8) +
+        geom_point(na.rm = TRUE, color = "steelblue", size = 0.9, alpha = 0.5) + 
         scale_x_continuous(breaks = seq(0, 2360, 100)) +
         xlab("Interval") + 
         ylab("Average number of steps taken") +
         ggtitle("Average number of steps taken in every 5-minute interval") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
-![timesseries2i-1](figure/timesseries2i-1.png) 
+
 
 ```{r maxi, echo = TRUE}
 max_int <- summary_interval[which.max(summary_interval$steps_mean), 1]
@@ -190,12 +188,17 @@ head(summary_steps_c)
 ### Comparison with the values from the estimates from the first part of the assignment
 
 ```{r comparison, echo = TRUE}
-comparison <- data.frame(summary_steps$date, 
-                         summary_steps$steps_sum, 
+summary_steps_a <- group_by(Activity_monitoring, date)
+summary_steps_a <- summarize(summary_steps_a, 
+                           steps_sum = sum(steps, na.rm = TRUE), 
+                           steps_mean = mean(steps, na.rm = TRUE), 
+                           steps_median = median(steps, na.rm = TRUE))
+comparison <- data.frame(summary_steps_a$date, 
+                         summary_steps_a$steps_sum, 
                          summary_steps_c$steps_sum,
-                         summary_steps$steps_mean, 
+                         summary_steps_a$steps_mean, 
                          summary_steps_c$steps_mean, 
-                         summary_steps$steps_median, 
+                         summary_steps_a$steps_median, 
                          summary_steps_c$steps_median)
 names(comparison) <- c("date", "sum_steps_i", "sum_steps_f", 
                        "mean_steps_i", "mean_steps_f",
@@ -208,11 +211,10 @@ head(comparison, 61)
 ```{r histogramf, echo = TRUE}
 g <- ggplot(data = steps_sum_c, aes(steps_sum))
         g + 
-        geom_histogram(bins = 61, aes(fill = ..count..)) + 
+        geom_histogram(bins = 30, aes(fill = ..count..)) + 
         ggtitle("Histogram of the total number of steps taken each day") +
         theme(plot.title = element_text(hjust = 0.5))
 ```
-![histogramf-1](figure/histogramf-1.png) 
 
 ## 8.  Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 
@@ -237,7 +239,6 @@ g <- ggplot(data = Activity_monitoring_c, aes(interval, steps))
         ggtitle("Total number of steps taken in every 5-minute interval") +
         theme(plot.title = element_text(hjust = 0.5)) 
 ```
-![panel-1](figure/panel-1.png) 
 
 ### As shown there are differences in activity patterns between weekdays and weekends
 
