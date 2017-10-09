@@ -1,25 +1,159 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template.Rmd"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+## R Markdown
 
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 
-## Imputing missing values
+### Loading and preprocessing the data
 
 
+```{r activity.csv}
+activity <- read.csv("activity.csv", colClasses=c("numeric","Date","numeric"))
+str(activity)
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{ r}
+library(dplyr)
+```
+
+### What is mean total number of steps taken per day?
+
+  1. Calculate the total number of steps taken per day
+
+```{r}
+steps_per_day <- aggregate(steps ~ date, data = activity, sum, na.rm = TRUE)
+head(steps_per_day)
+```
+
+  2. If you do not understand the difference between a histogram and a barplot, research the difference between them. Make a histogram of the total number of steps taken each day
+
+Difference: a histogram is used to see the distribution of a data. The barplot is used to summarize the categorical data
+
+histogram of the total number of steps taken each day
+```{r }
+hist(steps_per_day$steps, main = "Total steps taken per day", 
+    xlab = "Steps", breaks = 16, col = "mediumpurple1")
+```
+
+  3. Calculate and report the mean and median of the total number of steps taken per day
+
+```{r}
+library(dplyr)
+
+mean_median_steps_per_day <- group_by(activity, date) %>%
+    summarise(mean = mean(steps, na.rm = TRUE),
+              median = median(steps, na.rm = TRUE))
+head(mean_median_steps_per_day)
+```
+
+### What is the average daily activity pattern
+
+  1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+  
+```{r}
+interval_steps <- group_by(activity, interval) %>%
+                  summarise(mean = mean(steps, na.rm = TRUE))
+with(interval_steps, 
+     plot(interval, mean, 
+          type = "l", 
+          xlab = "5-minute interval",
+          ylab = "Average number of steps taken", lwd= 1.8, col = "dodgerblue"))
+```
+
+
+  2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps
+  
+```{r}
+max_steps_interval <- interval_steps$interval[which.max(interval_steps$mean)]
+max_steps_interval
+```
+
+### Imputing missing values
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data
+
+  1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+  
+```{r}
+sum(is.na(activity$steps))
+```
+
+The total number of rows of missing values is 2304
+
+  2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc
+
+I am going to substitue the missing values(NA's) with mean
+  
+  3. Create a new dataset that is equal to the original dataset but with the missing data filled in
+  
+I have created a new dataframe activity2 with the missing data filled in with activity$steps
+
+```{r}
+activity2 <- activity
+activity2$steps[is.na(activity2$steps)] <- mean(na.omit(activity$steps))
+str(activity2)
+```
+
+  4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps
+  
+```{r}
+total_mean_median_day <- group_by(activity2, date) %>%
+    summarise(total_steps = sum(steps),
+              mean_steps = mean(steps),
+              median_steps = median(steps))
+head(total_mean_median_day)
+```
+
+  plot histograms of the total steps taken per day BEFORE and AFTER the filling of missing data
+  
+```{r}
+par(mfcol = c(2,1))
+
+hist(steps_per_day$steps, main = "Total steps per day BEFORE missing data filling", 
+     xlab = "Steps", breaks = 16, col = "darkorchid", ylim = c(0,15))
+
+hist(total_mean_median_day$total_steps, main = "Total steps per day AFTER missing data filling", 
+     xlab = "Steps", breaks = 16, col = "mediumorchid3")
+
+```
+
+### Are there differences in activity patterns between weekdays and weekends
+
+  1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day
+  
+```{r}
+weeks <- ifelse(weekdays(activity2$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+weeks <- as.factor(weeks)
+activity2$weeks <- weeks
+str(activity2)
+```
+
+
+  2. Make a panel plot containing a time series plot (i.e. type = 'l') of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data
+  
+```{r}
+average_steps_weeks <- group_by(activity2, weeks, interval) %>%
+                     summarise(average_steps = mean(steps))
+```
+
+  load lattice
+  
+```{r}
+library(lattice)
+```
+
+  plot histogram weekdays vs weekend
+  
+```{r}
+xyplot(average_steps ~ interval | weeks, data = average_steps_weeks, type = "l", layout = c(1,2), 
+                  xlab = "Interval", ylab = "Number of steps")
+```
