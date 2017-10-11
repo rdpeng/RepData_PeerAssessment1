@@ -74,7 +74,7 @@ medianDailySteps
 ## [1] 10765
 ```
 
-## 3 What is the average daily activity pattern?
+## 3. What is the average daily activity pattern?
 
 ### 3.1 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
@@ -181,7 +181,7 @@ medianDailyStepsImp
 #### weekdayMeans$steps <- weekdayMeans$steps/stepsPerDayAvg
 
 
-## 5 Are there differences in activity patterns between weekdays and weekends?
+## 5. Are there differences in activity patterns between weekdays and weekends?
 
 ### 5.1 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
