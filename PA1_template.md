@@ -176,11 +176,6 @@ medianDailyStepsImp
 ## [1] 11015
 ```
 
-#### NOTUSED Get the mean for each weekday as a ratio of the mean of all days - to use on the interval means for imputing
-#### stepsPerDayAvg <- mean(totalSteps$steps)
-#### weekdayMeans$steps <- weekdayMeans$steps/stepsPerDayAvg
-
-
 ## 5. Are there differences in activity patterns between weekdays and weekends?
 
 ### 5.1 Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
