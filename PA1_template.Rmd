@@ -89,7 +89,8 @@ totalSteps$dayOfWeek <- weekdays(as.Date(totalSteps$date))
 weekdayMeans <- aggregate(totalSteps[,2], by = list(totalSteps$dayOfWeek), mean)
 colnames(weekdayMeans) <- c("dayOfWeek", "steps")
 weekdayMeans$dayOfWeek <- as.factor(weekdayMeans$dayOfWeek)
-weekdayMeans$dayOfWeek <- factor(weekdayMeans$dayOfWeek, levels=c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))
+weekdayMeans$dayOfWeek <- factor(weekdayMeans$dayOfWeek, levels=c("Monday", "Tuesday", "Wednesday", 
+                                                                  "Thursday", "Friday", "Saturday", "Sunday"))
 par(cex=0.8)
 plot(weekdayMeans$dayOfWeek, weekdayMeans$steps)
 ```
@@ -97,7 +98,9 @@ plot(weekdayMeans$dayOfWeek, weekdayMeans$steps)
 The plot shows a significant difference between the days of the week, so we will use day Of week as well as intervals to impute the data
 ```{r}
 newsteps$dayOfWeek <- weekdays(as.Date(newsteps$date))
-intervalDayMeans <- aggregate(newsteps[,1], by = list(dayOfWeek = newsteps$dayOfWeek, interval = newsteps$interval), mean)
+intervalDayMeans <- aggregate(newsteps[,1], 
+                              by = list(dayOfWeek = newsteps$dayOfWeek, interval = newsteps$interval), 
+                              mean)
 ```
 
 #### 4.3 Create a new dataset that is equal to the original dataset but with the missing data filled in.
