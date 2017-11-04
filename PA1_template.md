@@ -1,14 +1,7 @@
----
-title: "Reproducible Research Project 1"
-date: "November 3, 2017"
-output: 
-  html_document: 
-    keep_md: yes
----
+# Reproducible Research Project 1
+November 3, 2017  
 
-```{r setup, include=FALSE}
-    knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Data Collection Overview
    Fit bit device collects data at 5 minute intervals through out the day. The data consists of two     months of data from an anonymous individual collected during the months of October and November,     2012 and include the number of steps taken in 5 minute intervals each day. Data is saved in          activity.csv. 
@@ -17,7 +10,8 @@ output:
    1. Load the data
    2. Process/transform the data into a format suitable for analysis
 
-```{r}
+
+```r
       activity <- read.csv("activity.csv")
       activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
 ```
@@ -27,18 +21,34 @@ output:
    2. Make a histogram of the total number of steps taken each day
    3. Calculate and report the mean and median of the total number of steps taken per day
 
-```{r}
+
+```r
     wrkActivity <- activity[!is.na(activity$steps), ]
     stepsPerDay <- aggregate(wrkActivity$steps ~ wrkActivity$date, FUN = sum)
     colnames(stepsPerDay) <- c("date", "steps")
     
     hist(stepsPerDay$steps, main = "Total Number of Steps Each Day", 
          xlab ="Steps", col="green")
-    
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+
+```r
     stepsPerDayMean <- mean(stepsPerDay$steps)
     stepsPerDayMean
+```
+
+```
+## [1] 10766.19
+```
+
+```r
     stepsPerDayMedian <- median(stepsPerDay$steps)
     stepsPerDayMedian
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
@@ -47,15 +57,24 @@ output:
    2. Which 5-minute interval, on average across all the days in the dataset, contains the 
       maximum number of steps?
 
-```{r}
+
+```r
     avgStepsPerInterval <- aggregate(wrkActivity$steps ~ wrkActivity$interval, FUN = mean)
     colnames(avgStepsPerInterval) <- c("interval", "steps")
     
     plot(avgStepsPerInterval$interval, avgStepsPerInterval$steps, type="l", 
          xlab="Interval", ylab="Steps", main="Average Number of Steps Taken")
-    
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+
+```r
     maxInterval <-avgStepsPerInterval[which.max(avgStepsPerInterval$steps),1]
     maxInterval
+```
+
+```
+## [1] 835
 ```
 
 ## Imputing missing values
@@ -71,9 +90,16 @@ output:
    4. Make a histogram of the total number of steps taken each day and Calculate and report 
       the mean and median total number of steps taken per day. 
 
-```{r}
-      nrow(activity[is.na(activity$steps),])
 
+```r
+      nrow(activity[is.na(activity$steps),])
+```
+
+```
+## [1] 2304
+```
+
+```r
       meanIntervalSteps <- mean(avgStepsPerInterval$steps)
       
       wrkActivity <- activity
@@ -85,12 +111,26 @@ output:
       
       hist(stepsPerDay$steps, main = "Total Number of Steps Each Day", 
          xlab ="Steps", col="blue")
-      
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
       stepsPerDayMean <- mean(stepsPerDay$steps)
       stepsPerDayMean
+```
+
+```
+## [1] 10766.19
+```
+
+```r
       stepsPerDayMedian <- median(stepsPerDay$steps)
       stepsPerDayMedian
-      
+```
+
+```
+## [1] 10766.19
 ```
       No significant change since the average was used to fill in the NAs
   
@@ -99,7 +139,8 @@ output:
 
 2. Make a panel plot containing a time series plot (i.e. ) of the 5-minute interval (x-axis) and the    average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
-```{r}
+
+```r
       wrkActivity$DayOfWk <- factor(format(wrkActivity$date, "%A"))
       levels(wrkActivity$DayOfWk) <- list(weekday=c("Monday", "Tuesday", "Wednesday", 
                                                     "Thursday","Friday"), weekend = c("Saturday",
@@ -107,9 +148,14 @@ output:
       
       with(wrkActivity[wrkActivity$DayOfWk == "weekday",],
            plot(aggregate(steps ~ interval, FUN = mean), type = "l", main = "Weekdays"))
-      
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
       with(wrkActivity[wrkActivity$DayOfWk == "weekend",], 
            plot(aggregate(steps ~ interval, FUN = mean), type = "l", main = "Weekends")) 
-      
-```					
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-2.png)<!-- -->
       
