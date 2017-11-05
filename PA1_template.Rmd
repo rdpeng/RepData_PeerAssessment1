@@ -1,9 +1,10 @@
 ---
 title: "Reproducible Research Project 1"
 date: "November 3, 2017"
+
 output: 
   html_document: 
-    keep_md: yes
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
