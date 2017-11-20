@@ -3,6 +3,7 @@ title: "Reproducible Research Project Assignment 1"
 author: "Mark De La Mater"
 date: "November 19, 2017"
 output: html_document
+keep_md: TRUE
 ---
 
 ### Loading and Preparing the Data
@@ -14,7 +15,7 @@ require(ggplot2)
 home <- getwd()
 
 ## Set the path and source file name and read the csv data in as a date frame
-source.directory <- "C:/Users/Mark De La Mater/Desktop/RR_Assignments/RR_Wk2"
+source.directory <- "C:/Users/Mark De La Mater/Documents/GitHub/RepData_PeerAssessment1"
 source.file <- "activity.csv"
 setwd(source.directory)
 df <- read.csv(source.file)
