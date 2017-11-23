@@ -7,7 +7,8 @@ keep_md: TRUE
 ---
 
 ### Loading and Preparing the Data
-```{r Data_Preparation, message = FALSE, warning= FALSE}
+
+```r
 require(dplyr)
 require(ggplot2)
 
@@ -35,7 +36,8 @@ df <- mutate(df, data.impute.key = paste(weekday, "-", interval_fixed, sep = "")
 ```
 ### What is the mean total number of steps taken per day?
 #### Here we are ignoring missing data
-```{r Total Steps per Day}
+
+```r
 ## Here we group the data by date and then generate a historgam
 df_grp <- group_by(df, date)
 df_grp_sum <- summarize(df_grp,
@@ -50,21 +52,33 @@ g <- g + geom_histogram(binwidth = 2000)
 g <- g + ggtitle("Total Steps Taken per Day - Without Imputing Missing Values")
 g <- g + xlab("Total Steps per Day")
 print(g)
-
 ```
 
+<img src="PA1_template_files/figure-html/Total Steps per Day-1.png" width="672" />
+
 #### Mean Number of Steps Taken per Day - Ignoring Missing Data
-```{r}
+
+```r
 print(mean(df_grp_sum$steps.total))
 ```
 
+```
+## [1] 9354.23
+```
+
 #### Median Number of Steps Taken per Day - Ignoring Missing Data
-```{r}
+
+```r
 print(median(df_grp_sum$steps.total))
 ```
 
+```
+## [1] 10395
+```
+
 ### What is the average daily activity pattern ... across all days - Ignoring Missing Data?
-```{r Average Daily Activity}
+
+```r
 ## Group the data by interval and the calculated the average steps
 df_grp2 <- group_by(df, interval)
 df_grp2_sum <- summarize(df_grp2,
@@ -79,26 +93,39 @@ g2 <- g2 + ylab("Average Number of Steps per 5 Minute Interval")
 print(g2)
 ```
 
+<img src="PA1_template_files/figure-html/Average Daily Activity-1.png" width="672" />
+
 
 #### The 5-minute Interval with the highest average number of steps
-```{r}
+
+```r
 ## The Interval with the Highest Average Steps across all days
 print(interval.with.max.steps <- filter(df_grp2_sum, steps.average == max(steps.average))$interval)
+```
+
+```
+## [1] 835
 ```
 
 ### Imputing missing values
 
 #### The total number of observations with missing values
-```{r}
+
+```r
 ## Total Rows in Dataset with Missing Data
 print(sum(df$steps.missing))
+```
+
+```
+## [1] 2304
 ```
 
 #### A strategy for filling in missing data values
 
 I decided to calculate the mean number of steps by Week Day and Interval.  I would then map missing data based on the Week Day and Interval of the observation.  In the Loading and Preparing Data section, a relational key column named data.impute.key was added to the data frame.  The key value = weekday-interval, where interval has been formatted as having 4 digits with leading zeros.
 
-```{r Imputing Missing Data}
+
+```r
 ## Calculate the average number of steps by weekday and interval
 df_grp3 <- group_by(df, data.impute.key)
 df_grp3_sum <- summarize(df_grp3,
@@ -111,7 +138,8 @@ imputed.df <- mutate(imputed.df, steps.imputed = ifelse(steps.missing == TRUE, s
 ```
 
 #### Generate a new histogram of total number of steps taken each day using the dataset that now includes imputed values for any missing data
-```{r}
+
+```r
 ## now generate a new histogram with the data frame that includes the imputed values
 df_grp4 <- group_by(imputed.df, date)
 df_grp4_sum <- summarize(df_grp4,
@@ -135,24 +163,46 @@ g4 <- g4 + xlab("Total Steps per Day (with Imputed Steps)")
 print(g4)
 ```
 
+<img src="PA1_template_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+
 #### Mean Number of Steps Taken per Day - Including Imputed Values
-```{r}
+
+```r
 print(mean(df_grp4_sum$steps.imputed.total))
 ```
 
+```
+## [1] 10821.21
+```
+
 #### Median Number of Steps Taken per Day - Including Imputed Values
-```{r}
+
+```r
 print(median(df_grp4_sum$steps.imputed.total))
 ```
 
+```
+## [1] 11015
+```
+
 #### Difference in mean number of steps per day for data with Imputed Values vs. data with only Recorded Values
-```{r}
+
+```r
 print(mean(df_grp4_sum$steps.imputed.total) - mean(df_grp_sum$steps.total))
 ```
 
+```
+## [1] 1466.98
+```
+
 #### Difference in median number of steps per day for data with Imputed Values vs. data with only Recorded Values
-```{r}
+
+```r
 print(median(df_grp4_sum$steps.imputed.total) - median(df_grp_sum$steps.total))
+```
+
+```
+## [1] 620
 ```
 
 #### Impact of imputing missing data on the esimates of total daily number of steps
@@ -162,7 +212,8 @@ the observations were missing.  In total, there were 8 days with missing observa
 obervations.  All of the other weekdays had at least one occurance of missing observations.
 This is shown in the bar chart below
 
-```{r}
+
+```r
 g4a <- ggplot(data = df_grp4_sum)
 g4a <- g4a + geom_bar(
                       mapping = aes(x = date, y = steps.delta, fill = weekday),
@@ -173,17 +224,25 @@ g4a <- g4a + ggtitle("Difference Between Total Imputed Steps vs. Total Recored S
 print(g4a)
 ```
 
+<img src="PA1_template_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+
 
 As the result of imputing missing data, the estimates of total daily number of steps increased by ...
-```{r}
+
+```r
 ## Difference in total number of steps taken
 print(sum(df_grp4_sum$steps.delta))
+```
+
+```
+## [1] 89485.79
 ```
 
 ### Are there differences in activty patterns between weekdays and weekends?
 #### Here we will revert back to the original dataset that does not inlcude imputed values for missing data
 
-```{r}
+
+```r
 ## here we group the original dataset by day.type and interval
 df_grp5 <- group_by(df, day.type, interval)
 df_grp5_sum <- summarize(df_grp5,
@@ -198,6 +257,8 @@ g5 <- g5 + ggtitle("Average Number of Steps Taken per Interval by Type of Day \n
 g5 <- g5 + ylab("Average Number of Steps per 5 Minute Interval")
 print(g5)
 ```
+
+<img src="PA1_template_files/figure-html/unnamed-chunk-12-1.png" width="672" />
 
 
 ####It does look like activity starts and ends earlier on weekdays than on weekends.
