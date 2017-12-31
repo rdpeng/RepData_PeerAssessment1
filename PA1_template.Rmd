@@ -1,9 +1,12 @@
 ---
 title: "Activity Monitor Analysis"
-output: html_document
+output:
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
+fig.path='figure/'
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
