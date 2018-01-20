@@ -1,0 +1,162 @@
+#Reproducible Research - Peer Assesment 1 
+## Ömer Zeybek 
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(Hmisc)
+library(missForest)
+library(dplyr)
+```
+
+##Summary 
+
+This assignment covers wearable technology data containing date, interval and steps per interval data. By following the instructions we will try to describe data.
+
+###Part 1 : Loading and Processing the Data 
+
+In this part of the assignment we will load activity data toour R Session. To do this we need to call a read.csv statement.   
+
+```{r}
+mydata<-read.csv("activity.csv",sep=",",na.string="NA",header=TRUE)
+```
+
+In order to make a quick assesment on our data we can use summary function and explore frecuency distribution of our series. Frecuency distribution of our three variables shows that "steps" variable includes _**2304**_ missing values. On the other hand nearly half of the sample shows nearly "0" steps 
+
+```{r}
+summary(mydata,na.rm=TRUE)
+```
+
+As we will calculate number of total steps done per day, a summarisation is needed in steps variables. However in order to make this operation our variable should be in numeric form.
+
+```{r}
+str(mydata,na.rm=TRUE)
+```
+
+###Part 2 - What is mean total number of steps taken per day?
+
+First we have to find the total numner of steps taken per day, by summarizing raw data. To perform this calculation, we will use the __aggregate()__ function.  
+
+```{r}
+sum_mydata<-aggregate(steps ~ date,mydata,sum)
+sum_mydata$date<-as.Date(sum_mydata$date,"%Y-%m-%d")
+min(sum_mydata$date)
+max(sum_mydata$date)
+```
+
+From the graph bellow you can see distribution of number of steps per day from 02-10-2012 to 29-11-2012. 
+
+```{r}
+ggplot(sum_mydata, aes(steps), color=I("Red")) + geom_histogram(bins=10,boundary=3)+ylab("Total Number of  Steps per Day")+xlab("Days")
+```
+
+and mean total steps per hour is equal to 
+
+```{r}
+mean(sum_mydata$steps,na.rm=TRUE)
+```
+
+finally median of total steps per hour is 
+
+```{r}
+median(sum_mydata$steps)
+```
+
+###Part 3 Time series plot of the average number of steps taken
+
+Now we will look into daily activity pattern. To do that we will sketch graph of average amount of steps taken by 5 minute intervals. First we have to calculate daily average steps taken by again using __aggregate__ function.
+
+```{r}
+avg_data<-aggregate(steps ~ interval,data=mydata,FUN=mean,na.rm=TRUE)
+```
+
+After calculations we can plot the graph as follows. 
+
+```{r}
+ggplot(avg_data,aes(interval,steps))+geom_line()+xlab("5-Minute Intervals")+ylab("Average Number of Steps per Interval")
+```
+
+As it can e  seen from the graph the highest number of average steps is observed between 750th and 1000th interval. Bu if we want to see the exact interval which corresponds to highest number of steps taken, the following expression can be used,
+
+```{r}
+ avg_data[which.max(avg_data$steps),]
+```
+
+__835th__ interval is max and equals to __206.16__
+
+###Part 4 Imputing Missing Varriables
+
+From the summary table we produced at the begining of the exercise, we know that there are several number on missing values in __steps__ variable. In order to impute them first we have to be sure which observations are missing.
+
+```{r}
+print("Number of Missings in Steps")
+sum(is.na(mydata$steps))
+
+print("Number of Missings in Date")
+sum(is.na(mydata$date))
+
+print("Number of Missings in Interval")
+sum(is.na(mydata$interval))
+
+```
+
+There are __2304__ empty cells in Steps data. To impute missing values with __median__ value of the steps variable, we will use Hmisc package 
+
+```{r}
+mydata$steps_imputed<-impute(mydata$steps,mean)
+```
+
+After the treatment we can check number of missings in new imputed table followingly 
+
+```{r}
+print("Number of Missings in Steps")
+sum(is.na(mydata$steps_imputed))
+
+print("Number of Missings in Date")
+sum(is.na(mydata$date))
+
+print("Number of Missings in Interval")
+sum(is.na(mydata$interval))
+```
+Now we can observe histogram, mean and median values of the data again and inspect effects of imputation procedure on these statistics
+
+```{r}
+sum_mydata_imp<-aggregate(steps_imputed ~ date,mydata,sum)
+
+ggplot(sum_mydata_imp, aes(steps_imputed), color=I("Red")) + geom_histogram(bins=10,boundary=3)+ylab("Total Number of  Steps per Day")+xlab("Days")
+
+```
+
+```{r}
+mean(sum_mydata_imp$steps,na.rm=TRUE)
+median(sum_mydata_imp$steps,na.rm=TRUE)
+
+```
+
+After imputation of steps data, we can see that median and mean of data is exactly the same. 
+
+###Part 5 Are there differences in activity patterns between weekdays and weekends?
+
+To perform this exercise first we must create a factor variable which labels day of the week corresponds to specific dates. 
+
+```{r}
+mydata<-mydata[, !names(mydata)==c("steps","dayofweek")] #Here after, I will move with imputed steps data, I don't need raw data. 
+mydata$weekdays<-as.factor(weekdays(as.Date(sum_mydata_imp$date)))
+levels(mydata$weekdays) <- list(weekday = c("Monday", "Tuesday",
+                                             "Wednesday", 
+                                             "Thursday", "Friday"),
+                                 weekend = c("Saturday", "Sunday"))
+levels(mydata$weekdays)
+
+```
+
+Now we will calculate new averages according to weekday or weekend levels. 
+
+```{r}
+new.average<-aggregate(mydata$steps_imputed,list(interval=mydata$interval,weekdays=mydata$weekdays),FUN=mean)
+
+ggplot(new.average,aes(interval,x))+geom_line()+xlab("5-Minute Intervals")+ylab("Average Number of Steps per Interval")+facet_grid(weekdays~.)
+
+```
+
+
