@@ -1,25 +1,83 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template.Rmd"
+output: html_document
 ---
 
 
-## Loading and preprocessing the data
+```{r echo = TRUE}
+    #1. Loding the file in the variable data
+    dataset<- read.csv("activity.csv")
+
+```
 
 
+```{r echo = TRUE}
+    #2. Histogram of the total number of steps taken each day
+    stepsperday <- aggregate(dataset$steps, list(dataset$date), FUN= sum)
 
-## What is mean total number of steps taken per day?
+    #creating the Histogram
+    hist(stepsperday$x, xlab = "Steps per day", main = "Frequency of steps per day")
+
+    #mean of steps
+    mean(stepsperday$x, na.rm = TRUE)
+
+    #median of steps
+    median(stepsperday$x, na.rm = TRUE)
+```
+
+```{r echo=TRUE}
+#3. Time series plot of the average number of steps taken
+ds <- dataset[!is.na(dataset$steps),]
+meanSteps <-with(ds, tapply(steps, ds$interval, mean))
+int <- levels(as.factor(ds$interval))
+plot(int, meanSteps, type = "l", ylim = c(0,200))
+
+#Which 5-minute interval, on average across all the days in the
+#dataset, contains the maximum number of steps?
+df<-data.frame(meanSteps, int)
+df[df$meanSteps==max(df$meanSteps),]
+```
+
+```{r echo=TRUE}
+#4. Imputing missing values
+missing <- is.na(dataset$steps)
+# creating a copy of the dataset
+copyData <- dataset
+copyData$steps <- ifelse(is.na(copyData$steps),
+                         df$meanSteps[match(copyData$interval, df$int)],
+                         copyData$steps)
+
+stepsnotnull <- aggregate(copyData$steps, list(copyData$date), FUN= sum)
+hist(stepsnotnull$x, xlab = "Steps per day", 
+     main = "Frequency of steps per day")
 
 
+#mean of steps
+mean(stepsnotnull$x)
 
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
+#median of steps
+median(stepsnotnull$x)
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+```
+
+
+```{r echo=TRUE}
+#5. Differences in activity patterns between weekdays and weekends
+
+days <- weekdays(as.Date(copyData$date))
+days <- ifelse(grepl("Saturday|Sunday", days), "Weekend", "WeekDay")
+days <- as.factor(days)
+copyData <- cbind(copyData, days)
+
+#installing necessary packages
+library("ggplot2", lib.loc="~/R/win-library/3.3")
+library("dplyr", lib.loc="~/R/win-library/3.3")
+
+intbydaytype <- copyData %>% group_by(interval, days) %>%
+    summarise(steps = mean(steps))
+ggplot(intbydaytype, aes(x=interval, y=steps, color= days))+
+     geom_line() + facet_wrap(~days,nrow = 2, ncol = 1)
+
+```
+
