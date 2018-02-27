@@ -5,21 +5,85 @@ output:
     keep_md: true
 ---
 
+Setting Global option to set Echo ==True
+
+```{r}
+options(echo = TRUE)
+```
 
 ## Loading and preprocessing the data
+```{r}
+getwd()
+unzip("activity.zip")
+activityData <- read.csv("activity.csv")
+head(activityData)
+```
 
 
 
 ## What is mean total number of steps taken per day?
+```{r}
+library(dplyr)
+library(ggplot2)
+activityDataWithoutNA<- na.omit(activityData)
+##summarise(group_by(activityDataWithoutNA,date),sum(steps))
+totalStepsPerday<- aggregate(steps ~ date,data = activityDataWithoutNA,FUN = sum)
+hist(totalStepsPerday$steps,xlab = "Steps taken each day",ylab = "Interval",main = "Total number of steps taken each day",col = "orange",breaks = 50)
+meanTotalSteps <- mean(totalStepsPerday$steps)
+meanTotalSteps
+medianTotalSteps <- median(totalStepsPerday$steps)
+medianTotalSteps
 
-
+ 
+```
 
 ## What is the average daily activity pattern?
+```{r}
+avgDailyActivityPattern<- aggregate(steps~interval,data =activityDataWithoutNA,FUN = mean)
+plot(avgDailyActivityPattern$interval,avgDailyActivityPattern$step,type="l",xlab = " 5 min Interval",ylab = "Average number of steps taken")
+
+maxStepsInterval<- avgDailyActivityPattern$interval[which.max(avgDailyActivityPattern$steps)]
+maxStepsInterval
+```
 
 
 
 ## Imputing missing values
+```{r}
+library(plyr)
+numberOfRowswithNA <- sum(is.na(activityData$steps))
+numberOfRowswithNA
+
+activityData2 <- activityData
+NAinData<- is.na(activityData2$steps)
+avg_interval <- tapply(activityData2$steps, activityData2$interval, mean, na.rm=TRUE, simplify = TRUE)
+activityData2$steps[NAinData]<- avg_interval[as.character(activityData2$interval[NAinData])]
+sum(is.na(activityData2))
 
 
+totalStepsPerday2<- aggregate(steps ~ date,data = activityData2,FUN = sum)
+totalStepsPerday2
+hist(totalStepsPerday2$steps,xlab = "Steps taken each day",ylab = "Interval",main = "Total number of steps taken each day",col = "orange",breaks = 50)
+meanTotalSteps2 <- mean(totalStepsPerday2$steps)
+meanTotalSteps2
+medianTotalSteps2 <- median(totalStepsPerday2$steps)
+medianTotalSteps2
 
+summary(activityData)
+summary(activityData2)
+
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+activityData2<- activityData2%>%
+        mutate(typeofday= ifelse(weekdays(as.Date(activityData2$date))=="Saturday" | weekdays(as.Date(activityData2$date))=="Sunday", "Weekend", "Weekday"))
+head(activityData2)
+
+avgStepperInterval<- aggregate(steps ~ interval, data = activityData2, FUN = mean, na.rm = TRUE)
+head(avgStepperInterval)
+
+ggplot(activityData2, aes(x =interval , y=steps, color=typeofday)) + geom_line() +
+       labs(title = "Ave Daily Steps (type of day)", x = "Interval", y = "Total Number of Steps") +
+       facet_wrap(~ typeofday, ncol = 1, nrow=2)
+```
+

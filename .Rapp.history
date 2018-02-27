@@ -1,0 +1,247 @@
+flips
+sum(flips)
+?rbinom
+rbinom(1,size=100,prob=0.7)
+flips2 <- rbinom(c(0,1),size=100,prob=c(0.3,0.7))
+flips2 <- rbinom(n=100,size=1,prob=0.7)
+flips2
+sum(flips2)
+?rnorm
+rnorm(10)
+rnorm(10,sd=25,mean=100)
+rpois(5,mean=10)
+?rpois
+rpois(5,mean=10)
+rpois(5)
+rpois(5,lamda=10)
+rpois(5,lambda=10)
+replicate(100,rpois(5,10))
+my_pois<-replicate(100,rpois(5,10))
+my_pois
+cm<-colMeans(my_pois)
+cm
+hist(cm)
+swirl()
+data(cars)
+?cars
+head(cars)
+plot(cars)
+?plot
+plot(x=cars$speed,y=cars$dist)
+plot(y=cars$speed,x=cars$dist)
+?plot
+plot(y=cars$speed,x=cars$dist,xlab="speed")
+plot(y=cars$speed,x=cars$dist,xlab="Speed")
+plot(x=cars$speed,y=cars$dist,xlab="Speed")
+plot(x=cars$speed,y=cars$dist,xlab="Speed",ylab="Stooping Distance")
+plot(x=cars$speed,y=cars$dist,ylab="Stooping Distance")
+plot(x = cars$speed, y = cars$dist, ylab = "Stopping Distance")
+plot(x = cars$speed, y = cars$dist,xlab="Speed", ylab = "Stopping Distance")
+plot(cars,main="My Plot")
+?plot
+plot(cars,sub="My Plot subtitle")
+plot(cars,sub= "My Plot Subtitle")
+?par
+plot(cars,col=2)
+plot(cars,xlim=c(10,15))
+plot(cars,pch=2)
+data(mtcars)
+?boxplot
+boxplot(mpg~cyl,mtcars)
+hist(mtcars$mpg)
+swirl()
+library(swirl)
+swirl()
+install_from_swirl("Getting and Cleaning Data")
+swirl()
+1
+swirl()
+?read.csv
+mydf <- read.csv(path2csv,stringAsFactors= FALSE)
+mydf <- read.csv(file=path2csv,stringAsFactors= FALSE)
+mydf <- read.csv(path2csv,stringsAsFactors = FALSE)
+dim(mydf)
+head(mydf)
+library(dplyr)
+packageVersion("dplyr")
+cran <-tbl_df(mydf)
+rm("mydf")
+cran
+?select
+select(cran,ip_id,package,country)
+5:20
+select(cran, r_arch:country)
+select(cran, country:r_arch)
+cran
+select(cran,-time)
+select(cran,-5:20)
+select(cran,-X:size)
+select(cran,-(X:size))
+select(cran,-(5:20))
+select(cran,-5:20)
+info()
+skip()
+select(cran,-(5:20))
+-(5:20)
+select(cran,-(X:size))
+filter(cran, package=="swirl")
+filter(cran, r_version == "3.1.1", country == "US")
+?Comparison
+filter(cran, r_version <= "3.0.2", country == "India")
+v
+filter(cran, r_version <= "3.0.2", country == "IN")
+filter(cran, country == "US" | country == "IN")
+filter(cran,size>100500 && r_os == "linux-gnu")
+filter(cran,size>100500,r_os == "linux-gnu")
+is.na(c(3,5,NA,10))
+!is.na(c(3,5,NA,10))
+filter(cran,!is.na(r_version))
+cran2 <- select(cran,size:ip_id)
+arrange(cran2,ip_id)
+arrange(cran2,desc(ip_id))
+arrange(cran2, package, ip_id)
+arrange(cran2,country (ascending),r_version (descending),ip_id (ascending))
+skip()
+cran3
+mutate(cran3, size_mb = size / 2^20)
+mutate(cran3, size_gb = size_mb / 2^20)
+mutate(cran3, size_gb = size_mb / 2^10)
+skip()
+library(dplyr)
+cran <- tbl_df(mydf)
+rm("mydf")
+cran
+?group_by()
+?group_by
+by_package <- group_by(cran,package)
+by_package
+summarize(cran,mean(size))
+summarize(cran,mean(size),by_package)
+summarize(mean(size),by_package)
+?summarize
+summarize(mean(size),by=package)
+summarize(cran,mean(size),by=package)
+skip()
+?n
+submit()
+pack_sum
+quantile(pack_sum$count,probs=0.99)
+top_counts <- filter(pack_sum,count >679)
+top_counts
+View(top_counts)
+skip()
+swirl()
+View(top_counts)
+install.packages("Xuartz")
+skip()
+swirl()
+top_counts_sorted <- arrange(top_counts,count)
+top_counts_sorted <- arrange(top_counts,desc(count)
+s
+skip()
+exit()
+skip()
+swirl()
+library(tidyr)
+students
+?gather
+gather(students,sex,count,-grade)
+students2
+res<-gather(students2,sex_class,count,-grade)
+res
+?seperate()
+?separate
+separate(res,sex_class,sex,class)
+separate(data=res,col=sex_class,into=c("sex","class"))
+submit()
+skip()
+students3
+submit()
+?spread
+submit()
+skip()
+?spread
+library(readr)
+parse_number("class5")
+submit()
+students4
+submit()
+passed
+failed
+mutate(passed,status="passed")
+passed <- passed %>% mutate(status = "passed")
+failed <- failed %>% mutate(status = "failed")
+bind_rows(passed,failed)
+sat
+submit()
+?select
+submit()
+skip()
+submit()
+Sys.getlocale("LC_TIME")
+library(lubridate)
+help(package=lubridate)
+this_day <- today()
+this_day
+year(this_day)
+wday(this_day)
+wday(this_day,label=TRUE)
+this_moment <- now()
+this_moment
+hour(this_moment)
+ymd("1989-05-17")
+my_date <-ymd("1989-05-17")
+my_
+my_date
+class(my_date)
+ymd("1989 May 17")
+mdy("March 12,1975")
+mdy("March 12, 1975")
+dmy(25081985)
+ymd("192012")
+ymd("//192012")
+ymd("1920/1/2")
+dt1
+ymd_hms(dt1)
+hms("03:22:14")
+dt2
+ymd(dt2)
+update(this.moment,hours = 8,minutes=34,seconds=55)
+skip()
+this_moment
+this_moment <- now()
+skip()
+this_moment
+nyc <- now("America/New_york")
+skip()
+nyc
+nyc + days(2)
+depart <- nyc + days(2)
+depart
+update(depart,hours=17,minutes=34)
+depart <- update(depart,hours=17,minutes=34)
+depart
+arrive <- depart + hours(15) + minutes(50)
+?with_tz()
+?with_tz
+arrive <- with_tz(arrive,timezone="Asia/Hong_Kong")
+arrive <- with_tz(arrive,"Asia/Hong_Kong")
+arrive
+mdy("June 17, 2008")
+last_time<-mdy("June 17, 2008",tz="Singapore")
+last_time
+?interval
+interval(last_time,arrive)
+howlong <- interval(last_time,arrive)
+skip()
+as.period(how_long)
+stopwatch()
+install_from_swirl("Exploratory Data Analysis")
+swirl()
+library(swirl)
+swirl()
+getwd()
+setwd("/Users/golu/Documents/GitHub/RepData_PeerAssessment1")
+getwd()
+ls()
+list.files()
