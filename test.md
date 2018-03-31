@@ -408,7 +408,7 @@ ggplot(imputeInt5min, aes(x =interval , y=meanIntStep, color=day)) +
        theme(strip.background =element_rect(fill="yellow")) +
        theme(strip.text = element_text(colour = 'black'))
 ```
-
+![](Coursera_DataScience_5_ReproducibleResearch/instructions_fig/sample_panelplot.png)
 ![](test_files/figure-html/weekday vs weekend-1.png)<!-- -->
 
 
