@@ -1,0 +1,173 @@
+---
+author: "Mario Martinez"
+date: "April 16, 2018"
+
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Loading and preprocessing the data
+
+Data is in same folder as Rmd file  
+Changed name of data file to activityData.csv
+
+```{r loading}
+df <- read.csv('activityData.csv')
+head(df)
+tail(df)
+dim(df)
+
+```
+
+So we have about 17500 observations to go through
+
+## What is mean total number of steps taken per day?
+For our first question, let's just analyze the rows that have values to get an answer for the mean.
+
+```{r removeNA}
+dfNoNA <- df[complete.cases(df),]
+dim(dfNoNA)
+
+```
+
+So we have about 2000 rows with NA, surprising for the length of data available to us.  
+Without these NA's, we can now get the average daily steps easily.
+
+```{r avg daily steps}
+
+dailySteps <- tapply(dfNoNA$steps, dfNoNA$date, sum)
+mean(dailySteps)
+median(dailySteps)
+
+```
+
+But we get an NA value for each!  
+
+This happens because wew still have some NA values as seen below
+
+```{r remove dailySteps NA}
+
+dailySteps[is.na(dailySteps)==TRUE]
+
+```
+
+These dates aren't in our df with NA values removed, so let's remove them here too and try getting our mean and median again
+
+```{r dailySteps mean and median no NA}
+dailySteps <- dailySteps[is.na(dailySteps)==FALSE]
+mean(dailySteps)
+median(dailySteps)
+
+```
+
+Now that we have our mean and median, let's get a histogram of the number of steps per day.
+
+```{r hist daily steps}
+hist(dailySteps)
+
+```
+
+## What is the average daily activity pattern?
+
+For the average daily activity pattern, there are two ways we can answer this question:  
+
+- The first is by making a plot of the avg daily steps throughout the timeline of the data.
+- The second is by getting the average number of steps by interval and plotting out an 'average day'  
+
+Let's go ahead and do the second one for now, as that's what's required by our project.  
+
+```{r plotting avg steps by time interval}
+
+intervalMeans <- tapply(dfNoNA$steps, dfNoNA$interval, mean)
+meanTS <- ts(intervalMeans, start=c(1), end=c(288), frequency=1)
+
+intervalLevels <- levels(as.factor(dfNoNA$interval))
+plot(intervalLevels, intervalMeans, type='l', ylim = c(0, 200))
+
+```
+And the max average steps occurs at :
+
+```{r max average steps interval}
+
+which.max(meanTS)
+
+```
+
+and that time interval corresponds with the 1:55 - 2:00 P.M interval  
+## Imputing missing values
+
+First let's replace the NA's of each time interval with the mean for that interval
+
+```{r replacing NA with interval means}
+
+dfReplaceNA <- df
+dfReplaceNA$steps <- ifelse(is.na(dfReplaceNA$steps), intervalMeans, dfReplaceNA$steps)
+sum(is.na(dfReplaceNA))
+```
+
+
+Now let's get the histogram of each day's steps with all NA's replaced 
+
+```{r histogram by day}
+
+newDailySteps <- tapply(dfReplaceNA$steps, dfReplaceNA$date, sum);
+
+hist(newDailySteps)
+```
+
+And let's get the new mean and median too
+
+```{r new mean and median}
+
+mean(newDailySteps)
+median(newDailySteps)
+```
+
+The mean didn't change but the median became the mean, which makes sense because we replaced null values with the mean, right at the center.  
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+First let's add a column for day of the week
+
+```{r adding weekday col}
+
+dfReplaceNA['weekday'] <- weekdays(as.Date(as.character(dfReplaceNA$date), '%Y-%m-%d'))
+
+head(dfReplaceNA)
+```
+
+Now let's get a data frame with the weekdays, a dataframe with weekend days and get the 5 min interval means for each and plot them
+
+```{r weekend and weekday dfs}
+
+weekendDF <- subset(dfReplaceNA, weekday %in% c('Saturday', 'Sunday'))
+
+weekdayDF <- subset(dfReplaceNA, weekday %in% c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))
+
+```
+
+
+```{r  new interval means and plotting}
+
+weekdayIntervalMeans <- tapply(weekdayDF$steps, weekdayDF$interval, mean)
+weekdayMeanTS <- ts(weekdayIntervalMeans, start=c(1), end=c(288), frequency=1)
+
+intervalLevels <- levels(as.factor(weekdayDF$interval))
+plot(intervalLevels, weekdayIntervalMeans, type='l')
+
+weekendIntervalMeans <- tapply(weekendDF$steps, weekendDF$interval, mean)
+weekendMeanTS <- ts(weekendIntervalMeans, start=c(1), end=c(288), frequency=1)
+
+intervalLevels <- levels(as.factor(weekendDF$interval))
+plot(intervalLevels, weekendIntervalMeans, type='l')
+
+```
+
+
