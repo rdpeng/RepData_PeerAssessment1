@@ -4,22 +4,172 @@ output:
   html_document:
     keep_md: true
 ---
+global seetings
 
-
+```{r setoptions, echo = TRUE }
+```
+Load R package libraries required to answer the questions in the project.
+```{r loadRpackages}
+library(dplyr)
+library(Hmisc)
+library(ggplot2)
+```
 ## Loading and preprocessing the data
+Load the raw data and process/transform the data into a format suitable to calculate
+the total number of steps taken per day - NAs are not imputed from the original data
+ad = activity data (steps)
+ads = activity data (steps) sum over all days
+```{r totalnumberofsteps}
 
-
-
+ad <- read.table("activity.csv",sep = ",", header = TRUE)
+ad1 <- split(ad, ad$date)
+ad2 <- split(ad, ad$interval)
+ads <- sapply(ad1, function(x) {colSums(x["steps"])})
+ads <- as.data.frame(ads)
+names(ads) <- c("steps")
+rownames(ads) <- c(1:61)
+hist(ads$steps, col = "green", breaks = 10,xlab = "steps each day",main = title("Histogram of the Total number of Steps Taken Each Day"))
+```
 ## What is mean total number of steps taken per day?
+md = daily mean
+```{ r dailyaveragesteps}
+md <- sapply(ad1, function(x) {colMeans(x["steps"])})
+md <- as.data.frame(md)
+names(md) <- c("steps")
+rownames(md) <- c(1:61)
+md <- mutate(md, day = c(1:61))
+```
+print mean and media
 
-
+```{r showtable, results = 'asis'}
+library(xtable)
+xt <- xtable(md)
+print(xt, type = "html")
+```
 
 ## What is the average daily activity pattern?
+split the original data based on time intervals
+compute the 5-minutes interval average steps over all days
+mi = mean over 5-minutes interval
+plot average the 5-minute interval (x-axis) vs. the dialy mean (y-axis)
+```{r computeMean }
 
+mi <- sapply(ad2, function(x) {colMeans(x["steps"], na.rm = TRUE)})
+mi <- as.data.frame(mi)
+names(mi) <- c("steps")
+rownames(mi) <- c(1:288)
+mi <- mutate(mi, intervalID = c(1:288))
 
+g <- ggplot(mi, aes(intervalID))
+g <- g + geom_line(aes(y = steps, color = "blue"))
+#g <- ggplot(mi, aes(x = intervalID, y = steps))
+#g <- g + geom_line()
+g <- g + labs(x = "5-minutes interval ID", y = "average steps")
+g <- g + labs(title = " Time Series Plot Average Daily Activity")
+g
+```
 
-## Imputing missing values
+compute the 5-minutes interval where maximum activity  is
+```{r maxInterval}
+maxintervalID <- which.max(mi$steps)
+```
+the maximum 5-minutes interval ID `r maxintervalID`.
 
+## Impute Misssing Values
 
+To find the numbers of NAs use the following simple functions
+```{r missingvlaues}
+stat <- summary(ad$steps)
 
+```
+The number of NAs = `r stat[7]`
+
+To impute missing values use the Hmisc package - imputed with mean value
+adim - daialy activity (steps) from imputed data
+adims - total steps over all days
+```{r meanwithimputeddata}
+ad$imputed <- with(ad, impute(steps, mean))
+adim <- select(ad, date, imputed, interval)
+names(adim) <- c("date", "steps", "interval")
+
+# split the original data based on dates
+adim1 <- split(adim, adim$date)
+adims <- sapply(adim1, function(x) {colSums(x["steps"])})
+adims <- as.data.frame(adims)
+names(adims) <- c("steps")
+rownames(adims) <- c(1:61)
+```
+draw histogram of the daily total steps
+```{r histograpm, fig.height = 5}
+hist(adims$steps, col = "green", breaks = 10,xlab = "steps each day", main = title("Histogram of the Total number of Steps Taken Each Day with Imputed NAs"))
+```
+compute  and report the mean and median of the total number of 
+steps taken per day from imputed data set - 
+imd = mean over days from imputed data
+```{r imputedmean}
+imd <- sapply(adim1, function(x) {colMeans(x["steps"])})
+imd <- as.data.frame(imd)
+names(imd) <- c("steps")
+rownames(imd) <- c(1:61)
+imd <- mutate(imd, day = c(1:61))
+```
+Here is a table of mean values from imputed data
+
+```{r showtable2, results = 'asis'}
+library(xtable)
+xt <- xtable(imd)
+print(xt, type = "html")
+```
 ## Are there differences in activity patterns between weekdays and weekends?
+Check differences in activity patterns between weekdays and weekends?
+using imputed data set adim
+first create separe dat ser froweekdays and weekend
+```{r weekdays-ends}
+adim$date <- as.Date((adim$date))
+notweekend <- c("Monday","Tuesday", "Wednesday", "Thursday", "Friday") 
+adim$wday <- factor((weekdays(adim$date) %in% notweekend), levels = c(FALSE, TRUE),
+                    labels = c("weekend", "weekday"))
+adweekdays <- filter(adim, adim$wday == "weekday")
+adweekends <- filter(adim, adim$wday == "weekend")
+```
+split the original data based on time intervals for both weekdays and weekends
+awd = weekdays activity
+awdm - weekdays activity mean
+awe = weekends activity
+awem - weekends activity mean
+```{r weekday-endssmean}
+awd <- split(adweekdays, adweekdays$interval)
+awdm <- sapply(awd, function(x) {colMeans(x["steps"])})
+awdm <- as.data.frame(awdm)
+names(awdm) <- c("steps")
+rownames(awdm) <- c(1:288)
+awdm <- mutate(awdm, intervalID = c(1:288))
+
+awe <- split(adweekends, adweekends$interval)
+awem <- sapply(awe, function(x) {colMeans(x["steps"])})
+awem <- as.data.frame(awem)
+names(awem) <- c("steps")
+rownames(awem) <- c(1:288)
+awem <- mutate(awem, intervalID = c(1:288))
+```
+merged the weekend and the weekdays data
+mrgm - data frame containing all weekends andweekdays mean values
+```{r mergedmean}
+mrgm <- merge(awdm, awem, by = "intervalID")
+names(mrgm) <- c("intervalID", "steps.weekdays", "steps.weekends")
+```
+plot the weekedn and the weekdays data on the same graph to show differences 
+in activities
+here is the line graph with contrasting weekdays and weekends daily activities
+```{r linegraph, fig.height = 5}
+g <- ggplot(mrgm, aes(intervalID))
+g <- g + geom_line(aes(y = steps.weekdays, color = "red"))
+g <- g + geom_line(aes(y = steps.weekends, color = "blue"))
+g <- g + labs(x = "5-minutes interval ID", y = "average daily steps")
+g <- g + labs(title = " Time Series Plot Average Daily Activity red: weekdays, blue:weekend")
+g
+```
+
+The end
+
+             
