@@ -1,5 +1,7 @@
 ## Introduction
 
+I HAVE SUBMITTED A .pdf FILE (Knitr.R.pdf) which has the entire mark down information. OPen Knitr.R.pdf
+
 It is now possible to collect a large amount of data about personal
 movement using activity monitoring devices such as a
 [Fitbit](http://www.fitbit.com), [Nike
