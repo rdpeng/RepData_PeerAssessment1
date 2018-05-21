@@ -1,25 +1,89 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Repreducable Research - Project 1"
+author: "Charlie Becker"
+date: "5/21/2018"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#### This is a basic RMarkdown file that will be used to demostrate it ability to to create documents with embedded code and figures.  It will center around a fitbit-like dataset that counts the number of steps taken over a two month period.
 
-## Loading and preprocessing the data
+First we'll load the data and convert the dates intoa computer readable format.
+
+```{r warning = FALSE}
+d <- read.csv("/Users/charlesbecker/Downloads/activity.csv")
+d$date <- as.Date(strptime(d$date, "%Y-%m-%d"))
+```
+## Visualization 
+
+We'll sum the steps taken grouped by daily time interval, produce a histogram and find the interval with the highest mean step count.
+
+```{r}
+steps_per_day <- tapply(d$steps,d$date,sum)
+
+hist(steps_per_day, breaks = 15, col = 'Dark Green', xlab = 'Steps per day')
+
+summary(steps_per_day)
+```
+
+Here's a time series plot of average steps per daily interval and it's summary statistics.
+
+```{r}
+steps_per_interval <- tapply(d$steps,d$interval,mean, na.rm=T)
+
+plot(unique(d$interval),steps_per_interval, type = 'l', lwd = 2, col = 'blue',
+     xlab = 'Daily Interval Period',
+     ylab = 'Steps per Interval')
+
+names(steps_per_interval)[which.max(steps_per_interval)]
+```
+Above, you can see the maximium mean step interval is 835.
+
+## Imputing missing Values
+
+Here we'll sum the NA values, impute the mean step count of the interval, and display another histogram and it's summary stats.
+
+```{r}
+sum(is.na(d$steps))
+
+df <- data.frame(as.numeric(names(steps_per_interval)),steps_per_interval)
+
+index <- which(is.na(d))
+
+for (i in index) {
+    d[i,1] <- as.numeric(df[which(df[,1]==d[i,3]),2])
+}
+
+steps_per_day <- tapply(d$steps,d$date,sum)
+summary(steps_per_day)
+
+hist(steps_per_day, breaks = 15, col = 'Dark Red', xlab = 'Steps per day')
+```
+
+Not much changed by imputing onto the NA values.  The first and third quartile shifted quite a bit, but the median only increased by 1 and the mean remained the same.
+
+## Seperate by day of the week
+
+Create a column of day of the week, create new binary column of 'weekday' or 'weekend', and create a panel plot comparing mean steps per interval separated by weekday/weekend.
+
+```{r fig.height=14,fig.width=18}
+d$weekday <- sapply(d$date,weekdays)
+
+wkend <- function(x) {
+    if (x == 'Saturday' | x == 'Sunday') {y <- 'Weekend'}
+    else (y <- 'Weekday')
+        }
+
+d$weekend <- sapply(d$weekday, wkend)
+
+mean_steps_day <- tapply(d$steps,list(d$interval,d$weekend),mean)
 
 
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+par(mfrow = c(2,1))
+plot(unique(d$interval),mean_steps_day[,1], type = 'l',
+     xlab = "", ylab = 'Mean steps per day', main = 'Weekday')
+plot(unique(d$interval),mean_steps_day[,2], type = 'l',
+     xlab = "Daily interval", ylab = 'Mean steps per day', main = 'Weekend')
+```
