@@ -1,14 +1,32 @@
----
+
+
+```r
 title: "Reproducible Research: Peer Assessment 1"
+```
+
+```
+## Warning: NAs introduced by coercion
+```
+
+```
+## Error in title:"Reproducible Research: Peer Assessment 1": NA/NaN argument
+```
+
+```r
 output: 
   html_document:
     keep_md: true
----
+```
 
+```
+## Error in eval(expr, envir, enclos): object 'output' not found
+```
 
+```r
 ## Loading and preprocessing the data
+```
 
-```{r}
+```r
 if(!file.exists('activity.csv')){
     unzip('activity.zip')
 }
@@ -17,21 +35,28 @@ activityData <- read.csv('activity.csv')
 ##### 2. Transform interval data
 
 
-```{r}
+
+```r
 #activityData$interval <- strptime(gsub("([0-9]{1,2})([0-9]{2})", "\\1:\\2", activityData$interval), format='%H:%M')
 ```
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 stepsByDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
 ```
 
 ##### 1. Histogram of the total number of steps taken each day
 
 
-```{r}
+
+```r
 qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500', binwidth=500)
+```
+
+```
+## Error in qplot(stepsByDay, xlab = "Total steps per day", ylab = "Frequency using binwith 500", : could not find function "qplot"
 ```
 
 ![plot1](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot1.png)
@@ -39,7 +64,8 @@ qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500'
 ##### 2. Mean and median total number of steps taken per day
 
 
-```{r}
+
+```r
 stepsByDayMean <- mean(stepsByDay)
 stepsByDayMedian <- median(stepsByDay)
 ```
@@ -48,18 +74,24 @@ stepsByDayMedian <- median(stepsByDay)
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 averageStepsPerTimeBlock <- aggregate(x=list(meanSteps=activityData$steps), by=list(interval=activityData$interval), FUN=mean, na.rm=TRUE)
 ```
 
 ##### 1. Time series plot
 
 
-```{r}
+
+```r
 ggplot(data=averageStepsPerTimeBlock, aes(x=interval, y=meanSteps)) +
     geom_line() +
     xlab("5-minute interval") +
     ylab("average number of steps taken") 
+```
+
+```
+## Error in ggplot(data = averageStepsPerTimeBlock, aes(x = interval, y = meanSteps)): could not find function "ggplot"
 ```
 
 ![plot2](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot2.png)
@@ -67,7 +99,8 @@ ggplot(data=averageStepsPerTimeBlock, aes(x=interval, y=meanSteps)) +
 ##### 2. The 5-minute interval on average across all the days in the dataset that contains the maximum number of steps?
 
 
-```{r}
+
+```r
 mostSteps <- which.max(averageStepsPerTimeBlock$meanSteps)
 timeMostSteps <-  gsub("([0-9]{1,2})([0-9]{2})", "\\1:\\2",averageStepsPerTimeBlock[mostSteps,'interval'])
 ```
@@ -79,7 +112,8 @@ timeMostSteps <-  gsub("([0-9]{1,2})([0-9]{2})", "\\1:\\2",averageStepsPerTimeBl
 ##### 1. The total number of missing values in the dataset 
 
 
-```{r}
+
+```r
 numMissingValues <- length(which(is.na(activityData$steps)))
 ```
 
@@ -89,18 +123,28 @@ numMissingValues <- length(which(is.na(activityData$steps)))
 ##### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 
-```{r}
+
+```r
 activityDataImputed <- activityData
 activityDataImputed$steps <- impute(activityData$steps, fun=mean)
+```
+
+```
+## Error in impute(activityData$steps, fun = mean): could not find function "impute"
 ```
 
 
 ##### 4. Histogram of the total number of steps taken each day 
 
 
-```{r}
+
+```r
 stepsByDayImputed <- tapply(activityDataImputed$steps, activityDataImputed$date, sum)
 qplot(stepsByDayImputed, xlab='Total steps per day (Imputed)', ylab='Frequency using binwith 500', binwidth=500)
+```
+
+```
+## Error in qplot(stepsByDayImputed, xlab = "Total steps per day (Imputed)", : could not find function "qplot"
 ```
 
 ![plot3](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot3.png)
@@ -111,7 +155,8 @@ qplot(stepsByDayImputed, xlab='Total steps per day (Imputed)', ylab='Frequency u
 ##### ... and Calculate and report the mean and median total number of steps taken per day. 
 
 
-```{r}
+
+```r
 stepsByDayMeanImputed <- mean(stepsByDayImputed)
 stepsByDayMedianImputed <- median(stepsByDayImputed)
 ```
@@ -127,7 +172,8 @@ stepsByDayMedianImputed <- median(stepsByDayImputed)
 
 
 
-```{r}
+
+```r
 activityDataImputed$dateType <-  ifelse(as.POSIXlt(activityDataImputed$date)$wday %in% c(0,6), 'weekend', 'weekday')
 ```
 
@@ -135,7 +181,8 @@ activityDataImputed$dateType <-  ifelse(as.POSIXlt(activityDataImputed$date)$wda
 
 
 
-```{r}
+
+```r
 averagedActivityDataImputed <- aggregate(steps ~ interval + dateType, data=activityDataImputed, mean)
 
 ggplot(averagedActivityDataImputed, aes(interval, steps)) + 
@@ -145,6 +192,10 @@ ggplot(averagedActivityDataImputed, aes(interval, steps)) +
     ylab("avarage number of steps")
 ```
 
-![plot4](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot4.png)
+```
+## Error in ggplot(averagedActivityDataImputed, aes(interval, steps)): could not find function "ggplot"
+```
 
+![plot4](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot4.png)
+```
 
