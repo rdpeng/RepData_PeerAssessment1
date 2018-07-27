@@ -1,14 +1,18 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+
+
+# "Reproducible Research: Peer Assessment 1"
+
+
 
 
 ## Loading and preprocessing the data
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(ggplot2)
+library(scales)
+library(Hmisc)
+```
 
-```{r}
+```{r, results='markup', warning=TRUE, message=TRUE}
 if(!file.exists('activity.csv')){
     unzip('activity.zip')
 }
@@ -34,7 +38,7 @@ stepsByDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
 qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500', binwidth=500)
 ```
 
-![plot1](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot1.png)
+
 
 ##### 2. Mean and median total number of steps taken per day
 
@@ -62,7 +66,7 @@ ggplot(data=averageStepsPerTimeBlock, aes(x=interval, y=meanSteps)) +
     ylab("average number of steps taken") 
 ```
 
-![plot2](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot2.png)
+
 
 ##### 2. The 5-minute interval on average across all the days in the dataset that contains the maximum number of steps?
 
@@ -103,7 +107,6 @@ stepsByDayImputed <- tapply(activityDataImputed$steps, activityDataImputed$date,
 qplot(stepsByDayImputed, xlab='Total steps per day (Imputed)', ylab='Frequency using binwith 500', binwidth=500)
 ```
 
-![plot3](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot3.png)
 
 
  
@@ -144,7 +147,5 @@ ggplot(averagedActivityDataImputed, aes(interval, steps)) +
     xlab("5-minute interval") + 
     ylab("avarage number of steps")
 ```
-
-![plot4](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot4.png)
 
 

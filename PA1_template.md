@@ -1,30 +1,13 @@
 
 
-```r
-title: "Reproducible Research: Peer Assessment 1"
-```
+# "Reproducible Research: Peer Assessment 1"
 
-```
-## Warning: NAs introduced by coercion
-```
 
-```
-## Error in title:"Reproducible Research: Peer Assessment 1": NA/NaN argument
-```
 
-```r
-output: 
-  html_document:
-    keep_md: true
-```
 
-```
-## Error in eval(expr, envir, enclos): object 'output' not found
-```
-
-```r
 ## Loading and preprocessing the data
-```
+
+
 
 ```r
 if(!file.exists('activity.csv')){
@@ -55,11 +38,9 @@ stepsByDay <- tapply(activityData$steps, activityData$date, sum, na.rm=TRUE)
 qplot(stepsByDay, xlab='Total steps per day', ylab='Frequency using binwith 500', binwidth=500)
 ```
 
-```
-## Error in qplot(stepsByDay, xlab = "Total steps per day", ylab = "Frequency using binwith 500", : could not find function "qplot"
-```
+![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
 
-![plot1](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot1.png)
+
 
 ##### 2. Mean and median total number of steps taken per day
 
@@ -90,11 +71,9 @@ ggplot(data=averageStepsPerTimeBlock, aes(x=interval, y=meanSteps)) +
     ylab("average number of steps taken") 
 ```
 
-```
-## Error in ggplot(data = averageStepsPerTimeBlock, aes(x = interval, y = meanSteps)): could not find function "ggplot"
-```
+![plot of chunk unnamed-chunk-23](figure/unnamed-chunk-23-1.png)
 
-![plot2](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot2.png)
+
 
 ##### 2. The 5-minute interval on average across all the days in the dataset that contains the maximum number of steps?
 
@@ -129,10 +108,6 @@ activityDataImputed <- activityData
 activityDataImputed$steps <- impute(activityData$steps, fun=mean)
 ```
 
-```
-## Error in impute(activityData$steps, fun = mean): could not find function "impute"
-```
-
 
 ##### 4. Histogram of the total number of steps taken each day 
 
@@ -143,11 +118,8 @@ stepsByDayImputed <- tapply(activityDataImputed$steps, activityDataImputed$date,
 qplot(stepsByDayImputed, xlab='Total steps per day (Imputed)', ylab='Frequency using binwith 500', binwidth=500)
 ```
 
-```
-## Error in qplot(stepsByDayImputed, xlab = "Total steps per day (Imputed)", : could not find function "qplot"
-```
+![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
 
-![plot3](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot3.png)
 
 
  
@@ -192,10 +164,6 @@ ggplot(averagedActivityDataImputed, aes(interval, steps)) +
     ylab("avarage number of steps")
 ```
 
-```
-## Error in ggplot(averagedActivityDataImputed, aes(interval, steps)): could not find function "ggplot"
-```
+![plot of chunk unnamed-chunk-30](figure/unnamed-chunk-30-1.png)
 
-![plot4](/Users/sharanjeetsingh/Desktop/Data Science/Reproducible Research/Rplot4.png)
-```
 
