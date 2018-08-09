@@ -13,7 +13,8 @@ library(rmarkdown)
 library(knitr)
 #Loading and preprocessing the data
 
-```{r completeValues}
+
+```r
 dsActivity <- read.csv("activity.csv")
 ## ignore NA values
 ds_complete <- dsActivity[complete.cases(dsActivity), ]
@@ -22,7 +23,8 @@ ds_complete$date <- as.Date(as.POSIXlt(ds_complete$date))
 ```
 
 #Histogram of the total number of steps taken each day
-```{r histogram}
+
+```r
 steps_per_day <- aggregate(steps ~ date, ds_complete, sum)
 hist(steps_per_day$steps, xlab = "Steps per day", main = "Total number of steps taken each day")
 ##Mean and median number of steps taken each day
@@ -30,25 +32,59 @@ mn <- mean(steps_per_day$steps)
 md <- median(steps_per_day$steps)
 abline(v = mn, col = "blue", lwd = 2)
 abline(v = md, col = "red", lwd = 2)
+```
+
+![](PA1_template_files/figure-html/histogram-1.png)<!-- -->
+
+```r
 print(mn)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 print(md)
 ```
 
+```
+## [1] 10765
+```
+
 #Time series plot of the average number of steps taken
-```{r timeSeriesPlot}
+
+```r
 avg_steps_per_interval <- aggregate(steps ~ interval, ds_complete, mean)
 
 plot(avg_steps_per_interval$interval, avg_steps_per_interval$steps, type ="l", col="red", xlab = "5 minute interval", ylab = "Average steps taken", main = "Average Daily Activity Pattern")
+```
+
+![](PA1_template_files/figure-html/timeSeriesPlot-1.png)<!-- -->
+
+```r
 ##The 5-minute interval that, on average, contains the maximum number of steps
 maxInt <- avg_steps_per_interval[which.max(avg_steps_per_interval$steps), ]$interval
 print(maxInt)
 ```
 
+```
+## [1] 835
+```
+
 #Imputing missing values
-```{r missingValues}
+
+```r
 ## find NA values
 ds_NA <- dsActivity[!complete.cases(dsActivity), ]
 print(nrow(ds_NA))
+```
+
+```
+## [1] 2304
+```
+
+```r
 ##strategy for imputing missing data
 for(i in 1:nrow(ds_NA)){
      ds_NA$steps[i] <- avg_steps_per_interval[which(avg_steps_per_interval$interval == ds_NA$interval[i]), ]$steps
@@ -58,7 +94,8 @@ new_ds <- rbind(ds_complete, ds_NA)
 ```
 
 #Histogram of the total number of steps taken each day after missing values are imputed
-```{r histogram_missing_values}
+
+```r
 steps_per_day <- aggregate(steps ~ date, new_ds, sum)
 hist(steps_per_day$steps, xlab = "Steps per day", main = "Total number of steps taken each day")
 ##Mean and median number of steps taken each day
@@ -66,13 +103,30 @@ mn <- mean(steps_per_day$steps)
 md <- median(steps_per_day$steps)
 abline(v = mn, col = "blue", lwd = 2)
 abline(v = md, col = "red", lwd = 2)
+```
+
+![](PA1_template_files/figure-html/histogram_missing_values-1.png)<!-- -->
+
+```r
 print(mn)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 print(md)
+```
+
+```
+## [1] 10766.19
 ```
 ##The values of mean and median with inputing the missing dataset doesn't differ much from the dataset without the na values.
 
 #Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
-```{r panelPlot}
+
+```r
 library(lattice)
 for(i in 1:nrow(new_ds)){
         w_day <- weekdays(new_ds$date[i])
@@ -86,4 +140,6 @@ xyplot(steps ~ interval | day, data=avg_steps, type = "l", layout = c(1,2),
        scales=list(cex=.8, col="red"),
        ylab="Number of steps", xlab="Interval")
 ```
+
+![](PA1_template_files/figure-html/panelPlot-1.png)<!-- -->
 
