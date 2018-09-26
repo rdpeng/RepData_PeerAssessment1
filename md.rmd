@@ -25,6 +25,7 @@ stepperday<-tapply(act$steps,act$date,sum,na.rm=T)
 hist(stepperday, xlab = "number of steps",
      main = "the total number of steps taken each day")
 ```
+![](instructions_fig/1.png)<!-- -->
 
 #Mean and median number of steps taken each day
 ```{r echo=TRUE}
