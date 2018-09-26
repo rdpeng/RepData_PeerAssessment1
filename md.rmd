@@ -38,7 +38,7 @@ mean_interval <- tapply(act$steps, act$interval, mean, na.rm = T)
 
 plot(mean_interval, type = "l", main = "time series plot", xlab = "the 5-minute interval", ylab = "the average number of steps")
 ```
-
+![](instructions_fig/2.png)<!-- -->
 #The 5-minute interval that, on average, contains the maximum number of steps
 ```{r echo=TRUE}
 which.max(mean_interval)
@@ -67,6 +67,7 @@ act2$steps <- impute(act$steps, mean(act$steps))
 act2step <- tapply(act2$steps, act2$date, sum,na.rm=TRUE)
 hist(act2step, xlab='Total steps per day (Imputed)')
 ```
+![](instructions_fig/3.png)<!-- -->
 ![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 #Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 ##make a new vector to describe weekday and weekend
@@ -83,3 +84,4 @@ ggplot(avgAct2, aes(interval, steps)) +
   xlab("5-minute interval") + 
   ylab("avarage number of steps")
 ```
+![](instructions_fig/4.png)<!-- -->
