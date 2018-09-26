@@ -3,8 +3,7 @@ title: "Activity monitoring data analysis"
 author: "Kidpea LAU"
 date: "25/09/2018"
 output:
-  html_document: default
-  pdf_document: default
+keep_md:true
 ---
 #About the data:
 The data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
@@ -67,7 +66,7 @@ act2$steps <- impute(act$steps, mean(act$steps))
 act2step <- tapply(act2$steps, act2$date, sum,na.rm=TRUE)
 hist(act2step, xlab='Total steps per day (Imputed)')
 ```
-
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 #Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
 ##make a new vector to describe weekday and weekend
 ```{r echo=TRUE}
