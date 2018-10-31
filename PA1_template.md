@@ -77,7 +77,7 @@ print(histogram)
 
 ```
 
-![](FigureS/Rplot01.png)<!-- -->
+![](Figures/Rplot01.png)<!-- -->
 
 ## 3. Mean and median number of steps taken each day
 
@@ -120,7 +120,7 @@ TimeSeries1 <- ggplot(data = five_min_steps, aes(x = interval, y = steps)) +
 print(TimeSeries1)
 
 ```
-![](FigureS/Rplot02.png)<!-- -->
+![](Figures/Rplot02.png)<!-- -->
  
  
 ## 5. The 5-minute interval that, on average, contains the maximum number of steps
@@ -191,7 +191,7 @@ new_hist <- ggplot(data = new_steps, aes(Total)) +
 print(new_hist)
 
 ```
-![](FigureS/Rplot03.png)<!-- -->
+![](Figures/Rplot03.png)<!-- -->
 
 
 ## 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
@@ -216,4 +216,4 @@ ggplot(new_dataset, mapping = aes(x = interval, y = Mean)) + geom_line(color = "
  ggtitle("Comparison of the average number of steps taken per 5-minute interval across weekdays and weekends")
 
 ```
-![](FigureS/Rplot04.png)<!-- -->
+![](Figures/Rplot04.png)<!-- -->
