@@ -207,5 +207,4 @@ ggplot(new_dataset, mapping = aes(x = interval, y = Mean)) + geom_line(color = "
     facet_grid(WeekendOrWeekday ~.) + xlab("Interval") + ylab("Mean of   Steps") +
  ggtitle("Comparison of the average number of steps taken per 5-minute interval across weekdays and weekends")
 
-
 ```
