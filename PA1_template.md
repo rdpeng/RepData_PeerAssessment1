@@ -2,7 +2,8 @@
 title: "Reproducible Research project 1"
 author: "Ruchi Patel"
 date: "October 5, 2018"
-output: html_document
+output: html_document:    keep_md: true
+
 ---
 
 ```{r setup, include=FALSE}
