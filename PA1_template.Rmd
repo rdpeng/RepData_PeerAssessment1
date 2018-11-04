@@ -3,15 +3,15 @@ title: '#5: Reproducible Research - Project 1'
 author: "Sabine D'Amico"
 date: "October 26, 2018"
 output:
-  html_document: default
-  pdf_document: default
   keep_md: yes
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE}
 options(repos = getOption("repos")["CRAN"])
 install.packages("chron")
-install.packages("ggplot2")
+install.packages("tidyverse")
 ```
 ```{r, echo=FALSE}
 library(chron)

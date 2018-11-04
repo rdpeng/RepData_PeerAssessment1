@@ -3,13 +3,15 @@ title: '#5: Reproducible Research - Project 1'
 author: "Sabine D'Amico"
 date: "October 26, 2018"
 output:
-  html_document: default
-  pdf_document: default
   keep_md: yes
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r, echo=FALSE}
+options(repos = getOption("repos")["CRAN"])
 install.packages("chron")
+install.packages("tidyverse")
 ```
 ```{r, echo=FALSE}
 library(chron)
@@ -39,11 +41,6 @@ totalsteps
 ```
 
 #Histogram of total steps taken per day
- Install ggplot2
-```{r, echo=FALSE}
-options(repos = getOption("repos")["CRAN"])
-install.packages("ggplot2")
-```
 Bring up ggplot2
 ```{r, echo=FALSE}
 library(ggplot2)
@@ -54,10 +51,6 @@ plot1a.R <- qplot(totalsteps$steps, geom = "histogram", main = "# of Steps by da
 plot1a.R
 ```
 
-```{r, echo=FALSE}
-dev.copy(png,"plot1a.png")
-dev.off()
-```
 #The mean and median total number of steps taken per day 
 
 ```{r}
@@ -78,10 +71,6 @@ plot1b.R <- plot(intervalDF$intervalDF, intervalDF$mean_int, type = "l", col="re
 plot1b.R
 ```
 
-```{r, echo=FALSE}
-dev.copy(png,"plot1b.png")
-dev.off()
-```
 
 The max value and the interval with the max value, respectively are 
 ```{r}
@@ -106,11 +95,6 @@ newactivitiesDF <- aggregate(steps ~ interval + date ,activitiesreplaceNA, mean)
 newtotalsteps <- aggregate(steps ~ date, activitiesreplaceNA, sum)
 plot1c.R <- qplot(newtotalsteps$steps, geom = "histogram", main = "# of Steps by day", xlab = "Steps", fill=I("lavender"),col=I("black"))
 plot1c.R
-```
-
-```{r, echo=FALSE}
-dev.copy(png,"plot1C.png")
-dev.off()
 ```
 
 ```{r}
@@ -141,11 +125,6 @@ plot1d.R <- ggplot(data = activtybystepsandweektype1, aes(x = interval, y = step
   geom_line(colour="coral", size = 1.5)+ theme_classic()+
   ggtitle("Average steps by weekday/weekend")
 plot1d.R
-```
-
-```{r, echo=FALSE}
-dev.copy(png, "plot1d.png")
-dev.off()
 ```
 
 
