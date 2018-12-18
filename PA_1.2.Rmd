@@ -1,0 +1,195 @@
+---
+title: "Course Project 1 - Reproducible Research"
+author: "Tiago Assano"
+date: "14/12/2018"
+output: html_document
+---
+
+```{r}
+install.packages("dplyr", repos = 'http://cran.us.r-project.org')
+library(dplyr)
+```
+
+## Introduction
+
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the 'quantified self' movement, a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+
+## Loading and preprocessing the data
+This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+
+## Goal
+
+The goal of this assignment is to understand the biases introduced by the "NA" values that exist in the database and if there are differences when we analyze data from weekdays and weekends.
+
+## What is mean total number of steps taken per day?
+## Data
+
+The variables included in this dataset are:
+
+- steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
+
+## What is the average daily activity pattern?
+- date: The date on which the measurement was taken in YYYY-MM-DD format
+
+- interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+## Imputing missing values
+
+```{r}
+file <- paste(getwd(), "/activity.csv", sep ="")
+data <- read.csv(file)
+```
+
+### Structure
+
+## Are there differences in activity patterns between weekdays and weekends?
+This report is structuredn in a way that the proposed questions will be followed by the R code chunks used to analyze the data and by the printed results (either text or graphs).
+
+
+Now proceeding to the assignemnt questions:
+
+### What is mean total number of steps taken per day?
+
+For this part of the assignment, you can ignore the missing values in the dataset.
+
+1. Calculate the total number of steps taken per day.
+
+Result:
+
+
+```{r}
+
+steps <- tapply(data$steps, data$date, sum)
+steps
+```
+
+2.  Make a histogram of the total number of steps taken each day
+
+  Result:
+  
+  
+```{r}
+hist(steps)
+````
+
+
+3. Calculate and report the mean and median of the total number of steps taken per day
+
+  Result:
+  
+mean
+```{r}
+mean(steps, na.rm= TRUE)
+```
+
+median
+```{r}
+median(steps, na.rm=TRUE)
+```
+
+### What is the average daily activity pattern?
+
+1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+  Result: 
+  
+  
+```{r}
+data_clean = na.omit(data)
+time_series <- tapply(data_clean$steps, data_clean$interval, mean)
+plot(time_series, type="l")
+```
+
+2. Which 5-minute interval, on average across all the days in the dataset, contains more steps?
+
+  Result:
+  
+  
+```{r}
+time_series <- tapply(data_clean$steps, data_clean$interval, mean)
+max <- which.max(time_series)
+attributes(max)
+```
+
+### Imputing missing values
+
+Note that there are a number of days/intervals where there are missing values (coded as NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+
+  Result:
+  
+  
+```{r}
+length(which(is.na(data$steps)))
+```
+
+Devise a strategy for filling in all of the missing values in the dataset. 
+
+
+The strategy used for filling in the NAs values used the mean for that 5-minute interval.
+
+
+
+2. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+
+  Result: 
+  
+  
+```{r}
+head(data)
+data_2 <-data
+mean_steps <- mean(data$steps, na.rm = TRUE)
+data_2 <- data_2 %>% replace(., is.na(.), mean_steps)
+head(data_2)
+````
+
+3. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+  Result: 
+  
+  
+```{r}
+steps_2 <- tapply(data_2$steps, data_2$date, sum)
+steps_2
+hist(steps_2)
+```
+
+Mean
+```{r}
+mean(steps_2)
+```
+
+Median
+```{r}
+median(steps_2)
+```
+
+The results differ. The mean and median have changed and the number of events considered in the histogram has increased as well.
+
+### Are there differences in activity patterns between weekdays and weekends?
+
+Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+  Result:
+  
+  
+```{r}
+data_2$date <- as.Date(data_2$date)
+weekname <- weekdays(as.Date(data_2$date))
+data_2_wkd <- cbind(data_2, weekname)
+days <- ifelse( data_2_wkd$weekname %in% c("Sábado", "Domingo"), "weekend", "weekday")
+data_2_wkd <- cbind(data_2_wkd, days)
+````
+
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
+  Result: 
+```{r}
+library("lattice")
+xyplot( tapply(X= data_2_wkd$steps, INDEX = list(data_2_wkd$interval, data_2_wkd$weekname), mean) ~ interval  | days, data = data_2_wkd, type = "l", ylab = "average number of steps", xlab = "interval (min)")
+
+````
