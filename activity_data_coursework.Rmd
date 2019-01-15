@@ -1,0 +1,128 @@
+---
+title: "FitBit Data Analysis"
+author: "Elizabeth Betts"
+date: "January 15, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is Assignment 1 for Reproducible Research  in Coursera's Data Science specialization track. The purpose of the project was to create a R Markdown document to describe some data collected by FitBit.
+
+##Purpose of project  
+
+The purpose of this project was to practice
+
+1. loading and preprocessing data  
+2. imputing missing values  
+3. interpreting data to answer research questions  
+
+##Data for the assigment was downloaded from the course website  
+
+Link to required Dataset: https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
+
+The variables included are:
+
+1. steps: Number of steps taking in a 5-minute interval (missing values are coded as \color{red}{\verb|NA|}NA)
+2. date: The date on which the measurement was taken in YYYY-MM-DD format
+3. interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+##Loading and preprocessing the data
+
+```{r}
+if(!file.exists("getdata-projectfiles-UCI HAR Dataset.zip")) {
+        temp <- tempfile()
+        download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+        unzip(temp)
+        unlink(temp)
+}
+
+data <- read.csv("activity.csv")
+```
+
+##What is the average (mean) total number of steps taken per day?
+```{r}
+steps_by_day <- aggregate(steps ~ date, data, sum)
+hist(steps_by_day$steps, main = paste("Total Daily Steps"), col="red", xlab="Number of Steps")
+rmean <- mean(steps_by_day$steps)
+rmedian <- median(steps_by_day$steps)
+
+
+
+```
+The mean is <rmean> and the median is <rmedian>.
+
+##What is the average daily activity pattern?
+
+Calculate average steps for each interval for all days.
+Plot the Average Number Steps per Day by Interval.
+Which interval has most average steps?
+
+```{r}
+steps_interval <- aggregate(steps ~ interval, data, mean)
+
+plot(steps_interval$interval, steps_interval$steps, type="l", xlab="Interval", ylab="Number of Steps",
+     main = "Average daily steps by time interval")
+
+max_interval <- steps_interval[which.max(steps_interval$steps),1]
+
+```
+
+The highest number of steps during a single 5 minute interval is <max_interval>.
+
+##Impute missing values and compare the results from imputed to non imputed data
+```{r}
+incomplete <- sum(!complete.cases(data))
+imputed_data <- transform(data, steps = ifelse(is.na(data$steps), steps_interval$steps[match(data$interval, steps_interval$interval)], data$steps))
+
+steps_by_day_i <- aggregate(steps ~ date, imputed_data, sum)
+hist(steps_by_day_i$steps, main = paste("Total Steps Each Day"), col="blue", xlab="Number of Steps")
+
+#Create Histogram to show difference. 
+hist(steps_by_day$steps, main = paste("Total Daily Steps"), col="red", xlab="Number of Steps", add=T)
+legend("topright", c("Imputed", "Non-imputed"), col=c("blue", "red"), lwd=10)
+
+```
+Calculate new mean and median for the imputed data.
+```{r}
+rmean.i <- mean(steps_by_day_i$steps)
+rmedian.i <- median(steps_by_day_i$steps)
+```
+Calculate difference between imputed and non imputed data
+```{r}
+mean_diff <- rmean.i - rmean
+med_diff <- rmedian.i - rmedian
+
+```
+Calculate the total difference
+```{r}
+total_diff <- sum(steps_by_day_i$steps) - sum(steps_by_day$steps)
+```
+
+The imputed mean is <rmean.i>
+The imputed data median is <rmedian.i>
+The difference between the non imputed mean and the imputed mean is <mean_diff>
+The difference between the non imputed median and the imputed median is <med_diff>
+
+##Are there any differences between weekday and weekend step counts?
+Step volumes during weekdays vs. weekend days were analysed to observe any differences.
+
+```{r}
+weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", 
+              "Friday")
+imputed_data$wkday = as.factor(ifelse(is.element(weekdays(as.Date(imputed_data$date)),weekdays), "Weekday", "Weekend"))
+
+steps_by_interval_i <- aggregate(steps ~ interval + wkday, imputed_data, mean)
+
+library(lattice)
+
+xyplot(steps_by_interval_i$steps ~ steps_by_interval_i$interval|steps_by_interval_i$wkday, main="Average Daily Steps by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
+```
+
+

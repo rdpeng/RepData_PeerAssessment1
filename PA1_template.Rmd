@@ -1,25 +1,75 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "FitBit Data Analysis"
+author: "Elizabeth Betts"
+date: "January 15, 2019"
+output: html_document
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
-## Loading and preprocessing the data
+## R Markdown
+
+This is Assignment 1 for Reproducible Research  in Coursera's Data Science specialization track. The purpose of the project was to create a R Markdown document to describe some data collected by FitBit.
+
+##Purpose of project  
+
+The purpose of this project was to practice
+
+1. loading and preprocessing data  
+2. imputing missing values  
+3. interpreting data to answer research questions  
+
+##Data for the assigment was downloaded from the course website  
+
+Link to required Dataset: https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip
+
+The variables included are:
+
+1. steps: Number of steps taking in a 5-minute interval (missing values are coded as \color{red}{\verb|NA|}NA)
+2. date: The date on which the measurement was taken in YYYY-MM-DD format
+3. interval: Identifier for the 5-minute interval in which measurement was taken
+
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
+
+##Loading and preprocessing the data
+
+```{r}
+if(!file.exists("getdata-projectfiles-UCI HAR Dataset.zip")) {
+        temp <- tempfile()
+        download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+        unzip(temp)
+        unlink(temp)
+}
+
+data <- read.csv("activity.csv")
+```
+
+##What is the average (mean) total number of steps taken per day?
+```{r}
+steps_by_day <- aggregate(steps ~ date, data, sum)
+hist(steps_by_day$steps, main = paste("Total Daily Steps"), col="red", xlab="Number of Steps")
+rmean <- mean(steps_by_day$steps)
+rmedian <- median(steps_by_day$steps)
 
 
 
-## What is mean total number of steps taken per day?
+```
+The mean is <rmean> and the median is <rmedian>.
 
+##What is the average daily activity pattern?
 
+Calculate average steps for each interval for all days.
+Plot the Average Number Steps per Day by Interval.
+Which interval has most average steps?
 
-## What is the average daily activity pattern?
+```{r}
+steps_interval <- aggregate(steps ~ interval, data, mean)
 
+plot(steps_interval$interval, steps_interval$steps, type="l", xlab="Interval", ylab="Number of Steps",
+     main = "Average daily steps by time interval")
 
+max_interval <- steps_interval[which.max(steps_interval$steps),1]
 
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```
