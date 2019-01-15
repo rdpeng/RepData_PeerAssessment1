@@ -1,31 +1,41 @@
 ---
-title: "Assigment_1_RepResearch"
+title: "Course Project 1 - Reproducible Research"
 author: "Tiago Assano"
-date: "15 de julho de 2015"
+date: "14/12/2018"
 output: html_document
 ---
+
+```{r}
+install.packages("dplyr", repos = 'http://cran.us.r-project.org')
+library(dplyr)
+```
+
 ## Introduction
 
-It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a Fitbit, Nike Fuelband, or Jawbone Up. These type of devices are part of the 'quantified self' movement, a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data.
 
+## Loading and preprocessing the data
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
 
 ## Goal
 
 The goal of this assignment is to understand the biases introduced by the "NA" values that exist in the database and if there are differences when we analyze data from weekdays and weekends.
 
+## What is mean total number of steps taken per day?
 ## Data
 
 The variables included in this dataset are:
 
 - steps: Number of steps taking in a 5-minute interval (missing values are coded as NA)
 
+## What is the average daily activity pattern?
 - date: The date on which the measurement was taken in YYYY-MM-DD format
 
 - interval: Identifier for the 5-minute interval in which measurement was taken
 
 The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
+## Imputing missing values
 
 ```{r}
 file <- paste(getwd(), "/activity.csv", sep ="")
@@ -34,6 +44,7 @@ data <- read.csv(file)
 
 ### Structure
 
+## Are there differences in activity patterns between weekdays and weekends?
 This report is structuredn in a way that the proposed questions will be followed by the R code chunks used to analyze the data and by the printed results (either text or graphs).
 
 
@@ -68,15 +79,15 @@ hist(steps)
 
   Result:
   
-  
-```{r}
-mean <- tapply(data$steps, data$date, mean)
 mean
-
-median <- tapply(data$steps, data$date, median)
-median
+```{r}
+mean(steps, na.rm= TRUE)
 ```
 
+median
+```{r}
+median(steps, na.rm=TRUE)
+```
 
 ### What is the average daily activity pattern?
 
@@ -97,7 +108,9 @@ plot(time_series, type="l")
   
   
 ```{r}
-data_clean$interval[which(data_clean$steps == max(data_clean$steps))]
+time_series <- tapply(data_clean$steps, data_clean$interval, mean)
+max <- which.max(time_series)
+attributes(max)
 ```
 
 ### Imputing missing values
@@ -128,9 +141,9 @@ The strategy used for filling in the NAs values used the mean for that 5-minute 
   
 ```{r}
 head(data)
-mean_steps <- tapply(data_clean$steps, data_clean$interval, mean)
-data_2 <- data
-data_2$steps[is.na(data_2$steps)] <- mean_steps[which(is.na(data_2$steps))] 
+data_2 <-data
+mean_steps <- mean(data$steps, na.rm = TRUE)
+data_2 <- data_2 %>% replace(., is.na(.), mean_steps)
 head(data_2)
 ````
 
@@ -141,19 +154,21 @@ head(data_2)
   
 ```{r}
 steps_2 <- tapply(data_2$steps, data_2$date, sum)
+steps_2
 hist(steps_2)
 ```
 
+Mean
 ```{r}
-mean <- tapply(data_2$steps, data_2$date, mean)
-head(mean)
-
-median <- tapply(data_2$steps, data_2$date, median)
-head(median)
+mean(steps_2)
 ```
 
+Median
+```{r}
+median(steps_2)
+```
 
-There is no impact on the total daily number of steps.
+The results differ. The mean and median have changed and the number of events considered in the histogram has increased as well.
 
 ### Are there differences in activity patterns between weekdays and weekends?
 
@@ -163,11 +178,11 @@ Create a new factor variable in the dataset with two levels – “weekday” an
   
   
 ```{r}
-data_clean$date <- as.Date(data_clean$date)
-weekname <- weekdays(data_clean$date)
-days <- ifelse( weekname %in% c("Sábado", "Domingo"), "weekend", "weekday")
-data_clean_2 <- cbind(data_clean, days)
-head(data_clean_2)
+data_2$date <- as.Date(data_2$date)
+weekname <- weekdays(as.Date(data_2$date))
+data_2_wkd <- cbind(data_2, weekname)
+days <- ifelse( data_2_wkd$weekname %in% c("Sábado", "Domingo"), "weekend", "weekday")
+data_2_wkd <- cbind(data_2_wkd, days)
 ````
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
@@ -175,5 +190,6 @@ Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minut
   Result: 
 ```{r}
 library("lattice")
-xyplot( tapply(steps,interval, mean) ~ interval  | days, data = data_clean_2)
+xyplot( tapply(X= data_2_wkd$steps, INDEX = list(data_2_wkd$interval, data_2_wkd$weekname), mean) ~ interval  | days, data = data_2_wkd, type = "l", ylab = "average number of steps", xlab = "interval (min)")
+
 ````
