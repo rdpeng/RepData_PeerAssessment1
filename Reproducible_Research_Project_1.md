@@ -69,7 +69,7 @@ head(steps_by_day)
 hist(steps_by_day$total,main="Histogram of total number of steps taken per day", xlab = "Total no. of steps in a day")
 ```
 
-![](RepData_PeerAssessment1/unnamed-chunk-1-1.png)<!-- -->
+![](instructions_fig/unnamed-chunk-1-1.png)<!-- -->
 
 ```r
 summary(steps_by_day)
