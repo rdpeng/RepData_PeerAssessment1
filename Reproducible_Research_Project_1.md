@@ -93,7 +93,7 @@ steps_by_interval = aggregate(steps~interval,activity,mean)
 plot(steps_by_interval$interval,steps_by_interval$steps,type='l',main="Average number of steps over all days", xlab="Interval", ylab="Average number of steps")
 ```
 
-![](Reproducible_Research_Project_1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](RepData_PeerAssessment1/instructions_fig/unnamed-chunk-2-1.png)<!-- -->
 
 ```r
 max_steps_row <- which.max(steps_by_interval$steps)
