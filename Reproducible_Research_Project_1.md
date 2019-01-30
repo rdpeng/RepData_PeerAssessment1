@@ -93,7 +93,7 @@ steps_by_interval = aggregate(steps~interval,activity,mean)
 plot(steps_by_interval$interval,steps_by_interval$steps,type='l',main="Average number of steps over all days", xlab="Interval", ylab="Average number of steps")
 ```
 
-![](RepData_PeerAssessment1/instructions_fig/unnamed-chunk-2-1.png)<!-- -->
+![](instructions_fig/unnamed-chunk-2-1.png)<!-- -->
 
 ```r
 max_steps_row <- which.max(steps_by_interval$steps)
@@ -138,7 +138,7 @@ hist(df_imputed_steps_by_day$steps,main="Histogram of total no. of steps per day
      xlab = "Total no. of steps in a day")
 ```
 
-![](Reproducible_Research_Project_1_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+![](instructions_fig/unnamed-chunk-5-1.png)<!-- -->
 
 ```r
 mean(df_imputed_steps_by_day$steps)
@@ -191,6 +191,6 @@ facet_wrap(~type_of_day,ncol=1)
 ## Warning: Ignoring unknown parameters: type
 ```
 
-![](Reproducible_Research_Project_1_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](instructions_fig/unnamed-chunk-6-1.png)<!-- -->
 
 
