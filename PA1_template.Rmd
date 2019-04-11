@@ -6,20 +6,87 @@ output:
 ---
 
 
-## Loading and preprocessing the data
+1.Load Data
+```{r echo=TRUE}
+raw_data=read.csv('D:/files/R study/JHU/Reproducible Research/activity.csv')
+head(raw_data)
+processed=raw_data[,1:2]
+```
 
 
+2.In this step, we want to know mean total number of steps  
 
-## What is mean total number of steps taken per day?
+Firslt,compute total number per day
+```{r echo=TRUE}
+##build a function
+sumtotal<-function(data){
+  step=tapply(data$step,data$date,sum)
+  date=row.names(step)
+  step=as.vector(step)
+  #new_table=cbind(date,step)
+  new_table=data.frame(date=date,step=step)
+  new_table
+}
+new_table=sumtotal(processed)
+head(new_table)
+```
 
+Draw the histogram of steps  
+```{r echo=TRUE}
+library(ggplot2)
+ggplot(new_table, aes(step)) +
+  
+  geom_histogram(bins=100)+ theme(axis.text.x=element_blank(),
+                                     axis.text.y=element_blank()
+                                     )
+```  
 
+Compute mean and median of steps  
+```{r echo=TRUE}
+print(paste('mean:',mean(new_table[which(!is.na(new_table[2])),][,2]),' ','median:',median(new_table[which(!is.na(new_table[2])),][,2])))
+```
 
-## What is the average daily activity pattern?
+3.Show missing value
+```{r echo=TRUE}
+nrow(raw_data[which(is.na(raw_data[1])),])
+```
 
+Filling Missing values by using 0
+```{r echo=TRUE}
+new_data=data.frame(raw_data)
+new_data[is.na(new_data)]<-0
+new_data$steps=as.integer(new_data$steps)
+processed_new=sumtotal(new_data)
+head(processed_new)
+```
 
+Draw the new histogram of steps 
+```{r echo=TRUE}
+library(ggplot2)
+length=nrow(processed_new)
+ggplot(processed_new, aes(step)) +geom_histogram(bins=100)+ theme(axis.text.x=element_blank(),axis.text.y=element_blank())
+ 
 
-## Imputing missing values
+```  
 
+Compute mean and median again
+```{r echo=TRUE}
+print(paste('mean:',mean(processed_new[which(!is.na(processed_new[2])),][,2]),' ','median:',median(processed_new[which(!is.na(processed_new[2])),][,2])))
+```
+It is clear that mean is different from previous one and median is almost the same. The reason is that when we make NA to be zero and compute the average, denominator doesn;t change and numerator increases.
 
+4.Now we are using filled-in data to plot timeseries pircture
+```{r echo=TRUE}
+Sys.setlocale("LC_TIME", "English")  ##change time
+plotdata=as.data.frame(processed_new)
+plotdata[,1]<-sapply(plotdata[,1],as.character)
+plotdata[,1]<-as.Date(plotdata[,1])
+weekdays1 <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+plotdata$type <- factor((weekdays(plotdata$date) %in% weekdays1), 
+          levels=c(FALSE, TRUE), labels=c('weekend', 'weekday') )
+head(plotdata)
+```
+```{r echo=TRUE}
+ggplot(plotdata,aes(date,step))+geom_line(color='White')+facet_grid(.~type,scale = "free_y", space = "free_y")+theme(panel.background=element_rect(fill = "lightblue"),panel.spacing = unit(2, "lines"),panel.grid.major = element_blank(), panel.grid.minor = element_blank())  ##增加间距
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
