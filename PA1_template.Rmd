@@ -5,21 +5,66 @@ output:
     keep_md: true
 ---
 
-
 ## Loading and preprocessing the data
+##### 1. Load the data (i.e. read.csv())
 
+```r
+##################################################
+#                                                #
+#             CLEANING THE WORK SPACE            #
+#                                                #
+##################################################
 
+rm(list=ls())
+
+##################################################
+#                                                #
+#             DOWNLOADING THE FILE               #
+#                                                #
+##################################################
+
+if(!file.exists("activity.csv")) {
+    tempfile <- tempfile()
+    download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip")
+    unzip(tempfile)
+    unlink(tempfile)
+}
+
+##################################################
+#                                                #
+#             LOADING THE FILE                   #
+#                                                #
+##################################################
+
+activity <- read.csv("activity.csv")
+```
+##### 2. Process/transform the data (if necessary) into a format suitable for your analysis
+
+It is not necessary.
+
+-----
 
 ## What is mean total number of steps taken per day?
 
+```r
+activity_steps_day <- aggregate(steps ~ date, data = activity, FUN = sum, na.rm = TRUE)
+```
 
+##### 1. Make a histogram of the total number of steps taken each day
 
-## What is the average daily activity pattern?
+```r
+hist(activity_steps_day$steps, xlab = "Number of steps per day", main = "Total number of steps per day",col="grey")
+```
 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5.png) 
 
+##### 2. Calculate and report the mean and median total number of steps taken per day
 
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```r
+mean_steps <- mean(activity_steps_day$steps)
+median_steps <- median(activity_steps_day$steps)
+mean_steps <- format(mean_steps,digits = 1)
+median_steps <- format(median_steps,digits = 1)
+```
+* Mean: 10766
+* Median:  10765
