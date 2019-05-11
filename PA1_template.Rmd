@@ -38,7 +38,7 @@ perday <- summarise(by_day, total_steps = sum(steps))
 #### Histogram of the total number of steps taken each day
 
 Show the total number of steps per day through histogram
-```{r, message= FALSE}
+```{r, warning= FALSE}
 ggplot(perday, aes(total_steps))+
   geom_histogram(binwidth=1000)+
   labs(x="Total Steps")+
@@ -164,6 +164,8 @@ As you can see, the old and new mean are exactly the same. The only change that 
 ## Are there differences in activity patterns between weekdays and weekends?
 
 #### Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+Create a new column that identifies whether the date is a Weekend or a Weekday. 
 
 ```{r}
 combined$day <- weekdays(as.Date(combined$date))
