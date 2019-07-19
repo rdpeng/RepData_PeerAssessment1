@@ -4,22 +4,138 @@ output:
   html_document:
     keep_md: true
 ---
+---
+title: "Peer_Project_1"
+author: "RongbinY"
+date: "7/15/2019"
+output: html_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
+## R Markdown
+
+This is an R Markdown document for the peer project of the reproducible research at JHU-Cousera course. 
 ## Loading and preprocessing the data
+This data will examine the relationship between three major variables
 
+```{r cars, echo=FALSE}
+activities <- read.csv("./activity.csv")
+```
 
+## Explanatory Examination
+
+```{R examining data}
+head(activities)
+str(activities)
+summary(activities)
+```
 
 ## What is mean total number of steps taken per day?
+#Question 1: What is mean total number of steps taken per day?
+```{R}
+sum_up <- aggregate(activities$steps ~ activities$date, FUN=sum, )
+colnames(sum_up)<- c("Date", "Steps")
+hist(sum_up$Steps, breaks=5, xlab="Steps", main = "Graph1: Steps per Day")
+```
+Calculating the mean of the sum_up as the integers
+```{R}
+as.integer(mean(sum_up$Steps))
+```
 
+calculating the median of the sum_up as the integers
 
+```{R}
+as.integer(median(sum_up$Steps))
+```
 
 ## What is the average daily activity pattern?
+#Question 2: What is the average daily activity pattern?
 
+```{R}
+library(ggplot2)
+library(plyr)
+sum_clean <- activities[!is.na(activities$steps),]
+sum_up2 <- aggregate(sum_clean$steps ~ sum_clean$interval, FUN = sum)
+intervalTable <- ddply(sum_clean, .(interval), summarize, Avg = mean(steps))
+p <- ggplot(intervalTable, aes(x=interval, y=Avg), xlab = "Interval", ylab="Average Number of Steps")
+p + geom_line()+xlab("Interval")+ylab("Average Number of Steps")+ggtitle("Graph2: Average Number of Steps per Interval")
+```
+
+Maximum of the days' steps
+```{R}
+maxi <- max(intervalTable$Avg)
+maxi 
+```
+
+Interval that contain the maximum of steps
+```{R}
+intervalTable[intervalTable$Avg==max(intervalTable$Avg),1]
+
+```
 
 
 ## Imputing missing values
+#Question 3: Imputing missing values
+
+3.1 Compute number of the NA data
+```{R}
+a2<- nrow(activities[is.na(activities$steps), ])
+a2
+```
+3.2 Replace the NA with means of the day
+```{R}
+library(plyr)
+#replacing with mean
+
+act_2 <- activities
+act_2$steps[is.na(activities$steps)] = mean(sum_up$Steps/(12*24))
+
+```
+3.3 New dataset is the act_2
+3.4 Histogram & Summaries:
+```{R}
+act_sum <- aggregate(act_2$steps ~ act_2$date, FUN=sum, )
+hist(act_sum$`act_2$steps`, main = "Graph3: Total Number of Steps after Subsitituition")
+```
+Nothing changed after the substituition method of replacing the NAs by the daily average steps. 
+
+3.4 Mean & Median:
+```{R}
+act_mean <- mean(act_sum$`act_2$steps`)
+# Mean of modified dataset
+act_mean
 
 
+act_median <- median(act_sum$`act_2$steps`)
+# Median of modified dataset
+act_median
+```
+Indeed, comparing with the result in the question 1, the difference is in the expectation. Indeed, the substituition of the data via the mean of the overall data divided into the interval reinforces the previous result, especially the mean. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+#Question 4: Are there differences in activity patterns between weekdays and weekends?
+4.1 Using weekdays to differentiate weekdays and weekends
+```{R}
+library(plyr)
+library(lubridate)
+activities$week <- weekdays(as_date(activities$date))
+activities$week[which(activities$week == 'Monday')] = 'weekday'
+activities$week[which(activities$week == 'Tuesday')] = 'weekday'
+activities$week[which(activities$week == 'Wednesday')] = 'weekday'
+activities$week[which(activities$week == 'Thursday')] = 'weekday'
+activities$week[which(activities$week == 'Friday')] = 'weekday'
+activities$week[which(activities$week == 'Saturday')] = 'weekend'
+activities$week[which(activities$week == 'Sunday')] = 'weekend'
+
+activities$steps[is.na(activities$steps)] = mean(sum_up$Steps/(12*24))
+
+intervalTable2 <- ddply(activities, .(interval,week), summarize, Avg = mean(steps))
+
+library(lattice)
+xyplot(Avg~interval | week, data = intervalTable2, type = 'l', layout = c(1,2), main="Graph4: Average Steps per Interval Based on Type of Day", ylab="Average Number of Steps", xlab="Interval" )
+```
+The steps of the individuals that make during the weekdays and weekends are different, even through the pattern of weekend and weekdays are similar. The possible reason is that, in the weekends, people have more time to participate in the sport activities. 
