@@ -1,25 +1,113 @@
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Week 2 Reproducible Research Project"
+author: "June Kieu"
+date: "1/6/2020"
+output: html_document
 ---
 
 
-## Loading and preprocessing the data
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
+## Import Data
 
+First of all I load the data into R and eliminate **NA** values.
 
-## What is mean total number of steps taken per day?
+```{r Loading Data}
+setwd("C:/Users/June Kieu/Desktop/Studying R/Week2-Reproducible-Research-Project")
+data <- read.csv("activity.csv",header = TRUE,sep = ",")
+data1 <- data[!is.na(data$steps),]
+```
 
+## Total Number of Steps per day
 
+I used **sqldf** package to summarize the number of steps per day and use a histogram to have the visualization of data.
+```{r Steps per Day, echo=TRUE}
+require(sqldf)
+step_sum <- sqldf("select distinct date,sum(steps) as total_step from data1 group by date")
+require(ggplot2)
+ggplot(data=step_sum,aes(x=total_step)) + geom_histogram(bins = 15,fill="blue",color="gold")+
+  ggtitle("Total Steps per Day")
+```
 
-## What is the average daily activity pattern?
+## Total Number of Steps Taken per Day's Mean and Median
 
+The mean is 10766; the median is 10765.
 
+```{r MM, echo=TRUE}
+step_meanmed <- sqldf("select sum(total_step)/count(date) as avg_step,
+                      median(total_step) as med_step from step_sum")
+step_meanmed$avg_step
+step_meanmed$med_step
+```
 
-## Imputing missing values
+## Time Series Plot of the Average Number of Steps Taken
 
+```{r TS, echo=TRUE}
+timeseries <- sqldf("select distinct interval,sum(steps)/count(interval) 
+                    as five_min_step from data1 group by interval
+                    order by interval")
+ggplot(timeseries,aes(x=interval,y=five_min_step))+geom_line()+
+  labs(title = "Average number of steps taken \n per 5-min interval",
+       x="Interval",y="Average Steps")
+```
 
+The maxium average steps taken per 5 minute interval is 206; in interval 835.
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r MAX, echo=TRUE}
+timeseries[which(timeseries$five_min_step==max(timeseries$five_min_step)),]
+```
+
+# Dealing with NA value
+
+I would replace NA values in Steps with median of Steps. Replacing NAs with mean of step would give NAs value of roughly 10000 steps. I believe that is too many steps.
+
+```{r replace NA, echo=FALSE}
+replace <- function(x){
+  x[is.na(x)]=median(x,na.rm=TRUE)
+  x
+}
+
+data$steps1 <- replace(data$steps)
+```
+
+The revised histogram is below:
+
+```{r Steps per Day 1, echo=TRUE}
+require(sqldf)
+step_sum1 <- sqldf("select distinct date,sum(steps1) as total_step from data group by date")
+require(ggplot2)
+ggplot(data=step_sum1,aes(x=total_step)) + geom_histogram(bins = 15,fill="blue",color="gold")+
+  ggtitle("Total Steps per Day (modified)")
+```
+
+The revised mean and median are:
+
+The revised mean is 9354 and the median is 10395.
+```{r MM1, echo=TRUE}
+step_meanmed1 <- sqldf("select sum(total_step)/count(date) as avg_step,
+                      median(total_step) as med_step from step_sum1")
+step_meanmed1$avg_step
+step_meanmed1$med_step
+```
+
+### Comparison between Weekday and Weekend 
+
+```{r WW, echo=TRUE}
+data$date <- as.Date(data$date)
+data$DOW <- weekdays(data$date)
+data$WDWE <- ifelse(data$DOW=="Saturday" | data$DOW=="Sunday","Weekend","Weekday")
+WDWE <- sqldf("select distinct WDWE,interval,sum(steps1)/count(interval) as five_min_steps
+              from data group by WDWE,interval")
+ggplot(WDWE,aes(x=interval,y=five_min_steps))+geom_line()+ facet_grid(WDWE~.)+
+  labs(title = "Average number of steps taken per 5-min interval",
+       x="Interval",y="Average Steps")
+```
+
+Technically speaking, people walk more on weekdays.
