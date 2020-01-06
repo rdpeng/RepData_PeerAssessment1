@@ -79,7 +79,7 @@ require(sqldf)
 step_sum1 <- sqldf("select distinct date,sum(steps1) as total_step from data group by date")
 require(ggplot2)
 ggplot(data=step_sum1,aes(x=total_step)) + geom_histogram(bins = 15,fill="blue",color="gold")+
-  ggtitle("Total Steps per Day (modified")
+  ggtitle("Total Steps per Day (modified)")
 ```
 
 The revised mean and median are:
