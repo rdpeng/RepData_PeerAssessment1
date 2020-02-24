@@ -1,25 +1,100 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template.Rmd"
+author: "Emma Engler"
+date: "2/24/2020"
+output: html_document
 ---
 
+#Reproducible Research: Assignment 1 
 
-## Loading and preprocessing the data
+```{r, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+library(ggplot2)
+library(scales)
+library(Hmisc)
+library(knitr)
+library(lubridate)
+library(dplyr)
+```
 
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+##Load and preprocess data 
+###Loading data 
+```{r, results='markup',warning=TRUE,message=TRUE}
+if(!file.exists('activity.csv')){
+  unzip('activity.zip')
+}
+data <-read.csv('activity.csv')
+```
+###Process/transform data 
+```{r}
+#data$interval <-strptime(gsub("([0-9]{1,2})([0-9]{2})","\\1:\\2",data$interval), format='%H:%M')
+```
+##What is mean total number of steps taken per day? 
+```{r}
+steps.by.day<- tapply(data$steps, data$date, sum, na.rm=TRUE)
+```
+###Make a histogram of the total number of steps taken each day 
+```{r}
+qplot(steps.by.day,xlab='Total Steps Per Day', ylab='Frequency using Binwith 500', binwidth=500)
+```
+###Calculate and report mean and median of total number of steps per day 
+```{r}
+steps.by.day.mean <-mean(steps.by.day)
+steps.by.day.median <-median(steps.by.day)
+```
+*Mean: 'r steps.by.day.mean 
+*Median: 'r steps.by.day.median'
+##What is the average daily activity pattern? 
+```{r}
+average.steps.per.time.block <-aggregate(x=list(meanSteps=data$steps),by=list(interval=data$interval), FUN=mean, na.rm=TRUE)
+```
+###Make a time series plot
+```{r}
+ggplot(data=average.steps.per.time.block,aes(x=interval,y=meanSteps))+
+  geom_line()+
+  xlab("5-min Interval")+
+  ylab("Average Number of Steps Taken")
+```
+###Which interval contains max number of steps? 
+```{r}
+most.steps <-which.max(average.steps.per.time.block$meanSteps)
+time.most.steps <-gsub("([0-9]{1,2})([0-9]{2})","\\1:\\2",average.steps.per.time.block[most.steps,'interval'])
+```
+*Most steps: 'r most.steps'
+##Imputing missing values 
+###Calculate and report total missing values in dataset 
+```{r}
+missing.values <-length(which(is.na(data$steps)))
+```
+*Number of missing values: 'r missing.values' 
+###Devise a strategy to fill in all missing values in dataset 
+###Create new dataset equal to the original dataset but with the missing data filled in 
+```{r}
+activity.data.imputed <-data 
+activity.data.imputed$steps <-impute(data$steps, fun=mean)
+```
+###Make a histogram of the total number of steps taken each day 
+```{r}
+steps.by.day.imputed <-tapply(activity.data.imputed$steps, activity.data.imputed$date,sum)
+qplot(steps.by.day.imputed,xlab='Total Steps Per Day (imputed)',ylab='Frequency Using Binwith=500', binwidth=500)
+```
+###Calculate and report the mean and median total number of steps taking per day 
+```{r}
+steps.by.day.mean.imputed <-mean(steps.by.day.imputed)
+steps.by.day.median.imputed <-median(steps.by.day.imputed)
+```
+*Mean (imputed): 'r steps.by.day.imputed'
+*Median (imputed): 'r steps.by.day.imput' 
+##Are there differences in activity patterns between weekdays and weekends? 
+###Create a new factor variable in the dataset with two levels: weekday and weekend 
+```{r}
+activity.data.imputed$dateType <-ifelse(as.POSIXlt(activity.data.imputed$date)$wday %in% c(0.6),'weekend','weekday')
+```
+###Make a panel plot containing a time series plot 
+```{r}
+averaged.activity.data.imputed <-aggregate(steps~interval + dateType, data=activity.data.imputed,mean)
+ggplot(averaged.activity.data.imputed,aes(interval,steps))+
+  geom_line()+
+  facet_grid(dateType~.)+
+  xlab("5 min Interval")+
+  ylab("Averaged Number of Steps")
+```
