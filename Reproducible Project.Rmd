@@ -1,0 +1,180 @@
+---
+title: "Reproducible Project"
+author: "H. Tetteh"
+date: "21/03/2020"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(dplyr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This assignment will be described in multiple parts. You will need to write a report that answers the questions detailed below. Ultimately, you will need to complete the entire assignment in a single R markdown document that can be processed by knitr and be transformed into an HTML file.
+
+Throughout your report make sure you always include the code that you used to generate the output you present. When writing code chunks in the R markdown document, always use echo = TRUE so that someone else will be able to read the code. This assignment will be evaluated via peer assessment so it is essential that your peer evaluators be able to review the code for your analysis.
+
+For the plotting aspects of this assignment, feel free to use any plotting system in R (i.e., base, lattice, ggplot2)
+
+Fork/clone the GitHub repository created for this assignment. You will submit this assignment by pushing your completed files into your forked repository on GitHub. The assignment submission will consist of the URL to your GitHub repository and the SHA-1 commit ID for your repository state.
+
+NOTE: The GitHub repository also contains the dataset for the assignment so you do not have to download the data separately.
+
+## 1) Loading and preprocessing the data
+```{r activityDataSet}
+if (!file.exists('activity.csv')){
+  unzip(zipfile = "activity.zip")
+}
+
+activityDataSet <- read.csv( file = "activity.csv", header = TRUE)
+ 
+ head(activityDataSet, 20)
+ tail(activityDataSet, 20)
+```
+
+## 2) What is mean total number of steps taken per day? 
+
+```{r Calculate the total steps taken per day}
+# a) Make a histogram of the total number of steps taken each day
+totalSteps <- aggregate(steps ~ date, activityDataSet, FUN=sum)
+
+hist(totalSteps$steps,
+     main = "Total Steps per Day",
+     xlab = "Number of Steps")
+
+```
+
+```{r  What is mean total number of steps taken per day?}
+# b) Calculate and report the mean and median of total steps taken per day *Excluding NA*
+#Total number of NAs
+
+sum(is.na(activityDataSet))
+
+mean_Steps_per_day <- mean(totalSteps$steps, na.rm = TRUE)
+mean_Steps_per_day
+
+median_Steps_day <- median(totalSteps$steps, na.rm = TRUE)
+median_Steps_day
+```
+
+## 3) What is the average daily activity pattern?
+```{r What is the average daily activity pattern}
+
+# preprocessing data for plot
+Steps_by_interval <- aggregate(steps ~ interval, activityDataSet, mean)
+
+# create a time series plot 
+plot(Steps_by_interval$interval, Steps_by_interval$steps, type='l', 
+     main="Average number of steps over all days", xlab="5 - Minute Interval", 
+     ylab="Average number of steps")
+```
+
+### The 5-minute interval, on average across all the days in the dataset, containing the maximum number of steps.
+
+```{r The 5-minute interval, on average across all the days in the dataset }
+# find row with max of steps
+max_steps_row <- which.max(Steps_by_interval$steps)
+
+# find interval with this max
+Steps_by_interval[max_steps_row,]
+```
+### The interval 835 has the maximum average value of steps (206.1698).
+
+
+## 4 Imputing missing values
+### a) Calculate and report the total number of missing values
+```{r Imputing missing values}
+
+sum(is.na(activityDataSet))
+```
+###Total rows with missing Values 2304 Rows
+
+
+## b)I replace every NA’s with the mean for that 5-minute interval,since 2304 is a large number i can not remove affected rows.
+```{r replace every NA’s with the mean}
+activityDataSet_imputed <- activityDataSet
+for (i in 1:nrow(activityDataSet_imputed)) {
+  if (is.na(activityDataSet_imputed$steps[i])) {
+    interval_value <- activityDataSet_imputed$interval[i]
+    steps_value <- Steps_by_interval[
+     Steps_by_interval$interval == interval_value,]
+    activityDataSet_imputed$steps[i] <- steps_value$steps
+  }
+}
+
+```
+## I’ve created new data set data_no_na which equals to activityDataSet_imputed_row but without NA’s. All NA’s are replaced with mean of 5-minute interval.
+
+
+## c) printing the first and last 20 rows of the new Dataset(activityDataSet_imputed)
+```{r printing the first and last 20 rows}
+#activityDataSet_imputed
+head(activityDataSet_imputed, 20)
+tail(activityDataSet_imputed, 20)
+
+```
+
+## checking how many Rows of NAs are affected
+```{r checking how many Rows of NAs are affected}
+sum(is.na(activityDataSet_imputed))
+```
+### I’ve created new data set data_no_NA which equals to data_row but without NA’s. All NA’s are replaced with mean of 5-minute interval, so NA is equal to 0 now.
+
+
+## d) Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day
+```{r Calculate and report the mean and median total number of steps taken per day}
+
+df_imputed_steps <- aggregate(steps ~ date, activityDataSet_imputed , sum)
+head(df_imputed_steps, 20)
+
+sum(is.na(df_imputed_steps))
+```
+### Calculating the mean and median of imputed data
+```{r Calculating the mean and median of imputed data}
+mean(df_imputed_steps$steps)
+
+median(df_imputed_steps$steps)
+
+```
+
+```{r Make a histogram of the total number of steps taken each day}
+hist(df_imputed_steps$steps, main="Histogram of total number of steps per day (imputed)", 
+xlab="Total number of steps in a day")
+```
+
+
+## 5) Are there differences in activity patterns between weekdays and weekends?
+```{r Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day. }
+activityDataSet_imputed['type_of_day'] <- weekdays(as.Date(activityDataSet_imputed$date))
+activityDataSet_imputed$type_of_day[activityDataSet_imputed$type_of_day  %in% c('Saturday','Sunday') ] <- "weekend"
+activityDataSet_imputed$type_of_day[activityDataSet_imputed$type_of_day != "weekend"] <- "weekday"
+
+```
+
+```{r Convert type_of_day from character to factor }
+
+activityDataSet_imputed$type_of_day <- as.factor(activityDataSet_imputed$type_of_day)
+```
+
+```{r Make a panel plot containing a time series plot}
+df_imputed_steps_by_interval <- aggregate(steps ~ interval + type_of_day, activityDataSet_imputed , mean)
+```
+
+
+```{r The Make a panel plot containing a time series plot}
+qplot(interval, 
+      steps, 
+      data = df_imputed_steps_by_interval, 
+      type = 'l', 
+      geom=c("line"),
+      xlab = "Interval", 
+      ylab = "Number of steps", 
+      main = "Average Daily Activity Pattern") +
+  facet_wrap(~ type_of_day, ncol = 1)
+```
+
