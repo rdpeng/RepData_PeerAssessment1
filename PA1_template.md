@@ -23,7 +23,6 @@ The data for this project can be downloaded from this repository.
 
 
 ```r
-setwd(dir = '/Users/shaoz/Desktop/JHU_DataScience/Course 5 Week2')
 #setwd(dir = '/Users/...')
 ```
 
