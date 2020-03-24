@@ -7,9 +7,7 @@ output:
                 keep_md: true
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
+
 
 ## Introduction
 
@@ -23,13 +21,15 @@ The data for this project can be downloaded from this repository.
 
 #### 1.Set the working directory.
 
-```{r echo=TRUE}
+
+```r
 #setwd(dir = '/Users/...')
 ```
 
 #### 2.Download the activity file.
 
-```{r echo=TRUE}
+
+```r
 library(data.table)
 fileUrl = 'https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'
 if (!file.exists('./repdata_data_activity.zip')) {
@@ -40,7 +40,8 @@ if (!file.exists('./repdata_data_activity.zip')) {
 
 #### 3.Load and preprocess the data.
 
-```{r echo=TRUE}
+
+```r
 data <- read.csv('./activity.csv', stringsAsFactors = FALSE)
 data$date <- as.Date(data$date, '%Y-%m-%d')
 ```
@@ -49,15 +50,28 @@ data$date <- as.Date(data$date, '%Y-%m-%d')
 
 #### 1.Calculate the total number of steps taken per day.
 
-```{r echo=TRUE}
+
+```r
 totalSteps_day <- aggregate(steps ~ date, data, sum)
 ```
-```{r echo=FALSE}
-head(totalSteps_day,10)
+
+```
+##          date steps
+## 1  2012-10-02   126
+## 2  2012-10-03 11352
+## 3  2012-10-04 12116
+## 4  2012-10-05 13294
+## 5  2012-10-06 15420
+## 6  2012-10-07 11015
+## 7  2012-10-09 12811
+## 8  2012-10-10  9900
+## 9  2012-10-11 10304
+## 10 2012-10-12 17382
 ```
 
 #### 2.Make a histogram of the total number of steps taken each day using base plotting system.
-```{r echo=TRUE}
+
+```r
 hist(totalSteps_day$steps,
      breaks = 20,
      main = 'Total Number of Steps Taken Each Day',
@@ -66,20 +80,35 @@ hist(totalSteps_day$steps,
 )
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
 #### 3.Calculate and report the mean and median of the total number of steps taken per day.
 
-```{r echo=TRUE}
+
+```r
 totSteps_day_Mean <-  mean(totalSteps_day$steps)
 totSteps_day_Mean
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 totSteps_day_Median <- median(totalSteps_day$steps)
 totSteps_day_Median
+```
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 
 #### 1.Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis) using base plotting system.
 
-```{r echo=TRUE}
+
+```r
 aveStep_interval <- aggregate(steps ~ interval, data, mean)
 plot(aveStep_interval$interval,aveStep_interval$steps, 
      type = 'l',
@@ -89,12 +118,19 @@ plot(aveStep_interval$interval,aveStep_interval$steps,
      xlab = 'Interval')
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+
 #### 2.Find the 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps.
 
-```{r echo=TRUE}
+
+```r
 steps_interval_Max <-
         aveStep_interval[which.max(aveStep_interval$steps), 1]
 steps_interval_Max
+```
+
+```
+## [1] 835
 ```
 
 So, the **835** interval contains the maximum number of steps.
@@ -105,12 +141,28 @@ So, the **835** interval contains the maximum number of steps.
 
 Here is the raw data looks like:
 
-```{r echo=FALSE}
-head(data,10)
+
+```
+##    steps       date interval
+## 1     NA 2012-10-01        0
+## 2     NA 2012-10-01        5
+## 3     NA 2012-10-01       10
+## 4     NA 2012-10-01       15
+## 5     NA 2012-10-01       20
+## 6     NA 2012-10-01       25
+## 7     NA 2012-10-01       30
+## 8     NA 2012-10-01       35
+## 9     NA 2012-10-01       40
+## 10    NA 2012-10-01       45
 ```
 
-```{r echo=TRUE}
+
+```r
 sum(is.na(data$steps))
+```
+
+```
+## [1] 2304
 ```
 There are **2304** missing values in the `steps` column.
 
@@ -118,7 +170,8 @@ There are **2304** missing values in the `steps` column.
 
 I'll use the value of average steps taken in 5-min interval, which calculated previously, to replace the NA values.
 
-```{r echo=TRUE}
+
+```r
 ## Reread the raw data and use average steps in 5-min interval value 
 ## to replace the NA values in 'steps' column 
 newData <- read.csv('./activity.csv', stringsAsFactors = FALSE)
@@ -128,13 +181,25 @@ newData$steps[is.na(newData$steps)] <-
 
 New data looks like:
 
-```{r echo=FALSE}
-head(newData,10)
+
+```
+##        steps       date interval
+## 1  1.7169811 2012-10-01        0
+## 2  0.3396226 2012-10-01        5
+## 3  0.1320755 2012-10-01       10
+## 4  0.1509434 2012-10-01       15
+## 5  0.0754717 2012-10-01       20
+## 6  2.0943396 2012-10-01       25
+## 7  0.5283019 2012-10-01       30
+## 8  0.8679245 2012-10-01       35
+## 9  0.0000000 2012-10-01       40
+## 10 1.4716981 2012-10-01       45
 ```
 
 #### 3.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r echo=TRUE}
+
+```r
 totalSteps_day_2 <- aggregate(steps ~ date, newData, sum)
 hist(totalSteps_day_2$steps, 
      breaks = 20,
@@ -143,13 +208,27 @@ hist(totalSteps_day_2$steps,
      xlab = 'Number of Steps')
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
 Here are the mean and median total number of steps taken per day values calculated from imputed data:
 
-```{r echo=TRUE}
+
+```r
 totSteps_day_Mean_2 <-  mean(totalSteps_day_2$steps)
 totSteps_day_Mean_2
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 totSteps_day_Median_2 <- median(totalSteps_day_2$steps)
 totSteps_day_Median_2
+```
+
+```
+## [1] 10765.59
 ```
 
 Compare the difference between those values,
@@ -165,7 +244,8 @@ we can see that there is almost no impact on the estimates of the total daily nu
 
 #### 1.Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 
-```{r echo=TRUE}
+
+```r
 newData$date <- as.Date(newData$date, '%Y-%m-%d')
 ## add two columns,'days' and 'whatDays', in the newData to represent 
 ## the day of week and whether is a weekday or weekend day 
@@ -180,13 +260,25 @@ newData <- dplyr::mutate(newData, whatDays = whatDays)
 
 Data contains new variables looks like:
 
-```{r echo=FALSE}
-head(newData,10)
+
+```
+##        steps       date interval   days whatDays
+## 1  1.7169811 2012-10-01        0 Monday  Weekday
+## 2  0.3396226 2012-10-01        5 Monday  Weekday
+## 3  0.1320755 2012-10-01       10 Monday  Weekday
+## 4  0.1509434 2012-10-01       15 Monday  Weekday
+## 5  0.0754717 2012-10-01       20 Monday  Weekday
+## 6  2.0943396 2012-10-01       25 Monday  Weekday
+## 7  0.5283019 2012-10-01       30 Monday  Weekday
+## 8  0.8679245 2012-10-01       35 Monday  Weekday
+## 9  0.0000000 2012-10-01       40 Monday  Weekday
+## 10 1.4716981 2012-10-01       45 Monday  Weekday
 ```
 
 #### 2.Make a panel plot containing a time series plot (i.e. type="l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
 
-```{r echo=TRUE}
+
+```r
 ## First, separate the weekdays and weekends data to calculate the average steps taken in 5-min interval
 weekdayData <- dplyr::filter(newData,whatDays == 'Weekday')
 aveStep_interval_weekday <-
@@ -204,11 +296,20 @@ aveStep_interval_weekend <- dplyr::mutate(aveStep_interval_weekend,
 newData_whatDays <- dplyr::bind_rows(aveStep_interval_weekday,aveStep_interval_weekend)
 
 library(ggplot2)
+```
+
+```
+## Warning: package 'ggplot2' was built under R version 3.6.3
+```
+
+```r
 ggplot(newData_whatDays,aes(interval,steps,color = whatDays)) +
         geom_line() +
         facet_wrap(~whatDays , ncol = 1, nrow=2) +
         xlab('Interval') + 
         ylab('Number of steps')
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 We can see that there are differences in activity patterns between weekdays and weekends. For weekdays, more steps observed between 500 to 1000 intervals than others.
