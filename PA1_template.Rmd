@@ -1,25 +1,125 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Indoor Activity Analysis"
+author: "Daibik DasGupta"
+date: "23/04/2020"
+output: html_document
 ---
 
+# Introduction 
+It is now possible to collect a large amount of data about personal movement using activity monitoring devices such as a [Fitbit](https://www.fitbit.com/in/home), [Nike Fuelband](https://www.nike.com/help/a/why-cant-i-sync), or Jawbone Up. These type of devices are part of the “quantified self” movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. But these data remain under-utilized both because the raw data are hard to obtain and there is a lack of statistical methods and software for processing and interpreting the data. 
 
-## Loading and preprocessing the data
+At the time of writing, there is a world-wide lockdown due to the [outbreak of the pandemic virus Covid-19](https://www.who.int/emergencies/diseases/novel-coronavirus-2019/events-as-they-happen), and this exploratory data analysis will provide valuable insight into how one can perform various physical exercises to most efficiently stay in shape while also remaining indoors for very long periods of time.
 
+This analysis makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.
+The data for this analysis can be downloaded from [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip).
 
+The variables included in this dataset are: <br />
+-steps: Number of steps taking in a 5-minute interval (missing values are coded as **NA**) <br />
+-date: The date on which the measurement was taken in YYYY-MM-DD format <br />
+-interval: Identifier for the 5-minute interval in which measurement was taken <br />
+The dataset is stored in a comma-separated-value (CSV) file and there are a total of 17,568 observations in this dataset.
 
-## What is mean total number of steps taken per day?
+# Data Analysis
 
+### 1. Unpacking, Loading and Processing the Data
 
+```{r loaddata}
+unzip(zipfile="activity.zip")
+data <- read.csv("activity.csv")
+```
 
-## What is the average daily activity pattern?
+### 2. Histogram of the total number of steps taken each day
 
+```{r}
+library(ggplot2)
+total.steps <- tapply(data$steps, data$date, FUN=sum, na.rm=TRUE)
+qplot(total.steps, binwidth=1000, xlab="total number of steps taken each day")
+```
 
+### 3. Mean and median number of steps taken each day
 
-## Imputing missing values
+```{r}
+mean(total.steps, na.rm=TRUE)
+median(total.steps, na.rm=TRUE)
+```
 
+### 4. Time series plot of the average number of steps taken
 
+```{r}
+library(ggplot2)
+averages <- aggregate(x=list(steps=data$steps), by=list(interval=data$interval),
+                      FUN=mean, na.rm=TRUE)
+ggplot(data=averages, aes(x=interval, y=steps)) +
+    geom_line() +
+    xlab("5-minute interval") +
+    ylab("average number of steps taken")
+```
 
-## Are there differences in activity patterns between weekdays and weekends?
+### 5. The 5-minute interval that, on average, contains the maximum number of steps
+
+```{r}
+averages[which.max(averages$steps),]
+```
+
+### 6. Code to describe and show a strategy for inputing missing data
+
+There are many days/intervals where there are missing values (coded as **NA**). The presence of missing days may introduce bias into some calculations or summaries of the data, therefore we need a strategy to deal with it.
+
+```{r how_many_missing}
+missing <- is.na(data$steps)
+table(missing)
+```
+
+All of the missing values are filled in with mean value for that specific 5-minute interval:
+
+```{r}
+fill.value <- function(steps, interval) {
+  filled <- NA
+  if (!is.na(steps))
+    filled <- c(steps)
+  else
+    filled <- (averages[averages$interval==interval, "steps"])
+  return(filled)
+}
+filled.data <- data
+filled.data$steps <- mapply(fill.value, filled.data$steps, filled.data$interval)
+```
+### 7. Histogram of the total number of steps taken each day after missing values are inputed
+
+```{r}
+total.steps <- tapply(filled.data$steps, filled.data$date, FUN=sum)
+qplot(total.steps, binwidth=1000, xlab="total number of steps taken each day")
+```
+
+```{r}
+mean(total.steps)
+median(total.steps)
+```
+
+Mean and median values are higher after inputing missing data. The reason is that in the original data, there are some days with **steps** values **NA** for any **interval**. The total number of steps taken in such days are set to 0s by default. However, after replacing missing **steps** values with the mean **steps** of associated **interval** value, these 0 values are removed from the histogram of total number of steps taken each day.
+
+### 8. Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
+
+First, let's find the day of the week for each measurement in the dataset. In this part, we use the dataset with the filled-in values.
+
+```{r}
+weekday.or.weekend <- function(date) {
+    day <- weekdays(date)
+    if (day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+        return("weekday")
+    else if (day %in% c("Saturday", "Sunday"))
+        return("weekend")
+    else
+        stop("invalid date")
+}
+filled.data$date <- as.Date(filled.data$date)
+filled.data$day <- sapply(filled.data$date, FUN=weekday.or.weekend)
+```
+
+Now, let's make a panel plot containing plots of average number of steps taken on weekdays and weekends.
+
+```{r}
+averages <- aggregate(steps ~ interval + day, data=filled.data, mean)
+ggplot(averages, aes(interval, steps)) + geom_line() + facet_grid(day ~ .) +
+    xlab("5-minute interval") + ylab("Number of steps")
+```
