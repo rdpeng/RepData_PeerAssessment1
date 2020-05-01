@@ -4,7 +4,6 @@ author: "Yuchen Zhou"
 date: "5/1/2020"
 ---
 
-github repo for rest of specialization: [Data Science Coursera](https://github.com/mGalarnyk/datasciencecoursera)
 
 Introduction
 ------------
