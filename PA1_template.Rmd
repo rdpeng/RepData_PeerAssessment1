@@ -57,7 +57,7 @@ maxInterval <- which.max(averageStepsPerDayInterval)
 ```
 Interval `r maxInterval` has the most number of steps
 
-## Imputing missing values
+## Imputing missing values(NAs)
 Data has `r sum(is.na(dt$steps))` `NA`s. We will impute the missing values by filling them with the mean of the 5-minute interval.
 
 
@@ -88,7 +88,7 @@ dev.off()
 The mean of total steps taken per day, with no missing values, is `r round(meanStepsPerDayNoNAs,2)`,
 the median is `r medianStepsPerDayNoNAs`.
 
-The results differ slightly from the original data.
+The results differ slightly from the original data.  
 
 The median is the the same as the mean because all the missing values are filled with the mean, making the mean the most frequent value in the new data.
 
