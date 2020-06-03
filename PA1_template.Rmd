@@ -9,6 +9,7 @@ output:
 ## Loading and preprocessing the data
 ```{r}
 library(data.table)
+options(scipen=999)
 if (!file.exists('activity.csv')){
   if (!file.exists('activity.zip')){
     download.files('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip',
@@ -25,12 +26,14 @@ activity$date <- as.Date(activity$date)
 library(dplyr)
 library(ggplot2)
 activitystat <- activity %>% group_by(date) %>% select(-interval) %>% 
-  summarise(steptotal = sum(steps,na.rm=T), mean = mean(steps,na.rm=T), median = median(steps,na.rm=T))
+  summarise(steptotal = sum(steps,na.rm=T))
 head(activitystat,5)
 ggplot(data=activitystat,mapping=aes(steptotal))+
   geom_histogram(binwidth = 1000)+
   labs(x='Total number of steps', y='Frequency')
 ```
+  
+The mean total steps taken per day was `r round(mean(activitystat$steptotal,na.rm=T),1)` and the median was `r median(activitystat$steptotal,na.rm=T)`.  
 
 ## What is the average daily activity pattern?
 ```{r,fig.height=4,fig.width=6}
@@ -52,14 +55,14 @@ library(dplyr)
 activity$imputeSteps <- ave(activity$steps,activity$interval,FUN=function(x)
   ifelse(is.na(x),mean(x,na.rm=T),x))
 activityimpstat <- activity %>% group_by(date) %>% select(date,imputeSteps) %>% 
-  summarise(steptotal = sum(imputeSteps), mean = mean(imputeSteps), 
-            median = median(imputeSteps))
+  summarise(steptotal = sum(imputeSteps))
 ggplot(data=activityimpstat,mapping=aes(steptotal))+
   geom_histogram(binwidth = 1000)+
   labs(x='Total number of steps', y='Frequency')
 head(activityimpstat,5)
 ```
-Roughly speaking, the differences between the imputed and non-imputed data are `r colSums((activityimpstat[,-1] - activitystat[,-1])^2,na.rm=T)` in terms of total steps taken, mean, and median across days.
+  
+The resulting mean and median steps per day from the imputation was `r round(mean(activityimpstat$steptotal,na.rm=T),1)` and `r round(median(activityimpstat$steptotal,na.rm=T),1)`. The differences between the imputed and non-imputed data for these parameters are `r round(abs(mean(activityimpstat$steptotal,na.rm=T)- mean(activitystat$steptotal,na.rm=T)),1)` and `r round(abs(median(activityimpstat$steptotal,na.rm=T)-median(activitystat$steptotal,na.rm=T)),1)`. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?

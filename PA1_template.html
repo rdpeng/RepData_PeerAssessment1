@@ -204,6 +204,7 @@ hr {
 <h2>Loading and preprocessing the data</h2>
 
 <pre><code class="r">library(data.table)
+options(scipen=999)
 if (!file.exists(&#39;activity.csv&#39;)){
   if (!file.exists(&#39;activity.zip&#39;)){
     download.files(&#39;https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip&#39;,
@@ -219,18 +220,18 @@ activity$date &lt;- as.Date(activity$date)
 <pre><code class="r">library(dplyr)
 library(ggplot2)
 activitystat &lt;- activity %&gt;% group_by(date) %&gt;% select(-interval) %&gt;% 
-  summarise(steptotal = sum(steps,na.rm=T), mean = mean(steps,na.rm=T), median = median(steps,na.rm=T))
+  summarise(steptotal = sum(steps,na.rm=T))
 head(activitystat,5)
 </code></pre>
 
-<pre><code>## # A tibble: 5 x 4
-##   date       steptotal    mean median
-##   &lt;date&gt;         &lt;int&gt;   &lt;dbl&gt;  &lt;dbl&gt;
-## 1 2012-10-01         0 NaN         NA
-## 2 2012-10-02       126   0.438      0
-## 3 2012-10-03     11352  39.4        0
-## 4 2012-10-04     12116  42.1        0
-## 5 2012-10-05     13294  46.2        0
+<pre><code>## # A tibble: 5 x 2
+##   date       steptotal
+##   &lt;date&gt;         &lt;int&gt;
+## 1 2012-10-01         0
+## 2 2012-10-02       126
+## 3 2012-10-03     11352
+## 4 2012-10-04     12116
+## 5 2012-10-05     13294
 </code></pre>
 
 <pre><code class="r">ggplot(data=activitystat,mapping=aes(steptotal))+
@@ -239,6 +240,8 @@ head(activitystat,5)
 </code></pre>
 
 <p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-2"/></p>
+
+<p>The mean total steps taken per day was 9354.2 and the median was 10395.  </p>
 
 <h2>What is the average daily activity pattern?</h2>
 
@@ -263,8 +266,7 @@ ggplot(data=activeperiod,mapping=aes(interval,mean))+
 activity$imputeSteps &lt;- ave(activity$steps,activity$interval,FUN=function(x)
   ifelse(is.na(x),mean(x,na.rm=T),x))
 activityimpstat &lt;- activity %&gt;% group_by(date) %&gt;% select(date,imputeSteps) %&gt;% 
-  summarise(steptotal = sum(imputeSteps), mean = mean(imputeSteps), 
-            median = median(imputeSteps))
+  summarise(steptotal = sum(imputeSteps))
 ggplot(data=activityimpstat,mapping=aes(steptotal))+
   geom_histogram(binwidth = 1000)+
   labs(x=&#39;Total number of steps&#39;, y=&#39;Frequency&#39;)
@@ -275,17 +277,17 @@ ggplot(data=activityimpstat,mapping=aes(steptotal))+
 <pre><code class="r">head(activityimpstat,5)
 </code></pre>
 
-<pre><code>## # A tibble: 5 x 4
-##   date       steptotal   mean median
-##   &lt;date&gt;         &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-## 1 2012-10-01    10766. 37.4     34.1
-## 2 2012-10-02      126   0.438    0  
-## 3 2012-10-03    11352  39.4      0  
-## 4 2012-10-04    12116  42.1      0  
-## 5 2012-10-05    13294  46.2      0
+<pre><code>## # A tibble: 5 x 2
+##   date       steptotal
+##   &lt;date&gt;         &lt;dbl&gt;
+## 1 2012-10-01    10766.
+## 2 2012-10-02      126 
+## 3 2012-10-03    11352 
+## 4 2012-10-04    12116 
+## 5 2012-10-05    13294
 </code></pre>
 
-<p>Roughly speaking, the differences between the imputed and non-imputed data are 9.2728655 &times; 10<sup>8</sup>, 0, 0 in terms of total steps taken, mean, and median across days.</p>
+<p>The resulting mean and median steps per day from the imputation was 10766.2 and 10766.2. The differences between the imputed and non-imputed data for these parameters are 1412 and 371.2. </p>
 
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
 

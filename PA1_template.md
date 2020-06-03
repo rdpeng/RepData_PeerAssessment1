@@ -10,6 +10,7 @@ output:
 
 ```r
 library(data.table)
+options(scipen=999)
 if (!file.exists('activity.csv')){
   if (!file.exists('activity.zip')){
     download.files('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip',
@@ -27,19 +28,19 @@ activity$date <- as.Date(activity$date)
 library(dplyr)
 library(ggplot2)
 activitystat <- activity %>% group_by(date) %>% select(-interval) %>% 
-  summarise(steptotal = sum(steps,na.rm=T), mean = mean(steps,na.rm=T), median = median(steps,na.rm=T))
+  summarise(steptotal = sum(steps,na.rm=T))
 head(activitystat,5)
 ```
 
 ```
-## # A tibble: 5 x 4
-##   date       steptotal    mean median
-##   <date>         <int>   <dbl>  <dbl>
-## 1 2012-10-01         0 NaN         NA
-## 2 2012-10-02       126   0.438      0
-## 3 2012-10-03     11352  39.4        0
-## 4 2012-10-04     12116  42.1        0
-## 5 2012-10-05     13294  46.2        0
+## # A tibble: 5 x 2
+##   date       steptotal
+##   <date>         <int>
+## 1 2012-10-01         0
+## 2 2012-10-02       126
+## 3 2012-10-03     11352
+## 4 2012-10-04     12116
+## 5 2012-10-05     13294
 ```
 
 ```r
@@ -49,6 +50,8 @@ ggplot(data=activitystat,mapping=aes(steptotal))+
 ```
 
 ![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+  
+The mean total steps taken per day was 9354.2 and the median was 10395.  
 
 ## What is the average daily activity pattern?
 
@@ -74,8 +77,7 @@ library(dplyr)
 activity$imputeSteps <- ave(activity$steps,activity$interval,FUN=function(x)
   ifelse(is.na(x),mean(x,na.rm=T),x))
 activityimpstat <- activity %>% group_by(date) %>% select(date,imputeSteps) %>% 
-  summarise(steptotal = sum(imputeSteps), mean = mean(imputeSteps), 
-            median = median(imputeSteps))
+  summarise(steptotal = sum(imputeSteps))
 ggplot(data=activityimpstat,mapping=aes(steptotal))+
   geom_histogram(binwidth = 1000)+
   labs(x='Total number of steps', y='Frequency')
@@ -88,16 +90,17 @@ head(activityimpstat,5)
 ```
 
 ```
-## # A tibble: 5 x 4
-##   date       steptotal   mean median
-##   <date>         <dbl>  <dbl>  <dbl>
-## 1 2012-10-01    10766. 37.4     34.1
-## 2 2012-10-02      126   0.438    0  
-## 3 2012-10-03    11352  39.4      0  
-## 4 2012-10-04    12116  42.1      0  
-## 5 2012-10-05    13294  46.2      0
+## # A tibble: 5 x 2
+##   date       steptotal
+##   <date>         <dbl>
+## 1 2012-10-01    10766.
+## 2 2012-10-02      126 
+## 3 2012-10-03    11352 
+## 4 2012-10-04    12116 
+## 5 2012-10-05    13294
 ```
-Roughly speaking, the differences between the imputed and non-imputed data are 9.2728655 &times; 10<sup>8</sup>, 0, 0 in terms of total steps taken, mean, and median across days.
+  
+The resulting mean and median steps per day from the imputation was 10766.2 and 10766.2. The differences between the imputed and non-imputed data for these parameters are 1412 and 371.2. 
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
