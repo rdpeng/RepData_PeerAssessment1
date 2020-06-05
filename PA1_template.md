@@ -123,3 +123,7 @@ activity[is.na(steps), "steps"] <- activity[, c(lapply(.SD, median, na.rm = TRUE
 interval <- activity[, c(lapply(.SD, mean, na.rm = TRUE)), .SDcols = c("steps"), by = .(interval, `weekday or weekend`)] 
 ggplot(interval , aes(x = interval , y = steps, color=`weekday or weekend`)) + geom_line() + labs(title = "Avg. Daily Steps by Weektype", x = "Interval", y = "No. of Steps") + facet_wrap(~`weekday or weekend` , ncol = 1, nrow=2)
 ```
+
+knit2html("test.Rmd")
+        
+
