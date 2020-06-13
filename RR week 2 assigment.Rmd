@@ -1,14 +1,11 @@
+---
+title: "RR week2 assigment"
+output:
+  pdf_document: default
+  html_document: default
+---
+## Loading and pre-processing data
 
-
-# Reproducible Research: Peer Assessment 1
-
-output: 
-  html_document:
-    keep_md: true
-
-
-
-## Loading and preprocessing the data
 ```{r, echo=TRUE}
 library(readr)
 library(dplyr)
@@ -17,8 +14,8 @@ steps_by_day <- group_by(activity, date) %>% summarize(sum(steps))
 
 ```
 
+## Calculating mean and median of steps for each day
 
-## What is mean total number of steps taken per day?
 ```{r, echo=TRUE}
 
 library(ggplot2)
@@ -30,17 +27,14 @@ ggplot(steps_by_day, aes(x = date, y = steps_by_day$`sum(steps)`)) +
 summary(steps_by_day$`sum(steps)`)
 ```
 
-mean = 10766
-median = 10765
+## Average daily activity pattern
 
-
-## What is the average daily activity pattern?
-```{r, echo=TRUE}
+```{r}
 steps_by_interval <- group_by(activity, interval) %>% summarize(mean(steps, na.rm = TRUE))
 ```
 
-Time period that contains maximum number of steps on average is 835
-```{r, echo=TRUE}
+Time period that contains maximum number of steps on average 
+```{r}
 steps_by_interval[which.max(steps_by_interval$`mean(steps, na.rm = TRUE)`),]
 
 
@@ -52,8 +46,7 @@ ggplot(steps_by_interval, aes(x = interval, y = steps_by_interval$`mean(steps, n
         theme_bw()
 ````
 
-
-## Imputing missing values
+# Calculate and impute NAs
 
 ```{r,echo=TRUE}
 sum(is.na(activity$steps))
@@ -62,7 +55,7 @@ NAs are 2304
 
 Imputating NAs with the mean of each interval
 
-```{r, echo=TRUE}
+```{r}
 listmean <- as.list(steps_by_interval$`mean(steps, na.rm = TRUE)`)
 
 db_no_NA <- activity %>% mutate(steps_mean = ifelse(is.na(steps), listmean, steps))
@@ -74,9 +67,9 @@ ggplot(db_no_NA, aes(date, steps_mean)) +
         labs(x = "date", y = "steps by day", title = "steps by day (no NAs)")
 ```
 
-## Are there differences in activity patterns between weekdays and weekends?
+Showing difference in pattern between Weekday and Weekend
 
-```{r, echo=TRUE}
+```{r}
 db_wd <- db_no_NA %>% mutate(weekday = ifelse(weekdays(date) == 
         "Sabato" | weekdays(date) == "Domenica", yes = "Weekend", no = "Weekday"))
 
