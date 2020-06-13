@@ -35,14 +35,13 @@ median = 10765
 
 
 ## What is the average daily activity pattern?
-```{r}
+```{r, echo=TRUE}
 steps_by_interval <- group_by(activity, interval) %>% summarize(mean(steps, na.rm = TRUE))
 ```
 
 Time period that contains maximum number of steps on average is 835
-```{r}
+```{r, echo=TRUE}
 steps_by_interval[which.max(steps_by_interval$`mean(steps, na.rm = TRUE)`),]
-```
 
 
 library(ggplot2)
@@ -63,7 +62,7 @@ NAs are 2304
 
 Imputating NAs with the mean of each interval
 
-```{r}
+```{r, echo=TRUE}
 listmean <- as.list(steps_by_interval$`mean(steps, na.rm = TRUE)`)
 
 db_no_NA <- activity %>% mutate(steps_mean = ifelse(is.na(steps), listmean, steps))
@@ -77,7 +76,7 @@ ggplot(db_no_NA, aes(date, steps_mean)) +
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+```{r, echo=TRUE}
 db_wd <- db_no_NA %>% mutate(weekday = ifelse(weekdays(date) == 
         "Sabato" | weekdays(date) == "Domenica", yes = "Weekend", no = "Weekday"))
 
