@@ -1,25 +1,111 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
-output: 
+author: will
+Date: 07/02/2020
+output:
   html_document:
     keep_md: true
 ---
 
 
 ## Loading and preprocessing the data
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+This document fulfills the requirements for the week 2 project for Reproduceable Research
+First load the libraries we will need.  
 
+```{r read_lib}
+library(dplyr)
+library(lubridate)
+```
+
+Now read the data and replace the date as a character string with the date as a date.  In question 8, I will need to separate weekdays from weekends.  I'll compute them here.  
+I see no advantage in replacing the interval string with a date.  
+
+```{r read_data}
+wd=getwd()
+setwd("C:/Users/wphut/Documents/R class/Reproduceable research/repdata_data_activity")
+x<-read.csv("activity.csv", header=TRUE)
+x$date<-ymd(x$date)
+x$weekend <-ifelse(wday(x$date) %in% c(1,7), "weekend", "weekday")
+```
+
+We will need both data with and without missing values imputed.  
+
+Question 6 asks for a strategy to replace the missing values. I will describe it here.  Replace the missing values by the average of the times for that interval.  If an observation was missing for one element in a day, it was missing for all observations in that day.  Therefore, there is no advantage in taking other information from that day, only that interval.  First, we compute the average for that interval across all days.  Then we join it to the base data.  We don't need a by.x or by.y because there is only one matching field.  Finally, we compute the imputed data as steps if it is not NA, and the interval average if it is.  
+
+```{r compute int_means}
+
+time_sum <- x %>% group_by(interval) %>%
+      summarize(mean_steps = mean(steps, na.rm=TRUE))
+added_time <- inner_join(x, time_sum, by=NULL)
+added_time$imput_data<-ifelse(is.na(added_time$steps),
+      added_time$mean_steps,
+      added_time$steps)
+```
 
 
 ## What is mean total number of steps taken per day?
 
+Now we answer question 1, "Calculate the total number of steps taken per day." and
+question 2, "Make a histogram of the total number of steps taken each day."  Question 1 does not ask me to display the total numbers of steps per day, but I do anyway.  
+```{r compute numbers of steps per day}
+tot_steps <- added_time %>% group_by(date) %>%
+      summarize(steps = sum(steps, na.rm=TRUE))
+as.matrix(tot_steps[,1:2])
+hist(tot_steps$steps, xlab="Steps", main="Histogram of steps")
+```
 
+Now we answer question 3, "Mean and median number of steps taken each day".  We won't need the total steps until we get to question 7, but we'll compute it now.
+
+```{r question 3}
+date_sum <- added_time %>% group_by(date) %>% summarize(avg_steps = mean(imput_data, na.rm=TRUE), median_steps = median(imput_data, na.rm=TRUE), total_steps=sum(imput_data))
+as.matrix(date_sum[,1:3])
+```
 
 ## What is the average daily activity pattern?
 
+Question 4.  Time series plot of average steps taken each day.  
+
+``` {r question 4}
+
+plot(date_sum$date, date_sum$avg_steps, xlab= "Date", ylab="Average Steps", main="Average steps by day", type="l")
+```
+
+Question 5 "The 5-minute interval that, on average, contains the maximum number of steps".
+The question didn't ask for any particular format, so I just display the row.
+We created the object "time_sum" to fill in missing values.  We reuse it here.
+
+``` {r question 5}
+filter(time_sum, mean_steps==max(time_sum$mean_steps))
+```
 
 
 ## Imputing missing values
 
+Question 6 is answered above where I describe how to impute missing values.  
+Question 7 "Histogram of the total number of steps taken each day after missing values are imputed"
 
+``` {r question 7}
+hist(date_sum$total_steps, xlab="Steps", main="Histogram of total daily steps")
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+Question 8 "Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends"
+
+``` {r question 8}
+wknd_avg <- x %>% group_by(interval, weekend) %>%
+      summarize(time_mean = mean(steps, na.rm=TRUE))
+wkday <- filter(wknd_avg, weekend=="weekday")
+wknd<-filter(wknd_avg, weekend=="weekend")
+par(mfrow = c(2, 1), mar = c(4, 4, 2, 1))
+plot(wknd$interval, wknd$time_mean, type="l",
+     xlab="5 minute interval", ylab="average steps",
+     main="weekend average steps")
+plot(wkday$interval, wkday$time_mean, type="l",
+     xlab="5 minute interval", ylab="average steps",
+     main="weekday average steps")
+```
+Done
