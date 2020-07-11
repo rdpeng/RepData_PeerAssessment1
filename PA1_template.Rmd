@@ -1,8 +1,8 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
-  html_document:
-    keep_md: true
+html_document:
+keep_md: true
 ---
 
 
@@ -13,11 +13,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Reproducible Research: 
 ## Assessment 1
-## ========================================================
+### ========================================================
 
 ###  1.	Code for reading in the dataset and/or processing the data
 
-```{r cars}
+```{r p1}
 
 library(knitr);
 library(ggplot2)
@@ -41,7 +41,7 @@ activity = activity %>%
 ```
 ### 2.	Histogram of the total number of steps taken each day
 
-```{r pressure2, warning=TRUE, echo = TRUE}
+```{r p2, warning=TRUE, echo = TRUE}
 
 
 # total number of steps taken per day
@@ -61,21 +61,25 @@ ggplot(data=StepsTotal, aes(steps)) +
 ### 3.	Mean and median number of steps taken each day
 
 
-```{r pressure3, warning=TRUE, echo = TRUE}
+```{r p3, warning=TRUE, echo = TRUE}
 
 
 # mean
-mean(StepsTotal$steps)
+stmean <- round(mean(StepsTotal$steps),0)
 
 # median
-median(StepsTotal$steps)
+stmedian <- median(StepsTotal$steps)
 
-
+stmean <- sprintf("$ %6.0f", stmean)
 
 ```
+Mean  number of steps taken each day is `r stmean`
+
+Median number of steps taken each day is `r stmedian`
+
 
 ### 4.	Time series plot of the average number of steps taken
-```{r pressure4, warning=TRUE, echo = TRUE}
+```{r p4, warning=TRUE, echo = TRUE}
 
 avg_steps_per_day <- aggregate(steps ~ date, activity, mean)
 
@@ -90,7 +94,7 @@ ggplot(avg_steps_per_day, aes(x = date, y = steps))+ geom_line( color="blue", si
 
 ```
 ### 5.	The 5-minute interval that, on average, contains the maximum number of steps
-```{r pressure5, warning=TRUE, echo = TRUE}
+```{r p5, warning=TRUE, echo = TRUE}
 
 avg_steps_per_interval <- aggregate(steps ~ interval, activity, mean)
 
@@ -100,7 +104,7 @@ interval_idx <- which.max(avg_steps_per_interval$steps)
 
 ```
 ### 6.	Code to describe and show a strategy for imputing missing data
-```{r pressure6, warning=TRUE, echo = TRUE}
+```{r p6, warning=TRUE, echo = TRUE}
 
 
 
@@ -121,8 +125,7 @@ for (i in 1:nrow(activity_im)) {
 
 ```
 ### 7.	Histogram of the total number of steps taken each day after missing values are imputed
-```{r pressure7, warning=TRUE, echo = TRUE}
-
+```{r p7, warning=TRUE, echo = TRUE}
 
 
 
@@ -140,7 +143,7 @@ ggplot(data=steps_per_day_im, aes(steps)) +
 
 ```
 ### 8.	Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
-```{r pressure8, warning=TRUE, echo = TRUE}
+```{r p8, warning=TRUE, echo = TRUE}
 # 
 
 #Cretae a function to determine if the date is a weekday
