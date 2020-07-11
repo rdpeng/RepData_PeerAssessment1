@@ -3,7 +3,11 @@ title: "Exercise 2"
 author: "Will"
 date: "7/7/2020"
 output: html_document
+keep_md: true
+
 ---
+
+## Loading and preprocessing the data
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -40,10 +44,15 @@ added_time$imput_data<-ifelse(is.na(added_time$steps),
       added_time$mean_steps, 
       added_time$steps)
 ```
+
+## What is mean total number of steps taken per day?
+
 Now we answer **question 1**, "Calculate the total number of steps taken per day." and
-**question 2**, "Make a histogram of the total number of steps taken each day."  *tot_steps* 
-contains the total steps for each day.  A histogram displays the frequency for each
-continuous variable.  We'll compute the mean for both observed steps and for the imputed data.  We will need the mean steps with imputed data in question 7, but we'll compute it here.
+**question 2**, "Make a histogram of the total number of steps taken each day."  
+*tot_steps* contains the total steps for each day, which answers question 1.  
+A histogram displays the frequency for each continuous variable.  We'll compute the 
+mean for both observed steps and for the imputed data.  We won't need the mean steps 
+with imputed data until question 7, but we'll compute it here.
 ```{r compute numbers of steps per day}
 tot_steps <- added_time %>% group_by(date) %>% 
       summarize(steps = sum(steps, na.rm=TRUE), imput_steps=sum(imput_data))
@@ -55,8 +64,10 @@ Now we answer **question 3**, "Mean and median number of steps taken each day".
 ```{r question 3}
 grand_total <- tot_steps %>% summarize(mean_steps = mean(steps, na.rm=TRUE), 
                                     median_steps = median(steps, na.rm=TRUE))
-grand_total
+print(paste0("mean steps: ", grand_total[1], " median steps: ", grand_total[2]))
 ```
+
+## What is the average daily activity pattern?
 
 **Question 4**.  Time series plot of average steps taken each day.  We computed the average 
 steps per interval as part of imputing missing values and put it into the variable *time_sum*.
@@ -72,8 +83,10 @@ plot(time_sum$interval, time_sum$mean_steps, xlab= "Time", ylab="Average Steps",
 
 ``` {r question 5}
 max_step<-filter(time_sum, mean_steps==max(time_sum$mean_steps))
-max_step[1]
+print(paste0("Interval with most steps is ",max_step[1]))
 ```
+
+## Imputing missing values
 
 **Question 6** is answered above where I describe how to impute missing values.
 
@@ -83,6 +96,8 @@ max_step[1]
 
 hist(tot_steps$imput_steps, xlab="Steps", main="Histogram of total daily steps using imputed values")
 ```
+
+## Are there differences in activity patterns between weekdays and weekends?
 
 **Question 8** "Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends"  I interpreted this to mean we are averaging all the steps across all days in the weekday for a given 5 minute period.  We are not summing the averages across all weekdays.
 
