@@ -134,21 +134,17 @@ ggplot(data=StepsTotal, aes(steps)) +
 
 ```r
 # mean
-mean(StepsTotal$steps)
-```
+stmean <- round(mean(StepsTotal$steps),0)
 
-```
-## [1] 10766.19
-```
-
-```r
 # median
-median(StepsTotal$steps)
-```
+stmedian <- median(StepsTotal$steps)
 
+stmean <- sprintf("$ %6.2f", stmean)
 ```
-## [1] 10765
-```
+Mean  number of steps taken each day is $ 10766.00
+
+Median number of steps taken each day is 10765
+
 
 ### 4.	Time series plot of the average number of steps taken
 
