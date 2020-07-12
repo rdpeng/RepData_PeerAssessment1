@@ -70,7 +70,7 @@ stmean <- round(mean(StepsTotal$steps),0)
 # median
 stmedian <- median(StepsTotal$steps)
 
-stmean <- sprintf("$ %6.0f", stmean)
+stmean <- sprintf("%6.0f", stmean)
 
 ```
 Mean  number of steps taken each day is `r stmean`
