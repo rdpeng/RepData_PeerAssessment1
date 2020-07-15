@@ -1,0 +1,196 @@
+---
+title: "Course Project 1"
+author: "Flavia E. Rius"
+date: "7/14/2020"
+output:
+  md_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is a document describing analysis of data obtained from a personal activity monitoring device. The device collects steps taken from the user in 5 minute intervals. The data is labeled per day.
+
+First of all, we need to download the data and check the name of the file extracted from the .zip document.
+
+```{r download}
+url <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(url, destfile = "activity_monitor.zip")
+unzip("activity_monitor.zip")
+list.files()
+```
+
+We could see that the name of the file is "activity.csv". By knowing the extension, we can pick the 
+correct function in R to read it in, and then check the content of the data frame.
+
+```{r read}
+activity <- read.csv("activity.csv")
+head(activity)
+str(activity)
+```
+
+We can see it is a data frame with three variables and 17.568 observations. As expected, among the variables there is the number of steps, under the column "steps"; the interval of time when it was obtained, in minutes, under the column "interval"; and the date in format year-month-day when the measurement was taken, under the column "date".
+
+In order to facilitate R plotting, it will be helpful to transform "date" variable into a Date class object in R. We will do this by using the function as.Date(). Since it accepts only character objects as input, we will first transform it from factor to character, and then perform transforming into Date object.
+
+```{r date}
+activity$date <- as.character(activity$date)
+activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
+class(activity$date)
+```
+
+### What is the mean total number of steps taken per day?
+
+In order to answer the question about the mean total number of steps taken per day, we need to sum all the intervals collected in each day, to obtain a total per day, before getting the average of all across days. 
+The easiest way to do it is by using the dplyr function group_by() followed by the function summarise(). dplyr package is included in the tidyverse package, together with ggplot2, tidyr and others, all developed by Hadley Wickham, and that are all useful in data analysis. 
+Furthermore, we need the function %>% to pass the content from the left variable to the right function, and it is obtained from the package magrittr. 
+We could have loaded the packages in the beginning, but it is better to load them here for you to see where they are being used.
+
+```{r average}
+library(tidyverse)
+library(magrittr)
+per_day_table <- activity %>% 
+      group_by(date) %>% 
+      summarise(total_steps = sum(steps, na.rm = T))
+
+hist(per_day_table$total_steps, breaks = 15, las = 1, xlab = "number of steps",
+     main = "Frequency of steps taken per day")
+
+average_per_day <- mean(per_day_table$total_steps)
+paste0("The average number of steps per day is ", round(average_per_day), ".")
+```
+
+### What is the average daily activity pattern?
+
+To answer this question it is needed to show a time series plot with the number of steps in average taken in a each period of the day across all days analyzed. 
+By looking at the format of the 5-minute interval, it is shown in a way not useful for plotting, where minutes are represented in the last two digits, and hours in the first two. When it is null, only the last digits are shown, as in the 0 to 55 minutes, whereas the first hour is represented as 100. Let's take a look on that.
+
+```{r 5-minute interval}
+unique(activity$interval)
+```
+
+Therefore, it is needed to transform it and turn everything into minutes. 
+First we need to group the data by interval, and then transform the interval into minutes. Let's see how it is made.
+
+```{r transforming}
+per_interval_table <- activity %>% 
+      group_by(interval) %>% 
+      summarise(average_across_days = mean(steps, na.rm = T))
+
+per_interval_table$minutes_from_interval <- per_interval_table$interval %% 100
+per_interval_table$hours_from_interval <- floor(per_interval_table$interval/100)
+per_interval_table$proper_minutes <- per_interval_table$hours_from_interval*60 + per_interval_table$minutes_from_interval
+per_interval_table$proper_minutes
+```
+
+Now we can plot the time series plot for average steps accordingly.
+
+```{r average daily steps}
+with(per_interval_table, plot(proper_minutes/60, average_across_days, type = "l", 
+                              xlab = "time of the day (24h format)", 
+                              ylab = "average number of steps", 
+                              main = "Average steps per hour",
+                              xaxt = "n", las = 1
+                              ))
+xticks <- seq(0,23, by = 2)
+axis(at = xticks, side = 1)
+abline(v = per_interval_table[which.max(per_interval_table$average_across_days), "proper_minutes"]/60, col = "red")
+```
+
+Great! By the plot we can see that around 8:45h in the morning is the time of the day with more steps activity for the user we are analyzing. Maybe he/she runs at this time of the day, with sprints that make more steps fit in a 5-minute interval comparing with other intervals' number of steps.
+
+### Imputing missing values
+
+Missing values in the data can compromise the results reported. They can exist because of measurement or record errors, or due to not turning on the device on determined days. Let's take a look on how many missing values are in our data.
+
+```{r missing values}
+number_missing <- nrow(activity[is.na(activity$steps),])
+total <- nrow(activity)
+
+paste0("There are ", number_missing, " missing values out of ", total, " observations.")
+
+percentage <- number_missing/total*100
+
+paste0("Missing data comprehends ", round(percentage), " percent of total.")
+```
+
+13 percent is a considerable amount of the data. A way to deal with those missing values is by imputing them, and a reasonable way to impute those values is by assigning the interval's average to them. 
+To do so, first we need to check the pattern of the missing data.
+
+```{r pattern}
+missing <- activity[is.na(activity$steps),]
+head(missing)
+```
+
+Apparently the missing data is in whole days. Let's check if this is true.
+
+```{r dates missing}
+unique(missing$date)
+table(as.factor(sort(missing[,"interval"])))
+```
+
+There are eight dates with missing data, and all intervals have eight entries. So yes, all the intervals in those dates consist in all of the missing data. Probably this happened because the user forgot to turn the device on or to wear it at those dates.
+By using the table already built, containing the average values for all of the intervals, we will impute the missing values and assign them to a new variable.
+
+```{r impute}
+missing <- arrange(missing, date, interval)
+missing$steps <- rep(per_interval_table$average_across_days, 8)
+imputed <- activity
+imputed <- arrange(imputed, date, interval)
+imputed[is.na(imputed$steps),"steps"] <- missing[,"steps"]
+imputed[is.na(imputed$steps),]
+```
+
+We can see that now there are no rows with missing steps value. Done!
+Let's make a histogram to see how the data looks like now that there are no missing values.
+
+```{r histogram imputed}
+per_day_imputed <- imputed %>% 
+      group_by(date) %>% 
+      summarise(total_steps = sum(steps))
+hist(per_day_imputed$total_steps, breaks = 15, las = 1, xlab = "steps",
+     main = "Total number of steps taken per day")
+```
+
+The histogram looks a different from before imputing values, since the dates with missing values were accounted as zero steps, what does not reflect the real behavior of the user. 
+How does the mean and median differ from before imputing the values?
+
+```{r mean median}
+mean_steps <- mean(per_day_imputed$total_steps)
+median_steps <- median(per_day_imputed$total_steps)
+
+paste0("The mean of steps taken per day after imputing missing  values is ", round(mean_steps), 
+       " and the median is ", round(median_steps), ".")
+```
+
+We can see that the data is normally distributed, since the median and the mean are the same!
+It is  interesting to notice how the result differ from the one obtained before imputing the missing data. It was 9354 steps on average and now, with the imputed data, it is 10766, showing an increase of more than a thousand steps per day, a huge impact on a person's activity. This difference shows the importance of dealing with missing data adequately. 
+
+### Are there differences in activity patterns between weekdays and weekends?
+
+In order to answer the question about differences between weekdays and weekends steps pattern of the user, we will use R function weekdays() on the data with the imputed values.
+
+```{r weekdays}
+imputed$weekday <- weekdays(imputed$date)
+
+days <- unique(imputed$weekday)
+
+weekdays <- data.frame(dayname = days,
+                       week_or_weekend = c(rep("weekday", 5), rep("weekend", 2)))
+
+merged <- merge(imputed, weekdays, by.x = "weekday", by.y = "dayname")
+
+merged_minute_intervals <- merge(merged, per_interval_table, by = "interval") 
+
+per_interval_weekday <- merged_minute_intervals %>%
+      group_by(week_or_weekend,proper_minutes) %>%
+      summarise(total_steps = mean(steps))
+
+ggplot(per_interval_weekday, aes(proper_minutes/60, total_steps)) + geom_line() +
+      facet_grid(rows = vars(week_or_weekend))
+```
+
+It is  possible to see that during weekends there is a considerable decrease in the number of steps taken in the morning, and an increase in steps taken in the evenings.
