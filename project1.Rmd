@@ -1,0 +1,191 @@
+---
+title: "Daily Steps Takes - Data Analysis"
+author: "HALHOUL Adnane "
+date: "july 28, 2020"
+output: html_document
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE)
+```
+
+1. Loading the data
+-------------------
+
+We set the working directory followed by downloading the dataset from its url and unzipping the file to "step_data.csv". The data comes from Roger Pengs [github account](https://github.com/rdpeng/RepData_PeerAssessment1).
+
+```{r load data}
+activity <- read.csv("C:/Users/pc/Documents/data for R/activity.csv", stringsAsFactors=FALSE)
+```
+
+The variable names and the structure of the file are given by
+```{r activity details}
+names(activity)
+str(activity)
+head(activity[which(!is.na(activity$steps)), ]) # data set with NA rows removed
+```
+The format of the file is ready for analysis. No further processing is required. 
+
+2. Mean of "total number of step taken per day" over all days
+-------------------------------------------------------------
+
+Group the number of steps by date and intervals. Find the total number of steps per day over all days. Note that some of the days such as 2012-10-01 have no steps data. Remove such rows for this part.
+
+```{r steps mean}
+library(reshape2)
+activity_melt <- melt(activity[which(!is.na(activity$steps)), ], id.vars = c("date", "interval"))
+head(activity_melt)
+steps_sum <- dcast(activity_melt, date ~ variable, sum)
+head(steps_sum)
+```
+
+Then we can find the mean of 'total number of steps per day'.
+```{r total steps per day summary}
+summary(steps_sum$steps)
+```
+
+Histogram of the total number of steps taken each day.
+```{r total step per day histogram}
+hist(steps_sum$steps, main = "Histogram of total steps taken per day",
+     xlab = "Total steps per day", ylab = "Number of days", 
+     breaks = 10, col = "steel blue")
+abline(v = mean(steps_sum$steps), lty = 1, lwd = 2, col = "red")
+abline(v = median(steps_sum$steps), lty = 2, lwd = 2, col = "black")
+legend(x = "topright", c("Mean", "Median"), col = c("red", "black"),       lty = c(1, 2), lwd = c(2, 2))
+```
+
+Equivalent ggplot.
+```{r ggplot histogram}
+library(ggplot2)
+ggplot(steps_sum, aes(steps)) + geom_histogram(bins = 10)
+```
+
+Here's a plot showing the trend in total number of steps taken per day over two months.
+```{r total steps trend}
+library(lubridate)
+steps_sum$date <- as.Date(steps_sum$date)
+ggplot(steps_sum, aes(date, steps)) + geom_line() +            
+        scale_x_date(date_labels = "%b %d") + 
+        ylab("Total number of steps")
+```
+
+3. Average daily activity pattern
+---------------------------------
+
+In this section, we make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken averaged across all days.
+
+```{r time series plot}
+stepsmeaninterval <- dcast(activity_melt, interval ~ variable, mean, na.rm = TRUE)
+head(stepsmeaninterval)
+plot(stepsmeaninterval$interval, stepsmeaninterval$steps, ty = "l", 
+     xlab = "time interval", ylab = "Average steps", main = "Average 
+     steps taken over all days vs \n time interval")
+```
+
+The time interval during which the maximum number of steps is taken is
+
+```{r max steps}
+maxsteps_interval <- stepsmeaninterval$interval[which.max(stepsmeaninterval$steps)]
+maxsteps_interval
+```
+
+4. Imputing missing values
+--------------------------
+
+First of all, let us get a sense for the missing values. Are there days with all time intervals reporting NA step values? 
+
+We can replace the missing data for a day by the time average over all other days. 
+```{r impute missing days data}
+## Impute missing values
+activity2 <- split(activity, activity$interval)
+activity2 <- lapply(activity2, function(x) {
+        x$steps[which(is.na(x$steps))] <- mean(x$steps, na.rm = TRUE)
+        return(x)
+})
+activity2 <- do.call("rbind", activity2)
+row.names(activity2) <- NULL
+activity2 <- split(activity2, activity2$date)
+df <- lapply(activity2, function(x) {
+        x$steps[which(is.na(x$steps))] <- mean(x$steps, na.rm = TRUE)
+        return(x)
+})
+activity2 <- do.call("rbind", activity2)
+row.names(activity2) <- NULL
+head(activity2)
+```
+Assuming that the time intervals form a disjoint partitioning of 24 hrs, i.e. 1 day is found to be erroneous. The time interval for each day corresponds to approximately 40 hours, which refutes the intervals being disjoint.
+
+```{r steps mean2}
+library(reshape2)
+activity_melt2 <- melt(activity2, id.vars = c("date", "interval"))
+steps_sum <- dcast(activity_melt2, date ~ variable, sum, na.rm = TRUE)
+head(steps_sum)
+```
+Histogram of the total number of steps taken each day with the imputed missing values.
+```{r total step per day histogram2}
+hist(steps_sum$steps, main = "Histogram of total steps taken per day", 
+     xlab = "Total steps per day", ylab = "Number of days", 
+     breaks = 10, col = "steel blue")
+abline(v = mean(steps_sum$steps), lty = 1, lwd = 2, col = "red")
+abline(v = median(steps_sum$steps), lty = 2, lwd = 2, col = "black")
+legend(x = "topright", c("Mean", "Median"), col = c("red", "black"), lty = c(2, 1), lwd = c(2, 2))
+```
+
+Number of rows with NA values
+```{r NA row num}
+sum(is.na(activity$steps))
+sum(is.na(activity$steps))*100/nrow(activity) # Percentage of rows with missing values
+```
+
+5. Differences in activity patterns: Weekdays vs Weekends
+---------------------------------------------------------
+
+Create a new column describing if the date is a weekday or weekend.
+
+```{r weekday status}
+library(lubridate)
+weekends <- which(weekdays(as.Date(activity2$date)) == "Saturday" |
+              weekdays(as.Date(activity2$date)) == "Sunday")
+weekdays <- which(weekdays(as.Date(activity2$date)) != "Saturday" &
+              weekdays(as.Date(activity2$date)) != "Sunday")
+temp <- c(rep("a", length(activity2)))
+temp[weekends] <- "weekend"
+temp[weekdays] <- "weekday"
+length(temp)
+names(temp) <- "day"
+activity2 <- cbind(activity2, temp)
+names(activity2)[4] <- "day"
+```
+
+Steps taken over each interval averaged across weekday days and weekend days.
+
+```{r}
+activity2split <- split(activity2, activity2$day)
+stepsmean_interval <- lapply(activity2split, function(x) {
+        temp <- aggregate(x$steps, list(x$interval), mean)
+        names(temp) <- c("interval", "steps")
+        return(temp)
+})
+## Unsplit stepsmean_interval
+stepsmean_interval <- do.call("rbind", stepsmean_interval)
+weekdays <- grep("weekday" ,row.names(stepsmean_interval))
+weekends <- grep("weekend" ,row.names(stepsmean_interval))
+temp <- c(rep("a", length(stepsmean_interval$steps)))
+temp[weekdays] <- "weekdays"
+temp[weekends] <- "weekends"
+stepsmean_interval <- cbind(stepsmean_interval, temp)
+row.names(stepsmean_interval) <- NULL
+names(stepsmean_interval)[3] <- "day"
+head(stepsmean_interval)
+tail(stepsmean_interval)
+library(ggplot2)
+ggplot(stepsmean_interval, aes(interval, steps)) + geom_line() + facet_grid(day ~ .) 
+```
+
+The mean number of steps taken over the weekdays and weekends.
+
+```{r weekday/end mean steps}
+stepsdatamelt <- melt(stepsmean_interval, id.vars = c("interval",
+                                                      "day"))
+dcast(stepsdatamelt, day ~ variable, mean) # Average steps
+```
+
+
