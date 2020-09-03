@@ -1,25 +1,127 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template"
+author: "Mariana"
+date: "31/8/2020"
+output: html_document
 ---
+##
+```{r READING DATA,echo= TRUE}
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+setwd("C:/Users/vlrxo/Desktop/Mariana/Github/RepData_PeerAssessment1")
+activity <- read_csv("activity.csv")
+```
 
 
-## Loading and preprocessing the data
+```{r,echo= TRUE}
+pruebaactivity <- filter(activity, steps>=0 )
+datos1 <- aggregate(pruebaactivity$steps, by = list(pruebaactivity$date), FUN = sum)
+  colnames(datos1) <- c("date", "sum_steps")
+```
+
+
+```{r Histogram of total steps, echo= TRUE}
+gráfica1 <-  qplot(sum_steps, data = datos1,
+                   main = "  Total number of steps per day")
+      gráfica1
+
+```
+
+
+```{r mean and median, echo=TRUE}
+promedio_pasos <-mean(datos1$sum_steps)
+     promedio_pasos 
+mediana_pasos <- median(datos1$sum_steps)
+      mediana_pasos
+```
+##The total mean of steps per day is 10766.19
+
+```{r Time series, echo= TRUE}
+datos2 <- aggregate(pruebaactivity$steps, 
+                     by = list(pruebaactivity$interval), FUN = mean)
+colnames(datos2) <- c("interval", "mean_steps")
+  gráfica2 <- qplot(datos2$interval, datos2$mean_steps, 
+       main = "Interval vs average steps per day",
+       ylab = "Mean Steps", xlab = "Interval", geom = "line")  
+    gráfica2
+```
+## The activity increases at the half of it.
+
+```{r Máx steps, echo= TRUE}
+máxsteps <- which.max(datos2$mean_steps)
+máxsteps
+datos2$interval[máxsteps]
+```
+##The 835 interval has the máximum number of steps.
+
+```{r Total NAs, echo= TRUE}
+activityNA <- is.na(activity)
+sum(activityNA)
+```
+
+
+```{r Replacing NAs, echo= TRUE}
+activity$steps[is.na(activity$steps)] <-datos2$mean_steps
+
+```
+
+```{r Creating new daatset, echo= TRUE}
+fillactivity <- activity
+datosfill <- aggregate(fillactivity$steps, by = list(date = fillactivity$date), FUN = sum)
+    colnames(datosfill) <- c("date", "sum_steps")
+
+```
+
+
+```{r Histogram with filled NAs , echo= TRUE}
+gráfica3 <-  barplot(datosfill$sum_steps, data = datosfill, names.arg = datosfill$date,
+                   main = "  Total number of steps per day (fill)")
+  
+```
+## November 26 was the day that was more active for people
+
+```{r New mean and median, echo= TRUE}
+promedio_pasosfill <-mean(datosfill$sum_steps)
+   promedio_pasosfill
+
+mediana_pasosfill <- median(datosfill$sum_steps)
+   mediana_pasosfill
+```
+##With all the NAs filled, only the median change, but it wasnt significant, it only changed 1.19 steps. The mean value remained the same.
+
+```{r, echo= TRUE}
+Sys.setlocale("LC_TIME", "English")
+
+dias1 <- weekdays(as.Date(fillactivity$date)) %in% c('Saturday','Sunday') 
+fillactivity$weekday <- factor(dias1, labels = c("weekday", "weekend"))
+
+pasoseintervalos <- aggregate(steps ~ interval + weekday, fillactivity, FUN = mean)
+
+largo <- length(pasoseintervalos$interval) / 2
+pasoseintervalos$x <- rep(seq_along(pasoseintervalos$interval[1:largo]), 2)
+
+pasos <- nrow(pasoseintervalos)/2
+division <- round(pasos) / 12
+```
 
 
 
-## What is mean total number of steps taken per day?
+```{r Average steps intervals, echo= TRUE}
+graph4 <- ggplot(pasoseintervalos, aes(x = x, y = steps), ylabs)
+
+graph4 <- ggplot(pasoseintervalos, aes(x = x, y = steps))
+graph4 <- graph4 + scale_x_discrete(breaks=pasoseintervalos$x[seq(1, pasos, division)],
+                          labels=pasoseintervalos$interval[seq(1, pasos, division)])
+graph4 <- graph4 + facet_wrap(~ weekday, ncol = 1)
+graph4 <- graph4 + geom_line()
+graph4 <- graph4 + theme(axis.text.x=element_text(angle=90,vjust=.2,hjust=1))
+graph4 <- graph4 + labs(x = "Interval")
+graph4 <- graph4 + labs(y = "Mean Number of Steps")
+
+graph4
+```
+##The activity in the weekends notably increases. 
 
 
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
