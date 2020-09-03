@@ -12,6 +12,7 @@ pdf_document: default
 keep_md: yes
 
 self_contained: no
+  
 ---
 ##
 ```{r READING DATA,echo= TRUE}
@@ -36,7 +37,6 @@ datos1 <- aggregate(pruebaactivity$steps, by = list(pruebaactivity$date), FUN = 
 gráfica1 <-  qplot(sum_steps, data = datos1,
                    main = "  Total number of steps per day")
       gráfica1
-
 ```
 
 
@@ -74,14 +74,12 @@ sum(activityNA)
 
 ```{r Replacing NAs, echo= TRUE}
 activity$steps[is.na(activity$steps)] <-datos2$mean_steps
-
 ```
 
 ```{r Creating new daatset, echo= TRUE}
 fillactivity <- activity
 datosfill <- aggregate(fillactivity$steps, by = list(date = fillactivity$date), FUN = sum)
     colnames(datosfill) <- c("date", "sum_steps")
-
 ```
 
 
@@ -133,5 +131,4 @@ graph4 <- graph4 + labs(y = "Mean Number of Steps")
 graph4
 ```
 ##The activity in the weekends notably increases. 
-rmarkdown:::render("PA1_template.Rmd")
 

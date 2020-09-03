@@ -12,6 +12,7 @@ pdf_document: default
 keep_md: yes
 
 self_contained: no
+  
 ---
 ##
 
@@ -245,5 +246,4 @@ graph4
 
 ![](PA1_template_files/figure-html/Average steps intervals-1.png)<!-- -->
 ##The activity in the weekends notably increases. 
-rmarkdown:::render("PA1_template.Rmd")
 
