@@ -10,6 +10,7 @@ library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
+lilibrary(knitr)
 setwd("C:/Users/vlrxo/Desktop/Mariana/Github/RepData_PeerAssessment1")
 activity <- read_csv("activity.csv")
 ```
@@ -123,5 +124,5 @@ graph4 <- graph4 + labs(y = "Mean Number of Steps")
 graph4
 ```
 ##The activity in the weekends notably increases. 
-
+rmarkdown:::render("PA1_template.Rmd")
 
