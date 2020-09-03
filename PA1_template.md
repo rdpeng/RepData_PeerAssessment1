@@ -7,41 +7,91 @@ output:
     keep_md: yes
 ---
 ##
-```{r READING DATA,echo= TRUE}
+
+```r
 library(readr)
 library(tidyr)
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(ggplot2)
 library(knitr)
 setwd("C:/Users/vlrxo/Desktop/Mariana/Github/RepData_PeerAssessment1")
 activity <- read_csv("activity.csv")
 ```
 
+```
+## Parsed with column specification:
+## cols(
+##   steps = col_double(),
+##   date = col_date(format = ""),
+##   interval = col_double()
+## )
+```
 
-```{r,echo= TRUE}
+
+
+```r
 pruebaactivity <- filter(activity, steps>=0 )
 datos1 <- aggregate(pruebaactivity$steps, by = list(pruebaactivity$date), FUN = sum)
   colnames(datos1) <- c("date", "sum_steps")
 ```
 
 
-```{r Histogram of total steps, echo= TRUE}
+
+```r
 gráfica1 <-  qplot(sum_steps, data = datos1,
                    main = "  Total number of steps per day")
       gráfica1
-
 ```
 
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+```
 
-```{r mean and median, echo=TRUE}
+![](PA1_template_files/figure-html/Histogram of total steps-1.png)<!-- -->
+
+
+
+```r
 promedio_pasos <-mean(datos1$sum_steps)
      promedio_pasos 
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 mediana_pasos <- median(datos1$sum_steps)
       mediana_pasos
 ```
+
+```
+## [1] 10765
+```
 ##The total mean of steps per day is 10766.19
 
-```{r Time series, echo= TRUE}
+
+```r
 datos2 <- aggregate(pruebaactivity$steps, 
                      by = list(pruebaactivity$interval), FUN = mean)
 colnames(datos2) <- c("interval", "mean_steps")
@@ -50,53 +100,112 @@ colnames(datos2) <- c("interval", "mean_steps")
        ylab = "Mean Steps", xlab = "Interval", geom = "line")  
     gráfica2
 ```
+
+![](PA1_template_files/figure-html/Time series-1.png)<!-- -->
 ## The activity increases at the half of it.
 
-```{r Máx steps, echo= TRUE}
+
+```r
 máxsteps <- which.max(datos2$mean_steps)
 máxsteps
+```
+
+```
+## [1] 104
+```
+
+```r
 datos2$interval[máxsteps]
+```
+
+```
+## [1] 835
 ```
 ##The 835 interval has the máximum number of steps.
 
-```{r Total NAs, echo= TRUE}
+
+```r
 activityNA <- is.na(activity)
 sum(activityNA)
 ```
 
-
-```{r Replacing NAs, echo= TRUE}
-activity$steps[is.na(activity$steps)] <-datos2$mean_steps
-
+```
+## [1] 2304
 ```
 
-```{r Creating new daatset, echo= TRUE}
+
+
+```r
+activity$steps[is.na(activity$steps)] <-datos2$mean_steps
+```
+
+
+```r
 fillactivity <- activity
 datosfill <- aggregate(fillactivity$steps, by = list(date = fillactivity$date), FUN = sum)
     colnames(datosfill) <- c("date", "sum_steps")
-
 ```
 
 
-```{r Histogram with filled NAs , echo= TRUE}
+
+```r
 gráfica3 <-  barplot(datosfill$sum_steps, data = datosfill, names.arg = datosfill$date,
                    main = "  Total number of steps per day (fill)")
-  
 ```
+
+```
+## Warning in plot.window(xlim, ylim, log = log, ...): "data" is not a graphical
+## parameter
+```
+
+```
+## Warning in axis(if (horiz) 2 else 1, at = at.l, labels = names.arg, lty =
+## axis.lty, : "data" is not a graphical parameter
+```
+
+```
+## Warning in title(main = main, sub = sub, xlab = xlab, ylab = ylab, ...): "data"
+## is not a graphical parameter
+```
+
+```
+## Warning in axis(if (horiz) 1 else 2, cex.axis = cex.axis, ...): "data" is not a
+## graphical parameter
+```
+
+![](PA1_template_files/figure-html/Histogram with filled NAs -1.png)<!-- -->
 ## November 26 was the day that was more active for people
 
-```{r New mean and median, echo= TRUE}
+
+```r
 promedio_pasosfill <-mean(datosfill$sum_steps)
    promedio_pasosfill
+```
 
+```
+## [1] 10766.19
+```
+
+```r
 mediana_pasosfill <- median(datosfill$sum_steps)
    mediana_pasosfill
 ```
+
+```
+## [1] 10766.19
+```
 ##With all the NAs filled, only the median change, but it wasnt significant, it only changed 1.19 steps. The mean value remained the same.
 
-```{r, echo= TRUE}
-Sys.setlocale("LC_TIME", "English")
 
+```r
+Sys.setlocale("LC_TIME", "English")
+```
+
+```
+## [1] "English_United States.1252"
+```
+
+```r
 dias1 <- weekdays(as.Date(fillactivity$date)) %in% c('Saturday','Sunday') 
 fillactivity$weekday <- factor(dias1, labels = c("weekday", "weekend"))
 
@@ -111,7 +220,8 @@ division <- round(pasos) / 12
 
 
 
-```{r Average steps intervals, echo= TRUE}
+
+```r
 graph4 <- ggplot(pasoseintervalos, aes(x = x, y = steps), ylabs)
 
 graph4 <- ggplot(pasoseintervalos, aes(x = x, y = steps))
@@ -125,6 +235,8 @@ graph4 <- graph4 + labs(y = "Mean Number of Steps")
 
 graph4
 ```
+
+![](PA1_template_files/figure-html/Average steps intervals-1.png)<!-- -->
 ##The activity in the weekends notably increases. 
 rmarkdown:::render("PA1_template.Rmd")
 
