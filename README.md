@@ -39,9 +39,9 @@ Q2$date<-rownames(Q2)
 rownames(Q2)<-NULL
 names(Q2)[[1]]<-"Total Steps"
 #Total Steps by date bar chart
-ggplot(Q2,aes(y=`Total Steps`,x=date))+geom_bar(stat="identity") + ylab("Total Steps")+xlab("Date")+ggtitle("Total Steps by date")
+print(ggplot(Q2,aes(y=`Total Steps`,x=date))+geom_bar(stat="identity") + ylab("Total Steps")+xlab("Date")+ggtitle("Total Steps by date"))
 #Histogram of total steps
-qplot(Q2$`Total Steps`,geom="histogram",xlab="Total Steps",ylab="Counts",main="Total Steps Historgram",bins=7)
+print(qplot(Q2$`Total Steps`,geom="histogram",xlab="Total Steps",ylab="Counts",main="Total Steps Historgram",bins=7))
 ```
 ```{r,echo=FALSE}
 png("plot1.png")
