@@ -5,6 +5,7 @@ date: "9/5/2020"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 ---
 
 ## Step 1 
