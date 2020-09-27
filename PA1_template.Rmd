@@ -8,11 +8,14 @@ output:
 library(ggplot2)
 ## Loading and preprocessing the data
 
-Load the data
+Load the data  (i.e. read.csv())
 ```{r}
 if (!file.exists('activity.csv')) {
   unzip('activity.zip',overwrite=TRUE)
 }
+```
+Process/transform the data (if necessary) into a format suitable for your analysis
+```{r}
 activity <- read.csv("activity.csv", header = T, sep = ",")
 ```
 
@@ -58,13 +61,13 @@ maxInt <- meanStepsByInt[which.max(meanStepsByInt$steps),]
 
 ## Imputing missing values
 
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs).
 Total number of missing values in the dataset
 ```{r}
 missingValues <- is.na(activityData$steps)
 ```
-Strategy for filling in all of the missing values in the dataset: replace any NA with the mean of the corresponding interval
-
-New dataset that is equal to the original dataset but with the missing data filled in
+Strategy: replace  NA with the mean of the interval
+Create a new dataset that is equal to the original dataset but with the missing data filled in
 ```{r}
 imp_activityData <- transform(activityData, steps = ifelse(is.na(activityData$steps), meanStepsInterval$steps[match(activityData$interval, 
                                                                         meanStepsInterval$interval)], activityData$steps))
@@ -85,12 +88,15 @@ imp_MedSteps <- median(imp_StepsInterval$steps, na.rm = TRUE)
 diffMean = imp_MeanSteps - meanSteps
 diffMed = imp_MedSteps - medSteps
 diffTotal = sum(imp_StepsInterval$steps) - sum(totalSteps$steps)
-
+print(c("imp_MeanStepsean=",imp_MeanSteps))
+print(c("imp_MedSteps=",imp_MedSteps))
+print(c("Diff Mean=",diffMean))
+print(c("Diff Med=",diffMed))
 ```
-
-Impact of imputing missing data on the estimates of the total daily number of steps:
-1. We set about 14% of new values, all of them with the same value of the all mean, so the result is that we drive both the mean and median to values closer to the old mean
-2. Surprisingly, this drove both the median and the mean to the same value.
+The Difference between the two datasets is: Mean = 0.18, Median = 1.18
+What is the impact of imputing missing data on the estimates of the total daily number of steps?
+The% new values were set with the same value of the mean. Thus, the result will give mean and median values closer than the previous mean.
+The mean and the median are the same: Mean = 10766, Median = 10766
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
