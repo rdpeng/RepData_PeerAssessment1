@@ -1,25 +1,100 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+Assignment
+==========
+
+#Set the directory and load the csv file
+```{r,echo=TRUE}
+setwd("D:/Download/IDM Download/Compressed/New folder (5)")
+Data<-read.csv("activity.csv", header = TRUE)
+```
+#Total steps taken perday and histogram of the data
+
+```{r,echo=TRUE}
+c<-aggregate(steps~date,Data,sum)
+hist(c$steps,
+     main = "Total Steps per Day",
+     xlab = "Number of Steps")
+```
+
+#Mean and median of total steps taken per day
+
+```{r,echo=TRUE}
+meanSteps <- mean(c$steps, na.rm = TRUE)
+medSteps <- median(c$steps, na.rm = TRUE)
+```
+mean of total steps taken per day is `r meanSteps`
+median of total steps taken per day is `r medSteps`
+
+#Make a time series plot of the 5-minute interval and the average number of steps taken, averaged across all days
+```{r,echo=TRUE}
+library(ggplot2)
+Fu<-aggregate(steps~interval,Data,mean)
+ggplot(Fu,aes(interval,steps))+geom_line()+
+ggtitle("Average Daily Activity Pattern") +
+        xlab("5-minute Interval") +
+        ylab("Average Number of Steps") +
+        theme(plot.title = element_text(hjust = 0.5))
+```
+
+#Which 5-minute interval across all days contain the maximum number of steps
+```{r,echo=TRUE}
+maxIn<-max(Fu$interval[which.max(Fu$steps)])
+```
+`r maxIn` interval contain the maximum steps.
 
 
-## Loading and preprocessing the data
+#Calculate and report the total number of missing values in the dataset
+```{r,echo=TRUE}
+Total<-sum(is.na(Data$steps))
+```
+There are `r Total` missing values. I will replace these missing values with the 5-day average of that respective interval.
 
 
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
+#The missing data filled in
+```{r,echo=TRUE}
+import<-transform(Data,steps=ifelse(is.na(Data$steps),Fu$steps[match(Data$interval,Fu$interval)],Data$steps))
+```
 
 
+#Histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 
-## Imputing missing values
+```{r,echo=TRUE}
+d<-aggregate(steps~date,import,sum)
+hist(d$steps,main = "Imputed Number of Steps Per Day",
+     xlab = "Number of Steps")
+meanSteps2 <- mean(d$steps, na.rm = TRUE)
+medSteps2 <- median(d$steps, na.rm = TRUE)
+diffMean =meanSteps2 - meanSteps
+diffMed = medSteps2 - medSteps
+diffTotal = sum(d$steps) - sum(c$steps)
+```
+
+There is a difference of `r diffMean` in the mean steps of the two dataset. There is a difference of `r diffMed` in the median steps of the two dataset. There is a difference of `r diffTotal` in the total steps of the two dataset.
 
 
+#Create a new factor variable in the dataset with two levels - "weekend" and "weekday"
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r,echo=TRUE}
+datatype<-function(date){
+        day<-weekdays(date)
+        if (day %in% c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday"))
+        return("weekday")
+        else if (day%in% c("Saturday", "Sunday"))
+                return("weekend")
+        else
+                stop("Invalid")
+}
+import$date=as.Date(import$date)
+import$day<-sapply(import$date,FUN = datatype)
+```
+
+
+#A panel plot containnig a time-series plot of the 5-minute interval and the average number of steps taken across all weekdays or weekends.
+
+
+```{r,echo=TRUE}
+New<-aggregate(steps~interval+day,import,mean)
+ggplot(New,aes(interval,steps,col=day))+geom_line()+facet_grid(day~.)+ggtitle("Average Daily Activity Pattern") +
+        xlab("5-minute Interval") +
+        ylab("Average Number of Steps") +
+        theme(plot.title = element_text(hjust = 0.5))
+```
