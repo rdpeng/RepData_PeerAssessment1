@@ -1,0 +1,69 @@
+---
+title: "Week 5 Project 1"
+output: 
+   html_document:
+           keep_md: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading and preprocessing the data
+```{r}
+library(readstata13)
+activity = read.csv("/Users/mcheng/Week 5/activity.csv")
+activity$date <- as.Date(activity$date, "%Y-%m-%d", tz = "Europe/Zurich")
+class(activity$date)
+```
+
+## What is mean total number of steps taken per day?
+```{r}
+library(dplyr)
+total <- activity %>% group_by(date) %>% summarise(total = sum(steps, na.rm = T))
+total
+hist(total$total, main = "Total number of steps taken per day", xlab = "Total steps taken per day", ylim = c(0, 30))
+mean(total$total, na.rm = T)
+median(total$total, na.rm = T)
+```
+
+## What is the average daily activity pattern?
+```{r}
+average <- activity %>% group_by(interval) %>% summarise(average = mean(steps, na.rm = T))
+average
+plot(average$interval, average$average, type = "l", lwd = 2, xlab="Interval", ylab="Average number of steps", main="Average number of steps per interval")
+average[which.max(average$average), ]$interval
+```
+
+## Imputing missing values
+```{r}
+sum(is.na(activity$steps))
+missing_index <- is.na(activity$steps)
+m <- mean(average$average)
+activity_imputed <- activity
+activity_imputed[missing_index,1]<-m
+activity_imputed_1 <- activity_imputed %>% group_by(date) %>% summarise(sum = sum(steps))
+hist(activity_imputed_1$sum, xlab = "Total steps per day", ylim = c(0,30), main = "Total number of steps taken each day")
+mean(activity_imputed_1$sum)
+median(activity_imputed_1$sum)
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+activity_imputed$weekday <- weekdays(activity_imputed$date)
+activity_imputed <- activity_imputed %>% mutate(day = ifelse(weekday=="Saturday" | weekday=="Sunday", "Weekend", "Weekday"))
+```
+```{r, results="hide"}
+as.factor(activity_imputed$day)
+```
+```{r}
+average2 <- activity_imputed %>% group_by(day, interval) %>% summarise(mean = mean(steps))
+average2
+library(lattice)
+with(average2, xyplot(mean ~ interval | day, 
+                     type = "l",      
+                     main = "Number of Steps within Intervals by day",
+                     xlab = "Daily Intervals",
+                     ylab = "Number of Steps"))
+```
+
