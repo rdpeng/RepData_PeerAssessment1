@@ -76,7 +76,7 @@ total
 hist(total$total, main = "Total number of steps taken per day", xlab = "Total steps taken per day", ylim = c(0, 30))
 ```
 
-![](Week-5-Project-1_files/figure-html/total-1.png)<!-- -->
+![](Week-5-Project-1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 ```r
 mean(total$total, na.rm = T)
@@ -129,7 +129,7 @@ average
 plot(average$interval, average$average, type = "l", lwd = 2, xlab="Interval", ylab="Average number of steps", main="Average number of steps per interval")
 ```
 
-![](Week-5-Project-1_files/figure-html/average-1.png)<!-- -->
+![](Week-5-Project-1_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ```r
 average[which.max(average$average), ]$interval
@@ -165,7 +165,7 @@ activity_imputed_1 <- activity_imputed %>% group_by(date) %>% summarise(sum = su
 hist(activity_imputed_1$sum, xlab = "Total steps per day", ylim = c(0,30), main = "Total number of steps taken each day")
 ```
 
-![](Week-5-Project-1_files/figure-html/missing value-1.png)<!-- -->
+![](Week-5-Project-1_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 ```r
 mean(activity_imputed_1$sum)
@@ -233,5 +233,4 @@ with(average2, xyplot(mean ~ interval | day,
                      ylab = "Number of Steps"))
 ```
 
-![](Week-5-Project-1_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
-
+![](Week-5-Project-1_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
