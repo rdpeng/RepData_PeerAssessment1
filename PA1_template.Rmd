@@ -1,25 +1,225 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "Reproducible Research: Course Project 1"
+author: "Eric Andres Jardon Chao"
 output: 
   html_document:
     keep_md: true
 ---
-
+*Objective:* Perform a simple analysis on a wearable computing dataset consisting on the number of steps taken by a single person, measured in 5-minute intervals during a 2-month period between october and november 2012.  
 
 ## Loading and preprocessing the data
+First of all we want to load in the packages to use for our analysis.  
 
+```{r packages, results='hide', warning=FALSE, message=FALSE}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+```
 
+Next, unzip the file containing our data (a .csv file) and read it into R.  
+We also convert the <code>date</code> variable into a proper Date type.  
+**Note**: for this step make sure you are in the working directory of the project's root folder, i.e. where the activity.zip file is contained.  
+
+```{r readingdata}
+zipFile <- "activity.zip"
+if (file.exists(zipFile)){unzip(zipFile)}
+rawData <- read.csv("activity.csv")
+rawData$date <- as.Date(rawData$date)
+```
+
+Once the .csv file is present in the working directory and read into a dataframe, we are ready to start our analysis.  
 
 ## What is mean total number of steps taken per day?
+This question requires us to ignore missing values.   
+We will produce a dataframe <code>data</code> that we can work with for this question and which doesn't have any NA values.  
 
+```{r cleandata}
+cleanData <- subset(rawData, !is.na(steps)) # remove NA values
+data <- as_tibble(cleanData) # for pretty output purposes
+head(data)
+```
+
+**Prepare the Data for the plot:**
+We want to know the total number of steps taken each day. For this, we perform chaining on the <code>data</code> dataframe to produce a new, summarized data frame <code>daily.steps</code> that contains maps a given date to the total number of steps.  
+
+```{r dailysteps}
+daily.steps <- data %>%
+  group_by(date) %>%
+  summarise(daily_steps = sum(steps), .groups="keep")
+
+head(daily.steps)
+```
+
+We are also asked to calculate the mean and the median across all dates, which can be simply done with <code>mean</code> and <code>median</code> functions (I am storing them in variables so we can use them for our histogram up next).  
+
+```{r meanmedian}
+stepsmean <- mean(daily.steps$daily_steps)
+stepsmedian <- median(daily.steps$daily_steps)
+
+print(paste("Mean=",stepsmean))
+print(paste("Median=",stepsmedian))
+
+```
+We can see that both measurements are almost identical for this data.  
+
+#### Plot 1. Histogram for Daily Steps.
+
+We use the previous <code>daily.steps</code> dataframe to produce a histogram by setting the <code>daily_steps</code> variable along the x-axis, and we choose a binwidth of 1000 units. We also show where the median (green dashed line) and mean (red solid line) stand in this histogram.  
+
+```{r plot1, fig.height=5}
+plot.dailysteps <- ggplot(daily.steps, aes(x=daily_steps)) + 
+  geom_histogram(binwidth=1000, fill="steelblue", color="navyblue") +
+  labs(title="Histogram for Daily Total Steps",
+       x="Daily number of steps", y="Frequency") +
+  geom_vline(xintercept=stepsmean,
+             color="red") +
+  geom_vline(xintercept = stepsmedian,
+             linetype="dashed",
+             color="green")
+
+plot.dailysteps
+```
 
 
 ## What is the average daily activity pattern?
 
+This time we are asked to produce a time series plot that shows the average steps taken at each one of the 5-min intervals along the day.  
 
+**Prepare the Data for the plot:**
+We reuse the <code>data</code> dataframe that is free from missing values to produce a new, summarized dataframe that contains the mean steps taken according to the <code>interval</code> id and that we can later use for our plot.  
+Just for readability, we also add an extra column <code>interval_f</code> that indicates the starting time that the <code>interval</code> id belongs to.  
+
+```{r avginterval}
+interval.steps <- data %>%
+  group_by(interval) %>%
+  summarise(avg_steps = mean(steps), .groups="keep") %>%
+  mutate(interval_f = sprintf("%04d", interval)) %>%
+  mutate(interval_f = paste(substring(interval_f, 1, 2), substring(interval_f, 3, 4), sep=":"))
+
+head(interval.steps)
+```
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? We can find the row corresponding to the maximum average measurement like this: 
+
+```{r maxinterval}
+maxSteps = max(interval.steps$avg_steps)
+interval.maxsteps = interval.steps[which(interval.steps$avg_steps == maxSteps),]
+
+print(paste("The maximum average number of steps is ", maxSteps, "  taken at", interval.maxsteps$interval_f, " in the morning."))
+```
+A possible explanation is that this person walks the most at 8:035 in the morning because of commuting to work or school.  
+
+#### Plot 2. Time series for average steps along the day.
+
+```{r plot2, fig.height=5}
+plot.intervalsteps <- ggplot(interval.steps, aes(x=interval, y=avg_steps)) + 
+                      geom_line(color="orange") +
+                      labs(title="Average Steps per 5-min intervals during the Day",
+                           x="Time of day", y="Average steps") +
+                      geom_vline(xintercept = interval.maxsteps$interval, color="darkred",
+                                 linetype="dashed")
+plot.intervalsteps
+```
+
+From our plot it looks like most of the walking happens between 8:00 and 9:00, possibly due to commuting.  
 
 ## Imputing missing values
+Our analysis up to now has been made ignoring the missing values of the original dataset. Since ignoring missing values may induce bias, it may also be important to view patterns with imputed data.  
+First let us verify how many NA values we have:  
+```{r}
+numberofNA <- sum(is.na(rawData$steps))
+print(paste("Total number of rows with missing values is", numberofNA))
+```
 
+**Strategy: use the interval's average steps to impute missing values in the rows.**  
 
+- We can reuse our <code>interval.steps</code> dataframe. If we join this dataframe with the original dataset by the <code>interval</code> id, we can know the interval's average value for every row.
+- For the missing value rows, we replace the <code>steps</code> value with the average.  
+
+```{r}
+naRows <- which(is.na(rawData$steps))
+imputedData <- full_join(rawData, interval.steps, by="interval")
+imputedData[naRows,1] <- imputedData[naRows,4]
+
+head(imputedData[naRows, ])
+```
+We can confirm that the previously NA rows now contain the value of the average steps of that interval.  
+
+**Prepare the Data for the plot:**
+Use the newly imputed dataframe to produce a summarized <code>imp.daily.steps</code> dataframe that contains the daily steps taken for each date.
+
+```{r impdailysteps}
+imp.daily.steps <- imputedData %>%
+  group_by(date) %>%
+  summarise(daily_steps = sum(steps), .groups="keep")
+
+head(imp.daily.steps)
+```
+Here we can see that the first date (2012-10-01) has now an imputed value of daily steps equivalent to the mean, as it was one of the few dates that had completely missing values.  
+Next, as we did in for the first histogram, we can recalculate the mean and median of the data easily.  
+
+```{r impmeanmedian}
+imp_mean <- mean(imp.daily.steps$daily_steps)
+imp_median <- median(imp.daily.steps$daily_steps)
+
+print(paste("Mean =",imp_mean))
+print(paste("Median =",imp_median))
+```
+The median and mean values don't differ much from the non-imputed case, but this time the median is exactly equivalent to the mean, probably because we now have more occurrences of 10766.18 across the population. Indeed, this will be shown in the histogram.
+
+#### Plot 3. Histogram of Daily Steps with Imputed Data.
+```{r imphistogram}
+plot.impdailysteps <- ggplot(imp.daily.steps, aes(x=daily_steps)) + 
+  geom_histogram(binwidth=1000, fill="darkturquoise", color="darkslategray") +
+  labs(title="Histogram for Daily Steps (Imputed NA values)",
+       x="Daily number of steps", y="Frequency") +
+  geom_vline(xintercept=imp_mean,
+             color="red") +
+  geom_vline(xintercept = imp_median,
+             linetype="dashed",
+             color="green")
+
+plot.impdailysteps
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+For this question we are required to reutilize the <code>imputedData</code> dataframe.  
+We can derive a new dataframe <code>dayData</code> which has an additional categorical variable, <code>day.type</code> indicating whether the date of measurement is a weekday or a weekend.
+Based on <code>day.type</code> we will be able to separate the data into two separate time series plots and compare the patterns.  
+
+```{r}
+dayData <- mutate(imputedData, day.type = fifelse(weekdays(imputedData$date)%in%c("Saturday", "Sunday"), "Weekend", "Weekday"))
+dayData <- dayData[, -c(4,5)]
+
+head(dayData)
+```
+
+Notice how we got rid of the <code>avg_steps</code> and <code>interval_f</code> columns at 4 and 5 because we no longer need them and we will be recalculating a new average that takes the weekday into account.
+
+**Prepare the Data for the plot:**
+
+Once again we perform chaining to produce a summarized dataframe that we can use for our plot, which contains the average steps taken per unique combination of interval id and day type. 
+
+```{r}
+day.interval.steps <- dayData %>%
+  group_by(interval, day.type) %>%
+  summarise(avg_steps = mean(steps), .groups="keep")
+
+head(day.interval.steps)
+```
+
+#### Plot 4. Patterns in activity of Weekdays vs Weekends
+
+```{r}
+plot.weekdaysteps <- ggplot(day.interval.steps, aes(x=interval, y=avg_steps)) +
+  geom_line(aes(color=day.type)) +
+  facet_grid(day.type~.) +
+  labs(title="Average Steps taken at 5-min intervals, Weekday vs Weekends", x="Interval", 
+       y="Average steps")
+
+plot.weekdaysteps
+```
+
+From the plot we can see that on weekdays there is a much higher amount of walking in the morning, which supports our theory of the spike caused by commuting (assuming commuting only happens on weekdays as it usually does).  This is followed by a period of much less walking possibly due to sitting in the office most of the time.
+
+On the other hand, we have a relatively more uniform amount of steps during the day on weekends, which can be explained due to possible weekend activities and leisure throughout the day.
