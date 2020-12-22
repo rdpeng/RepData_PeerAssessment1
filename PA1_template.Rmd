@@ -8,18 +8,47 @@ output:
 
 ## Loading and preprocessing the data
 
-
+source_file <- "https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip"
+download.file(source_file, destfile = paste0(getwd(), '/repdata%2Fdata%2Factivity.zip'), method = "curl")
+unzip("repdata%2Fdata%2Factivity.zip",exdir = "data")
 
 ## What is mean total number of steps taken per day?
 
+activity_data <-  data.table::fread(input = "data/activity.csv")
+Total_Steps <- activity_data[, c(lapply(.SD, sum, na.rm = FALSE)), .SDcols = c("steps"), by = .(date)] 
+
+Total_Steps[, .(Mean_Steps = mean(steps, na.rm = TRUE), Median_Steps = median(steps, na.rm = TRUE))]
+
+# Plotting the Steps Data 
+ggplot(Total_Steps, aes(x = steps)) +     geom_histogram(fill = "Red", binwidth = 2000) +     labs(title = "Daily Steps", x = "Steps", y = "Frequency")
 
 
 ## What is the average daily activity pattern?
 
+interval_data <- activity_data[, c(lapply(.SD, mean, na.rm = TRUE)), .SDcols = c("steps"), by = .(interval)] 
+interval_data [steps == max(steps), .(max_interval = interval)]
+
+# Plotting Average Steps Data
+ggplot(interval_data, aes(x = interval , y = steps)) + geom_line(color="Red", size=1) + labs(title = "Average Daily Steps", x = "Interval", y = "Average Steps per day")
 
 
 ## Imputing missing values
 
+activity_data [is.na(steps), .N ]
+
+nrow(activity_data [is.na(steps),])
+
+activity_data[is.na(steps), "steps"] <- activity_data[, c(lapply(.SD, median, na.rm = TRUE)), .SDcols = c("steps")]
+
+data.table::fwrite(x = activity_data, file = "data/modified_file.csv", quote = FALSE)
+
+Total_Steps <- activity_data [, c(lapply(.SD, sum)), .SDcols = c("steps"), by = .(date)] 
+
+Total_Steps[, .(Mean_Steps = mean(steps), Median_Steps = median(steps))]
+
+#  histogram of the total number of steps taken each day 
+ggplot(Total_Steps, aes(x = steps)) + geom_histogram(fill = "green", binwidth = 2000) + labs(title = "Daily Steps", x = "Steps", y = "Frequency")
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+
+
