@@ -1,0 +1,82 @@
+---
+title: "Project 1"
+date: "February 22, 2021"
+output: html_document
+---
+
+
+```{r, echo=TRUE}
+if (!file.exists("activity.csv") )
+    {
+     url <- 'http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip'  
+     download.file(url,destfile='repdata%2Fdata%2Factivity.zip',mode='wb')  
+     unzip('repdata%2Fdata%2Factivity.zip')
+     
+}
+DataSet <- read.csv("activity.csv") 
+summary(DataSet)
+```
+Calculate the total number of steps taken per day, and make a histogram of the total number of steps taken each day.
+
+```{r, echo=TRUE}
+Total_Steps <- aggregate(steps ~ date, DataSet, sum)
+hist(Total_Steps$steps, main = paste("Total Steps Per Day"))
+```
+
+Calculate and report the mean and median of the total number of steps taken per day.
+```{r, echo=TRUE}
+Total_Steps_Mean <- mean(Total_Steps$steps)
+Total_Steps_Median <- median(Total_Steps$steps)
+Total_Steps_Mean
+Total_Steps_Median
+```
+
+Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
+
+```{r, echo=TRUE}
+Interval_Steps <- aggregate(steps ~ interval, DataSet, mean)
+plot(Interval_Steps$interval,Interval_Steps$steps, type="l", xlab="5-minute Interval", ylab="Number of Steps",main="Average Number of Steps per Day by Interval")
+```
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r, echo=TRUE}
+Interval_Max <- Interval_Steps[which.max(Interval_Steps$steps),1]
+Interval_Max
+```
+
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+```{r, echo=TRUE}
+Number_NA <- sum(!complete.cases(DataSet))
+Number_NA 
+```
+
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```{r, echo=TRUE}
+for(i in 1:NROW(DataSet)){
+  if(is.na(DataSet[i,2])==TRUE){
+    DataSet[i] = Total_Steps_Mean
+  }
+}
+```
+
+Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+```{r, echo=TRUE}
+Total_Steps_2 <- aggregate(steps ~ date, DataSet, sum)
+hist(Total_Steps$steps, main = paste("Total Steps Per Day without NAs"))
+Total_Steps_Mean_2 <- mean(Total_Steps$steps)
+Total_Steps_Median_2 <- median(Total_Steps$steps)
+Total_Steps_Mean_2
+Total_Steps_Median_2
+```
+
+Create a new factor variable in the dataset with two levels - "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
+Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
+```{r, echo=TRUE}
+weekdays <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+DataSet$f = as.factor(ifelse(is.element(weekdays(as.Date(DataSet$date)),weekdays), "Weekday", "Weekend"))
+Step_3 <- aggregate(steps ~ interval + f, DataSet, mean)
+library(lattice)
+xyplot(Step_3$steps ~ Step_3$interval|Step_3$f, main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
+```
+
