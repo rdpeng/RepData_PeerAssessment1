@@ -1,12 +1,9 @@
 ---
-title: "Reproducible Research: Peer Assessment 1."
+title: "Reproducible Research: Peer Assessment 1..."
 author: "Darwin Reynell Nava"
-date: "18 de abril de 2021"
+date: "19 de abril de 2021"
 output: html_document
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## Loading and preprocessing the data  
 ```{r echo=TRUE}  

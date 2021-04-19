@@ -1,15 +1,12 @@
 ---
-title: "Reproducible Research: Peer Assessment 1.."
+title: "Reproducible Research: Peer Assessment 1"
 author: "Darwin Reynell Nava"
-date: "18 de abril de 2021"
+date: "19 de abril de 2021"
 output: html_document
 ---
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## Loading and preprocessing the data  
-```{r echo=TRUE}  
+```{r}  
 library(dplyr)
 steps <- read.csv("./activity.csv", sep=",", header=TRUE)  
 steps <- na.omit(steps)  
@@ -19,7 +16,7 @@ steps_daily <- summarize(by_day, steps=sum(steps))
 ```
 
 ## What is mean total number of steps taken per day?  
-```{r echo=TRUE}  
+```{r}  
 par(mar=c(4,4,2,1))  
 hist(steps_daily$steps, breaks=30, xlab="Number of steps", ylab = "Frequency", main = "Distribution. Number of steps daily", col="yellow", xlim=c(0, 25000))  
 abline(v= mean(steps_daily$steps, na.rm = TRUE), lwd=2, lty=4, col="red")  
@@ -31,7 +28,7 @@ print(paste(m, " ", md))
 ```  
 
 ## What is the average daily activity pattern?  
-```{r echo=TRUE}  
+```{r}  
 library(dplyr) 
 by_interval <- group_by(steps, interval)  
 steps_interval <- (summarize(by_interval, steps=mean(steps)))  
@@ -44,7 +41,7 @@ steps_interval[steps_interval$steps==max(steps_interval$steps),]
 ```  
 
 ## Imputing missing values  
-```{r echo=TRUE}  
+```{r}  
 raw_data <- read.csv("./activity.csv", sep=",", header=TRUE)  
 print("The total number of rows with Nas")  
 sum(is.na(raw_data))  
@@ -69,7 +66,7 @@ print(paste("after imputing: ",m2, " ", md2))
 ```  
 
 ## Are there differences in activity patterns between weekdays and weekends?  
-```{r echo=TRUE}  
+```{r}  
 steps2 <- raw_data_imputed  
 library(lubridate) 
 library(ggplot2)
