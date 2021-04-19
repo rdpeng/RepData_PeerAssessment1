@@ -82,3 +82,4 @@ qplot(interval, steps,data=steps_interval_weektype, facets=weektype~.,geom="line
 *Max Weekends: x= 915 y= 153. Mean= 40.02226*  
 *More activity during the weekends in contrast to the weekdays.*  
 
+*end*
