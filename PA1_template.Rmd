@@ -5,21 +5,159 @@ output:
     keep_md: true
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#remove scientific notation
+options("scipen"=999)
+#create figure directory
+dir.create("figures")
+```
 
 ## Loading and preprocessing the data
 
+```{r}
+library(dplyr)
+library(stringr)
 
+#Read in activity data
+raw_activity_data <- read.csv("activity.csv")
+head(raw_activity_data)
+summary(raw_activity_data)
 
+#convert dates to datetime
+activity_data <- raw_activity_data %>% mutate(date = as.POSIXct(date, format = "%Y-%m-%d", tz=Sys.timezone()))
+head(activity_data)
+```
 ## What is mean total number of steps taken per day?
+```{r}
+library(ggplot2)
 
+#Summarise number of steps taken each day
+daily_steps <- activity_data %>% group_by(date) %>%
+                  summarise(steps = sum(steps, na.rm =TRUE))
+head(daily_steps)
 
+#Plot number of steps taken each day
+q <- ggplot(daily_steps, aes(date,steps)) + 
+                    labs(title = "Daily Steps taken by Wearer of Activity Monitoring Device",
+                         y = "Number of Steps", x = "Date")
+
+q + geom_bar(stat="identity")
+#Save plot to file
+dev.copy(png, file="figures/daily_steps.png")
+dev.off() #Close PNG device
+
+avg_daily_steps <- round(mean(daily_steps$steps, na.rm = TRUE),0)
+median_daily_steps <- median(daily_steps$steps, na.rm = TRUE)
+```
+- The mean number of steps taken each day is `r round(avg_daily_steps,0)`. 
+- The median number of steps taken each day is `r median_daily_steps`.
 
 ## What is the average daily activity pattern?
+```{r}
+#Group number of steps by interval and calculate mean
+interval_steps <- activity_data %>% group_by(interval) %>%
+                  summarise(avg_steps = mean(steps, na.rm = TRUE))
+head(interval_steps)
 
+#Plot average number of steps for each interval
+plot(interval_steps$interval, interval_steps$avg_steps, type = "l",
+     main = "Average number of steps for each 5-minute interval",
+     xlab = "Interval",
+     ylab = "Number of Steps")
 
+#Save plot to file
+dev.copy(png, file="figures/avg_steps_per_interval.png")
+dev.off() #Close PNG device
+
+#Find interval with maximum average of steps
+max_interval <- interval_steps$interval[which.max(interval_steps$avg_steps)]
+
+#Convert interval into time format
+interval_in_minutes <- vector()
+interval_in_minutes[1] <- interval_steps$interval[which.max(interval_steps$avg_steps)]
+interval_in_minutes[2] <- interval_steps$interval[which.max(interval_steps$avg_steps)+1]
+
+interval_in_minutes <- paste0(str_pad(interval_in_minutes, 4, pad = 0),"00") %>%
+                        strptime("%H%M%S") %>% format("%H:%M")
+```
+
+- The  interval with the highest average number of steps is `r max_interval` which corresponds to the 5-minute
+time interval `r interval_in_minutes[1]` - `r interval_in_minutes[2]`.
 
 ## Imputing missing values
+```{r}
+#Find number of missing rows
+no_of_missing_rows <- sum(!complete.cases(activity_data))
+```
+The total number of rows with missing numbers is `r no_of_missing_rows`.
 
+```{r}
+#Replace missing values with average for the 5-minute interval
+activity_data_clean <- activity_data %>%
+                        mutate(steps = ifelse(is.na(steps),
+                         interval_steps$avg_steps[interval_steps$interval == interval],
+                          steps))
+head(activity_data_clean)
 
+#Calculate daily steps in imputated data
+daily_steps_clean <- activity_data_clean %>% group_by(date) %>%
+                  summarise(steps = sum(steps, na.rm =TRUE))
+head(daily_steps)
+
+#Plot imputed data
+q2 <- ggplot(daily_steps_clean, aes(date,steps)) + 
+                    labs(title = "Daily Steps taken by Wearer of Activity Monitoring Device",
+                         y = "Number of Steps", x = "Date")
+
+q2 + geom_bar(stat="identity")
+#Save plot to file
+dev.copy(png, file="figures/daily_steps_imputed_data.png")
+dev.off() #Close PNG device
+
+#Mean number of daily steps
+avg_daily_steps_clean <- mean(daily_steps_clean$steps)
+
+#Median number of daily steps
+median_daily_steps_clean <- median(daily_steps_clean$steps)
+
+#Relative percentage change in mean number of daily steps between raw and imputed data
+rel_change_mean <- 100*(avg_daily_steps_clean - avg_daily_steps)/avg_daily_steps
+
+#Relative percentage change in median number of daily steps between raw and imputed data
+rel_change_median <- 100*(median_daily_steps_clean - median_daily_steps)/median_daily_steps
+```
+
+- The mean number of daily steps in the imputated activity data is `r round(avg_daily_steps_clean,0)`.
+- The median number of daily steps in the imputated activity data is `r median_daily_steps_clean`.
+
+- The mean daily steps in the imputated activity data is `r round(rel_change_mean,2)`% higher than the mean in the raw activity data.
+- The median daily steps in the imputated activity data is `r round(rel_change_median,2)`% higher than the median in the raw activity data.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+# Define vector of Weekend days
+weekend = c("Saturday","Sunday")
+
+# create dataset of avg. steps per interval grouped by Weekday/Weekend
+interval_steps_by_day_type <- activity_data_clean %>%
+                     mutate(type_of_day = weekdays(date),
+                            type_of_day = ifelse(type_of_day %in% weekend,"weekend","weekday")) %>%
+                    group_by(type_of_day,interval) %>%
+                    summarize(steps = mean(steps, na.rm = TRUE))
+head(interval_steps_by_day_type)
+
+library(lattice)
+
+#Plot average number of steps vs. interval for Weekdays and Weekends
+xyplot(interval_steps_by_day_type$steps ~ interval_steps_by_day_type$interval | interval_steps_by_day_type$type_of_day,
+       type = "l",
+       main = "Avg. Steps during 5 minute intervals on Weekdays and Weekends",
+       xlab = "Interval",
+       ylab = "Number of Steps",
+       layout = c(1, 2)) ## Plot with 2 panels
+
+#Save plot to file
+dev.copy(png, file="figures/avg_steps_weekdays_weekends.png")
+dev.off() #Close PNG device
+```
