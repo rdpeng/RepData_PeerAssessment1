@@ -1,0 +1,77 @@
+---
+title: "RR Project1"
+author: "Shengbai Zhang"
+date: "7/13/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load and Preprocessing 
+
+```{r}
+activity <- read.csv("~/Downloads/activity.csv")
+head(activity)
+dim(activity)
+summary(activity)
+activity$date<-as.Date(activity$date,"%Y-%m-%d")
+```
+
+## Mean Total Steps Taken Per Day
+
+```{r, echo=TRUE}
+a1<- data.frame(tapply(activity$steps,activity$date,sum,na.rm = T))
+a1$date<-rownames(a1)
+rownames(a1)<-NULL
+library(ggplot2)
+plot1<-ggplot(a1,aes(x=a1$date,y=a1$tapply.activity.steps..activity.date..sum..na.rm...T.))+geom_bar(stat="identity")+ylab("Total Steps")+xlab("Date")+ggtitle("Steps per Day")
+plot1
+mean(a1[,1])
+median(a1[,1])
+```
+
+## Average Daily Pattern
+
+```{r,echo=TRUE}
+a2<-data.frame(tapply(activity$steps,activity$date,mean,na.rm=T))
+a2$date<-rownames(a2)
+rownames(a2)<-NULL
+a2$average<-a2$tapply.activity.steps..activity.date..mean..na.rm...T.
+ggplot(a2,aes(x=date,y=average))+ylab("Average Steps")+xlab("Date")+ggtitle("Average Steps per Day")+ geom_bar(stat="identity")
+activity[which.max(activity$steps),]
+```
+2012-11-27 6:15 contain max steps
+
+## Imputing Missing Data
+The presence of missing days may introduce bias into some calculations or summaries of the data.
+
+And the way to solve this problem is to impute values. Common imputations used include constant, regression model output, or mean value.
+
+For simplicity, mean imputation will be used.
+```{r,echo=TRUE}
+a3<-activity
+a3$missing<-is.na(a3$steps)
+a3<-aggregate(data=a3, missing~date+interval,FUN = "sum")
+a31<-data.frame(tapply(a3$missing,a3$date,sum))
+a31$date<-rownames(a31)
+rownames(a31)=NULL
+names(a31)<-c("missing","date")
+```
+```{r}
+a32<-data.frame(tapply(a3$missing,a3$interval,sum))
+a32$date<-rownames(a32)
+rownames(a32)<-NULL
+names(a32)<-c("missing","Interval")
+```
+plots
+```{r,echo=TRUE}
+ggplot(a31,aes(x=date,y=missing))+ggtitle("Missing Value Distribution by Date")+
+  geom_bar(stat = "identity")
+```
+From the plot, we could observe that there are 8 days that have no steps value, 
+we donot know what happened at those days, but there is a pattern, and the mean 
+imputation is desirable
+
+
