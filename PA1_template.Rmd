@@ -141,7 +141,6 @@ activityWeekend$day <- "weekend"
 wkdayWkend <- rbind(activityWeekday, activityWeekend)
 wkdayWkend$day <- as.factor(wkdayWkend$day)
 
-
 g <- ggplot (wkdayWkend, aes (interval, steps))
 g + geom_line() + facet_grid (day~.) + 
       theme(axis.text = element_text(size = 12),axis.title = element_text(size = 14)) + 
