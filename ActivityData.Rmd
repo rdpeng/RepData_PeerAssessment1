@@ -2,7 +2,7 @@
 title: "Activity Monitoring"
 author: "Shylo Burrell"
 date: "7/24/2021"
-output: md_document
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
