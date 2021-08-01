@@ -2,14 +2,20 @@
 title: "Activity Monitoring"
 author: "Shylo Burrell"
 date: "7/24/2021"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include = TRUE}
 library(ggplot2)
 library(data.table)
 ```
+
 
 ```{r}
 #steps: Number of steps taking in a 5-minute interval (missing #values are coded as NA)
@@ -37,7 +43,7 @@ activity_hist <- ggplot(data = activity_data_bydate, aes(x = steps)) +
   geom_histogram(binwidth = 1000, color = "black", fill = "steelblue3") +
   ggtitle("Total Steps per Day") 
   
-activity_hist
+print(activity_hist)
 
 ```
 
@@ -64,7 +70,7 @@ activity_timeseries_plot <- ggplot(data = activity_timeseries, aes( x = interval
   xlab("Interval")+
   ggtitle("Steps vs interval")
 
-activity_timeseries_plot
+print(activity_timeseries_plot)
 ```
 ```{r}
 #maximim steps
@@ -113,7 +119,7 @@ new_activity_hist <- ggplot(data = new_activity_data_bydate, aes(x = steps)) +
   geom_histogram(binwidth = 1000, color = "black", fill = "steelblue3") +
   ggtitle("Total Steps per Day (NA values replaced with mean steps)") 
   
-new_activity_hist
+print(new_activity_hist)
 #activity_hist
 ```
 
@@ -157,6 +163,6 @@ activity_timeseries_daytype_plot <- ggplot(data = mean_weekday, aes( x = interva
   ggtitle("Steps vs Interval for Weekends and Weekdays")+
   facet_grid(day ~ .)
 
-activity_timeseries_daytype_plot
+print(activity_timeseries_daytype_plot)
 ```
 
