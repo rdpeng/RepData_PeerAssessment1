@@ -44,7 +44,7 @@ activity_hist <- ggplot(data = activity_data_bydate, aes(x = steps)) +
   geom_histogram(binwidth = 1000, color = "black", fill = "steelblue3") +
   ggtitle("Total Steps per Day") 
   
-print(activity_hist)
+activity_hist
 ```
 
 ![](ActivityData_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
@@ -82,7 +82,7 @@ activity_timeseries_plot <- ggplot(data = activity_timeseries, aes( x = interval
   xlab("Interval")+
   ggtitle("Steps vs interval")
 
-print(activity_timeseries_plot)
+activity_timeseries_plot
 ```
 
 ![](ActivityData_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
@@ -150,7 +150,7 @@ new_activity_hist <- ggplot(data = new_activity_data_bydate, aes(x = steps)) +
   geom_histogram(binwidth = 1000, color = "black", fill = "steelblue3") +
   ggtitle("Total Steps per Day (NA values replaced with mean steps)") 
   
-print(new_activity_hist)
+new_activity_hist
 ```
 
 ![](ActivityData_files/figure-html/unnamed-chunk-11-1.png)<!-- -->
@@ -209,7 +209,7 @@ activity_timeseries_daytype_plot <- ggplot(data = mean_weekday, aes( x = interva
   ggtitle("Steps vs Interval for Weekends and Weekdays")+
   facet_grid(day ~ .)
 
-print(activity_timeseries_daytype_plot)
+activity_timeseries_daytype_plot
 ```
 
 ![](ActivityData_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
