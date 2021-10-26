@@ -6,20 +6,84 @@ output:
 ---
 
 
-## Loading and preprocessing the data
+---
+title: "Actividad4"
+output: html_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## Cargar y procesar datos
+```{r}
+DatosActividad <- read.csv(file= "~/Downloads/activity.csv", header=TRUE, sep = ",")
+```
 
+## ¿Cual es la media total del numero de pasos por dia?
 
-## What is mean total number of steps taken per day?
+```{r}
+#1
+TotalPasos <- aggregate(steps ~ date, DatosActividad, FUN = sum)
+#2
+hist(TotalPasos$steps, xlab="numero de pasos", main="total de pasos por dia")
+#3
+media_TotalPasos <- mean(TotalPasos$steps, na.rm=TRUE)
+mediana_TotalPasos <- median(TotalPasos$steps, na.rm = TRUE)
+print(c("Media",mediana_TotalPasos))
+print(c("Mediana",mediana_TotalPasos))
+```
+## ¿Cual es el patron de actividad diaria promedio?
 
+```{r}
+#1
+library(ggplot2)
+Intervalo_Pasos <- aggregate(steps ~ interval,DatosActividad, mean )
+ggplot(data = Intervalo_Pasos, aes(x= interval, y= steps))+
+  geom_line()+
+  ggtitle("Patron de actividad diaria promedio")
+  xlab=("Intervalo de 5 minutos")
+  ylab=("Numero promedio de pasos")
+  theme(plot.title= element_text(hjust =0.5))
+#2
+MaxNumero <- Intervalo_Pasos[which.max(Intervalo_Pasos$steps),]
+```
+## imputar valores perdidos
 
-
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+#1
+Val_perdidos <- is.na(DatosActividad$steps)
+#2#3
+Datos_imputados <- transform(DatosActividad, steps= ifelse(is.na(DatosActividad$steps),Intervalo_Pasos$steps[match(DatosActividad$interval,Intervalo_Pasos$interval)], DatosActividad$steps))
+#4
+Datos_imputadosHist <- aggregate(steps ~ date, Datos_imputados, FUN = sum )
+hist(Datos_imputadosHist$steps, main= "numero de pasos imputados por dia", xlab= "numero de pasos")
+media_TotalPasosImp <- mean(Datos_imputados$steps, na.rm = TRUE)
+mediana_TotalPasosImp <- median(Datos_imputados$steps, na.rm = TRUE)
+diferenciaMedia = media_TotalPasosImp - media_TotalPasos
+diferenciaMediana = mediana_TotalPasosImp - mediana_TotalPasos
+diferenciaTotal = sum(Datos_imputados$steps) - sum(TotalPasos$steps)
+```
+## existen diferencias en patrones de actividad entre fines de semana y entre semana
+```{r}
+#1
+TipoDia <- function(date) {
+  dia <- weekdays(date)
+  if (dia %in% c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))
+      return ("weekeday")
+  else if (dia %in% c('Saturday', 'Sunday'))
+      return ("weekend")
+  else
+      stop ("Formato de dia invalido.")
+}
+Datos_imputados$date <- as.Date(Datos_imputados$date)
+Datos_imputados$dia <- sapply(Datos_imputados$date, FUN = TipoDia)
+#2
+MediaTotalPasos <- aggregate(steps ~ interval + dia, Datos_imputados, mean)
+ggplot(data = MediaTotalPasos, aes(x = interval, y = steps)) + 
+  geom_line() +
+  facet_grid(dia ~ .) +
+  ggtitle("Patron de actividad diario promedio") +
+  xlab("Intervalo de 5 minutos") +
+  ylab("Numero de pasos promedio") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
