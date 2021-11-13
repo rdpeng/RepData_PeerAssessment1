@@ -1,14 +1,19 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "RR Project1"
+author: "Shengbai Zhang"
+date: "7/13/2021"
+output: html_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 activity<-read.csv("activity.csv")
 ```
 
-Exploring the basics of this data
+##Step1
+##Exploring the basics of this data
 ```{r}
 dim(activity)
 names(activity)
