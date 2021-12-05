@@ -1,10 +1,17 @@
 ---
 title: "project1_activity"
-output: rmarkdown::github_document
 author: weimf1990
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
      keep_md: true
+     
+output:
+  github_document: default
+  html_document: default
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding,
+  output_format = "all") })
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
