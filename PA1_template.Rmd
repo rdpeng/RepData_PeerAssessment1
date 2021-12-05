@@ -1,10 +1,8 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+title: "project1_activity"
 output: html_document
-  html_document:
-  author: weimf1990
-  date: "`r format(Sys.time(), '%m/%d/%Y')`"
-    keep_md: true
+author: weimf1990
+date: "`r format(Sys.time(), '%m/%d/%Y')`"
 ---
 
 ```{r setup, include=FALSE}
@@ -12,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Loading and preprocessing the data
+
 ```{r}
 #setting the directory
 setwd("C:/Users/user/Desktop/Data Science/project/Course 5")
