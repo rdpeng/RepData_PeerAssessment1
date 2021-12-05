@@ -1,6 +1,6 @@
 ---
 title: "project1_activity"
-output: html_document
+output: rmarkdown::github_document
 author: weimf1990
 date: "`r format(Sys.time(), '%m/%d/%Y')`"
 ---
