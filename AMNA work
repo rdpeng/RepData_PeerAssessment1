@@ -1,0 +1,56 @@
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
+# Read in the dataset
+
+steps_data \<-
+read.csv("C:\\Users\\amnay\\AppData\\Local\\Temp\\Rar\$DIa4616.49842\\activity.csv")
+
+# Convert date column to date format
+
+steps_data$date <- as.Date(steps_data$date)
+
+# Add a column for day of the week
+
+library(lubridate) steps_data$day_of_week <- weekdays(steps_data$date)
+
+# Add a column for weekend
+
+steps_data$weekend <- ifelse(steps_data$day_of_week %in% c("Sat",
+"Sun"), 1, 0) \# Calculate total steps per day library(magrittr)
+total_steps_per_day \<- steps_data %\>% group_by(date) %\>%
+summarise(total_steps = sum(steps))
+
+# Plot the histogram
+
+ggplot(total_steps_per_day, aes(x = total_steps)) +
+geom_histogram(binwidth = 1000, color = "black", fill = "white") +
+ggtitle("Histogram of Total Steps Taken Each Day") + xlab("Total
+Steps") + ylab("Frequency")
+
+\# Calculate mean and median steps per day mean_steps_per_day \<-
+mean(total_steps_per_day$total_steps) median_steps_per_day <- median(total_steps_per_day$total_steps)
+
+# Print the results
+
+cat("Mean Steps per Day:", mean_steps_per_day, "\n") cat("Median Steps
+per Day:", median_steps_per_day, "\n")
+
+# Calculate average steps per 5-minute interval
+
+average_steps_per_interval \<- steps_data %\>% group_by(interval) %\>%
+summarise(average_steps = mean(steps))
+
+# Plot the time series
+
+ggplot(average_steps_per_interval, aes(x = interval, y =
+average_steps)) + geom_line(color = "red") + ggtitle("Time Series Plot
+of Average Steps Taken") + xlab("5-Minute Interval") + ylab("Average
+Steps")
+
+\# Find the 5-minute interval with maximum average steps max_interval
+\<- average_steps_per_interval %\>% filter(average_steps ==
+max(average_steps)) %\>% pull(interval)
