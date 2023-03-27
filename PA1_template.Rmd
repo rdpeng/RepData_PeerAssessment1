@@ -2,24 +2,111 @@
 title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
-    keep_md: true
+  keep_md: true
 ---
 
 
 ## Loading and preprocessing the data
-
-
+```{r 1, echo = TRUE, message=FALSE, warning=FALSE}
+df<-read.csv("activity.csv", header=TRUE)
+df_clean<-df[complete.cases(df), ]
+df_clean$date<-as.Date(df_clean$date)    
+df_clean$interval<-as.numeric(df_clean$interval)
+summary(df_clean)
+```
 
 ## What is mean total number of steps taken per day?
 
+```{r 2, echo = TRUE, message=FALSE, warning=FALSE}
+# Group by day
+library(lubridate)
+library(dplyr)
+
+day<- df_clean %>% 
+      group_by(date = lubridate::floor_date(date, 'day')) %>%
+      summarize(steps = sum(steps))
+
+# Histogram of daily steps
+hist(day$steps, fig.width=4, fig.height=4)
+
+# Mean and median number of steps taken each day
+summary(day$steps)
+
+```
+### The mean and median of the total number of daily steps are:
+### Mean = 10766
+### Median = 10765.
 
 
 ## What is the average daily activity pattern?
 
+```{r 3, echo = TRUE, message=FALSE, warning=FALSE}
+# Time series plot
+library(ggplot2)
+p <- ggplot(day, aes(x=date, y=steps)) + geom_line() 
+p
+
+# Grouping by five-minute intervals, and sorting in descending order
+library(dplyr)
+options(digits=5)
+five_min <- df_clean %>% group_by(interval) %>% 
+    summarise(steps=mean(steps))
+
+five_min[order(-five_min$steps),]
+```
+
+### The interval with the highest average number of steps is the one at 8:35am.
 
 
 ## Imputing missing values
 
+```{r 4, echo = TRUE, message=FALSE, warning=FALSE}
+# Computing missing values from original data
+summary(df)
+
+# Missing values (NA values) in the steps column are substituted by the 
+# average number of steps in each interval of time
+df_new<-df
+df_new$steps[is.na(df_new$steps) == TRUE] <- five_min$steps[df_new$interval == five_min$interval]
+
+# Grouping by day the newly completed dataset: 
+df_new$date<-as.Date(df_new$date)    
+df_new$interval<-as.numeric(df_new$interval)
+df_new<-df_new[complete.cases(df_new), ]
+
+
+library(lubridate)
+library(dplyr)
+
+day_new<- df_new %>% 
+    group_by(date = lubridate::floor_date(date, 'day')) %>%
+    summarize(steps = sum(steps))
+
+# Histogram of daily steps in the newly completed dataset:
+hist(day_new$steps)
+
+summary(day$steps) #without NA substitution
+summary(day_new$steps) #with NA substitution
+```
+
+### The total number of missing values is 2304. Missing values were substituted by the average number of steps in each interval of time. The difference obtained with the first part of the assignment is minimal. The average mean number of steps remained the same (10766 steps).  Just the median increased by one (from 10765 to 10766).   
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r 5, echo = TRUE, message=FALSE, warning=FALSE}
+# Grouping the data between weekdays and weekends
+
+# Identifying the day of the week
+df_new$weekday <- weekdays(df_new$date)
+
+# Replacing each day of the week between weekday and weekend
+df_new$weekday[(df_new$weekday == "lunes") | (df_new$weekday == "martes") | (df_new$weekday == "miércoles") | (df_new$weekday == "jueves") | (df_new$weekday == "viernes")]<-"weekday"
+df_new$weekday[(df_new$weekday == "sábado") | (df_new$weekday == "domingo")] <- "weekend"
+
+# Creating the panel graphs
+library(ggplot2)
+panel <- ggplot(df_new, aes(x=interval, y=steps, colour= weekday)) + geom_line() + facet_grid(~weekday) 
+panel
+```
+
+### There are differences between the distribution of steps during weekdays, and during weekends. During weekdays, the intervals with the higher number of steps are in the morning. During weekends, the intervals with the higher number of steps are in the afternoon.   
