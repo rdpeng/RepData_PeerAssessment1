@@ -14,7 +14,13 @@ head(data)
 ```
 
 ## What is mean total number of steps taken per day?
-
+```{r}
+library(ggplot2)
+total.steps <- tapply(data$steps, data$date, FUN=sum, na.rm=TRUE)
+qplot(total.steps, binwidth=1000, xlab="total number of steps taken each day")
+mean(total.steps, na.rm=TRUE)
+median(total.steps, na.rm=TRUE)
+```
 
 
 ## What is the average daily activity pattern?
