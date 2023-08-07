@@ -21,7 +21,7 @@ activity <- read.csv("~/Reproducible Research/week2/activity.csv")
 ### Histogram of number of steps
 Here, I do an histogram of the number of steps taken each day.
 
-```{r steps per day, echo=TRUE}
+```{r , echo=TRUE}
 data<- activity %>% 
     group_by(date) %>% 
     summarize(Steps_per_day=sum(steps))
@@ -80,7 +80,7 @@ activity2$steps_imp<-ifelse(is.na(activity2$steps)==FALSE,activity2$steps,mean_s
 
 Now, I create the new dataset per day, but using the imputed data.
 
-```{r steps per day with imputed data, echo=TRUE}
+```{r , echo=TRUE}
 data_imp<- activity2 %>% 
     group_by(date) %>% 
     summarize(Steps_per_day_imp=sum(steps_imp))

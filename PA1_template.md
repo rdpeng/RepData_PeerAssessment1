@@ -57,7 +57,7 @@ data<- activity %>%
 hist(data$Steps_per_day)
 ```
 
-![](PA1_template_files/figure-html/steps per day-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
 
 # What is the mean and median number of steps taken each day? 
 As instructed, I use NA.RM to ignore the missings. 
@@ -87,7 +87,7 @@ data2<- activity %>%
 plot(data2$interval,data2$Steps_per_interval,type="l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
 ```r
 max<-max(data2$Steps_per_interval)
@@ -139,7 +139,7 @@ data_imp<- activity2 %>%
 hist(data_imp$Steps_per_day_imp)
 ```
 
-![](PA1_template_files/figure-html/steps per day with imputed data-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -170,4 +170,4 @@ xyplot(Steps_per_int_imp ~ interval | weekend,
        type = "l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
