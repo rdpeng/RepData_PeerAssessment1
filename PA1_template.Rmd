@@ -1,25 +1,116 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Reproducible Research"
+author: "Alexis R. Santos"
+date: "7/25/2023"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
 ---
 
+#```{r setup, include=FALSE}
+#knitr::opts_chunk$set(echo = TRUE)
+#```
 
-## Loading and preprocessing the data
+# Reading the data into R. 
+In this data section I read the data from the shared folder. 
 
+```{r Reading the data, echo=TRUE}
+library(tidyverse) #Need for the Pipes I will use in next step.
+options(digits=0) #Shows full numbers
+options(scipen=999) #Removes scientific notation
 
+activity <- read.csv("~/Reproducible Research/week2/activity.csv")
+```
 
-## What is mean total number of steps taken per day?
+## Histogram of number of steps
 
+Here, I do an histogram of the number of steps taken each day.
 
+```{r steps per day, echo=TRUE}
+data<- activity %>% 
+    group_by(date) %>% 
+    summarize(Steps_per_day=sum(steps))
 
-## What is the average daily activity pattern?
+hist(data$Steps_per_day)
+```
 
+# What is the mean and median number of steps taken each day? NA.RM ignores the missings
+```{r descriptives,echo=TRUE}
+mean<-mean(data$Steps_per_day,na.rm=TRUE)
+median<-median(data$Steps_per_day,na.rm=TRUE)
+```
 
+The mean number of steps is `r mean` and the median is `r median`. 
 
-## Imputing missing values
+#What is the average daily activity pattern?
+To study this, I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). For this, I aggregate the data per interval.
 
+```{r steps per interval, echo=TRUE}
+data2<- activity %>% 
+    group_by(interval) %>% 
+    summarize(Steps_per_interval=mean(steps,na.rm=TRUE))
 
+plot(data2$interval,data2$Steps_per_interval,type="l")
 
-## Are there differences in activity patterns between weekdays and weekends?
+max<-max(data2$Steps_per_interval)
+
+max2<-subset(data2,(data2$Steps_per_interval)==max)
+```
+
+Interval `r max2$interval` is the one with the maximum or higher number of steps. The total number of steps is `r max2$Steps_per_interval`.
+
+#Imputing missing values
+```{r determine missing, echo=TRUE}
+activity$missing<-ifelse(is.na(activity$steps)==TRUE,1,0)
+
+data3<-activity %>% 
+       summarize(Missing=sum(missing))
+
+total_missing<-data3$Missing
+
+rm(data3)
+```
+
+The total number of observation with a missing value is `r total_missing`.
+
+```{r mean imputation, echo=TRUE}
+#Here I create a new dataset to avoid overwriting the old one
+activity2<-activity
+
+mean_steps<-mean(activity2$steps,na.rm=TRUE)
+
+activity2$steps_imp<-ifelse(is.na(activity2$steps)==FALSE,activity2$steps,mean_steps)
+```
+
+Now, I create the new dataset per day, but using the imputed data.
+
+```{r steps per day with imputed data, echo=TRUE}
+data_imp<- activity2 %>% 
+    group_by(date) %>% 
+    summarize(Steps_per_day_imp=sum(steps_imp))
+
+hist(data_imp$Steps_per_day_imp)
+```
+
+#Are there differences by weekday and weekend?
+
+```{r aggregate by weekend or not with imputed data, echo=TRUE}
+activity3<-activity2
+activity3$date_new <- as.Date(activity3$date)
+activity3$day<-weekdays(activity3$date_new)
+
+activity3$weekend<-ifelse(activity3$day=="Saturday","Weekend",
+                  ifelse(activity3$day=="Sunday","Weekend","Weekday"))
+```
+
+```{r plot by weekday and  interval, echo=TRUE}
+library(lattice)
+weekday_series<- activity3 %>% 
+    group_by(weekend,interval) %>% 
+    summarize(Steps_per_int_imp=mean(steps_imp))
+
+xyplot(Steps_per_int_imp ~ interval | weekend,
+       data = weekday_series,
+       type = "l")
+```
