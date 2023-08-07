@@ -4,24 +4,24 @@ output:
   html_document: 
     keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
 In this data section I read the data from the shared folder. 
 
-```{r , echo=TRUE}
+```{r, echo=FALSE}
 library(tidyverse) #Need for the Pipes I will use in next step.
 library(knitr)
 options(digits=0) #Shows full numbers
 options(scipen=999) #Removes scientific notation
+```
 
+```{r, echo=TRUE}
 activity <- read.csv("~/Reproducible Research/week2/activity.csv")
 ```
 
 ### Histogram of number of steps
 Here, I do an histogram of the number of steps taken each day.
 
-```{r , echo=TRUE}
+```{r, echo=TRUE}
 data<- activity %>% 
     group_by(date) %>% 
     summarize(Steps_per_day=sum(steps))
@@ -38,7 +38,7 @@ median<-median(data$Steps_per_day,na.rm=TRUE)
 
 The mean number of steps is `r mean` and the median is `r median`. 
 
-#What is the average daily activity pattern?
+# What is the average daily activity pattern?
 To study this, I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). For this, I aggregate the data per interval.
 
 ```{r , echo=TRUE}
@@ -80,7 +80,7 @@ activity2$steps_imp<-ifelse(is.na(activity2$steps)==FALSE,activity2$steps,mean_s
 
 Now, I create the new dataset per day, but using the imputed data.
 
-```{r , echo=TRUE}
+```{r, echo=TRUE}
 data_imp<- activity2 %>% 
     group_by(date) %>% 
     summarize(Steps_per_day_imp=sum(steps_imp))
@@ -89,7 +89,7 @@ hist(data_imp$Steps_per_day_imp)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r , echo=TRUE}
+```{r, echo=TRUE}
 activity3<-activity2
 activity3$date_new <- as.Date(activity3$date)
 activity3$day<-weekdays(activity3$date_new)

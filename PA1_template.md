@@ -4,15 +4,9 @@ output:
   html_document: 
     keep_md: true
 ---
-
-
 ## Loading and preprocessing the data
 In this data section I read the data from the shared folder. 
 
-
-```r
-library(tidyverse) #Need for the Pipes I will use in next step.
-```
 
 ```
 ## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
@@ -31,11 +25,8 @@ library(tidyverse) #Need for the Pipes I will use in next step.
 ## x dplyr::lag()    masks stats::lag()
 ```
 
-```r
-library(knitr)
-options(digits=0) #Shows full numbers
-options(scipen=999) #Removes scientific notation
 
+```r
 activity <- read.csv("~/Reproducible Research/week2/activity.csv")
 ```
 
@@ -57,7 +48,7 @@ data<- activity %>%
 hist(data$Steps_per_day)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-2-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 # What is the mean and median number of steps taken each day? 
 As instructed, I use NA.RM to ignore the missings. 
@@ -69,7 +60,7 @@ median<-median(data$Steps_per_day,na.rm=TRUE)
 
 The mean number of steps is 10766 and the median is 10765. 
 
-#What is the average daily activity pattern?
+# What is the average daily activity pattern?
 To study this, I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). For this, I aggregate the data per interval.
 
 
@@ -87,7 +78,7 @@ data2<- activity %>%
 plot(data2$interval,data2$Steps_per_interval,type="l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
 
 ```r
 max<-max(data2$Steps_per_interval)
@@ -139,7 +130,7 @@ data_imp<- activity2 %>%
 hist(data_imp$Steps_per_day_imp)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -170,4 +161,4 @@ xyplot(Steps_per_int_imp ~ interval | weekend,
        type = "l")
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png)<!-- -->

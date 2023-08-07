@@ -369,7 +369,6 @@ summary {
 <div id="loading-and-preprocessing-the-data" class="section level2">
 <h2>Loading and preprocessing the data</h2>
 <p>In this data section I read the data from the shared folder.</p>
-<pre class="r"><code>library(tidyverse) #Need for the Pipes I will use in next step.</code></pre>
 <pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
 <pre><code>## ✓ ggplot2 3.3.1     ✓ purrr   0.3.4
 ## ✓ tibble  3.0.1     ✓ dplyr   1.0.0
@@ -378,11 +377,7 @@ summary {
 <pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(knitr)
-options(digits=0) #Shows full numbers
-options(scipen=999) #Removes scientific notation
-
-activity &lt;- read.csv(&quot;~/Reproducible Research/week2/activity.csv&quot;)</code></pre>
+<pre class="r"><code>activity &lt;- read.csv(&quot;~/Reproducible Research/week2/activity.csv&quot;)</code></pre>
 <div id="histogram-of-number-of-steps" class="section level3">
 <h3>Histogram of number of steps</h3>
 <p>Here, I do an histogram of the number of steps taken each day.</p>
@@ -400,7 +395,10 @@ activity &lt;- read.csv(&quot;~/Reproducible Research/week2/activity.csv&quot;)<
 <pre class="r"><code>mean&lt;-mean(data$Steps_per_day,na.rm=TRUE)
 median&lt;-median(data$Steps_per_day,na.rm=TRUE)</code></pre>
 <p>The mean number of steps is 10766 and the median is 10765.</p>
-<p>#What is the average daily activity pattern? To study this, I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). For this, I aggregate the data per interval.</p>
+</div>
+<div id="what-is-the-average-daily-activity-pattern" class="section level1">
+<h1>What is the average daily activity pattern?</h1>
+<p>To study this, I will make a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis). For this, I aggregate the data per interval.</p>
 <pre class="r"><code>data2&lt;- activity %&gt;% 
     group_by(interval) %&gt;% 
     summarize(Steps_per_interval=mean(steps,na.rm=TRUE))</code></pre>
