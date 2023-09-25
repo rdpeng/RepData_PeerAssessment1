@@ -1,25 +1,145 @@
 ---
 title: "Reproducible Research: Peer Assessment 1"
+author: "Thomas Frank"
+date: "25-09-2023"
 output: 
   html_document:
     keep_md: true
 ---
 
 
+```{r load-additional-packages, message=FALSE, warning=FALSE, echo=FALSE}
+library(dplyr)
+library(ggplot2)
+library(knitr)
+library(tidyr)
+library(lubridate)
+```
+
+
 ## Loading and preprocessing the data
+```{r read-data, message=FALSE, warning=FALSE, echo=TRUE}
+rm(list=ls()) # clean workspace
+unzip(zipfile="activity.zip")
+data <- read.csv("activity.csv")
+head(data)
+str(data)
+
+total.steps <-data%>%
+        dplyr::filter(!is.na(steps))%>%
+        dplyr::group_by(date)%>%
+        dplyr::summarise(stepsum =sum(steps))
+
+```
 
 
 
 ## What is mean total number of steps taken per day?
+```{r mean-steps, message=FALSE, warning=FALSE, echo=TRUE}
+ggplot(total.steps, aes(x=stepsum)) + 
+  geom_histogram(binwidth=1000) + 
+        xlab("total number of steps taken each day") + 
+        geom_vline(data=total.steps, xintercept=mean(total.steps[["stepsum"]])) + 
+        geom_vline(data=total.steps, xintercept=median(total.steps[["stepsum"]]), color="red", linetype="dashed")
+```
 
-
+The mean number of steps per day is `r round(mean(total.steps[["stepsum"]], na.rm=TRUE),digits=0)` (black vertical line). The median number of steps per day is `r signif(median(total.steps[["stepsum"]], na.rm=TRUE))` (red dashed vertical line).
 
 ## What is the average daily activity pattern?
+
+```{r plot-activity-pattern, echo=TRUE}
+average.d <-data%>%
+        dplyr::group_by(interval)%>%
+        dplyr::summarise(meansteps =mean(steps, na.rm = TRUE))
+
+ggplot(data=average.d, aes(x=interval, y=meansteps)) +
+    geom_line() +
+    xlab("5-minute interval") +
+    ylab("average number of steps taken")+
+    scale_x_continuous(limits=c(0,2400), breaks=c(seq(0,2400,200)))
+```
+
+The 5-minute interval "`r average.d[which.max(average.d[["meansteps"]]),][1]`" contains the maximum number of steps (`r round(average.d[which.max(average.d[["meansteps"]]),][2],1)`) on average across all the days in the dataset. 
+
 
 
 
 ## Imputing missing values
 
+The number of missing values is shown in the following table:
+
+```{r calculate_missings, echo=TRUE}
+missing <- is.na(data[["steps"]])
+kable(table(missing), col.names=c("Missing values", "Frequency (n)"), caption = "Number of missing values in the dataset:")
+```
+
+As substitution rule, all of the missing values are filled in with mean value for that 5-minute interval.
+
+```{r replace-missing-values, echo=TRUE}
+repl.na <- function(steps, interval) {
+    replaced <- NA
+    if (!is.na(steps))
+        replaced <- c(steps)
+    else
+        replaced <- (average.d[average.d[["interval"]]==interval, "meansteps"])
+    return(replaced)
+}
+repl.d <- data
+repl.d[["steps"]] <- mapply(repl.na, repl.d[["steps"]], repl.d[["interval"]])
+repl.d<- unnest(repl.d, steps)
+```
+
+
+
+```{r mean-steps-w-replacement, message=FALSE, warning=FALSE, echo=TRUE}
+total.steps2 <-repl.d%>%
+        dplyr::group_by(date)%>%
+        dplyr::summarise(stepsum =sum(steps))
+
+ggplot(total.steps2, aes(x=stepsum)) + 
+  geom_histogram(binwidth=1000) + 
+        xlab("total number of steps taken each day") + 
+        geom_vline(data=total.steps2, xintercept=mean(total.steps2[["stepsum"]])) + 
+        geom_vline(data=total.steps2, xintercept=median(total.steps2[["stepsum"]]), color="red", linetype="dashed")
+
+```
+
+
+The mean number of steps per day is `r round(mean(total.steps2[["stepsum"]], na.rm=TRUE),digits=0)` (black vertical line). The median number of steps per day is `r round(median(total.steps2[["stepsum"]], na.rm=TRUE),digits=0)` (red dashed vertical line). These values do not differ from the estimates from the first part of the assignment. Thus, the impact of imputing missing data on the estimates of the total daily number of steps is low.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
+```{r prepare-panel-plot, echo=TRUE}
+repl.d2 <- repl.d%>%
+        dplyr::mutate(date = ymd(date),
+                      date2 = weekdays(date),
+                      is.wke = ifelse(date2%in%c("Saturday","Sunday"), "weekend", "weekday"))
+
+```
+
+
+```{r plot-activity-pattern-2, echo=TRUE}
+average.d2 <-repl.d2%>%
+        dplyr::group_by(interval,is.wke)%>%
+        dplyr::summarise(meansteps =mean(steps, na.rm = TRUE))
+
+ggplot(data=average.d2, aes(x=interval, y=meansteps)) +
+    geom_line() +
+    xlab("5-minute interval") +
+    ylab("average number of steps taken")+
+    scale_x_continuous(limits=c(0,2400), breaks=c(seq(0,2400,200)))+
+    facet_wrap(~is.wke, ncol = 1, nrow=2)
+```
+
+
+There is a difference in the activity pattern in that the average number of steps on the weekday is higher in the morning and lower in the afternoon/evening than a weekend day. Weekend days in the graph shown above include Saturday and Sunday.
+
+
+# R environment used for this report {#rsettings}
+
+```{r print_rsettings, echo=FALSE, eval=TRUE, size="scriptsize"}
+si <- sessionInfo()
+si[] <- lapply(si, function(x) if (is.list(x)) x[sort(names(x))] else sort(x))
+print(si)
+```
