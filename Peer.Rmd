@@ -1,0 +1,187 @@
+---
+title: "Peer Assessment 1, Reproducable Research"
+author: "redson"
+date: "2023-10-09"
+output: html_document
+---
+
+The variables used:
+
+1. **steps**: Number of steps taking in a 5-minute interval (missing values are coded as NA ) 
+2. **date**: The date on which the measurement was taken in YYYY-MM-DD format 
+3. **interval**: Identifier for the 5-minute interval in which measurement was taken
+
+```{r}
+#Loading the data
+dat <- read.csv("activity.csv", header = T)
+names(dat)
+str(dat)
+head(dat)
+```
+
+
+###Histogram, Mean & Median
+
+---
+
+```{r}
+library(data.table)
+table1 = data.table(dat)
+table1_summary = table1[, list(total_steps = sum(steps, na.rm = T)), 
+                          by = date]
+```
+
+**Drawind the Histogram**
+
+
+```{r}
+hist_it = function(x, title){
+        hist(x, 
+             breaks = 20,
+             main = title,
+             xlab = 'Total Number of Steps', col = 'grey',
+            
+             cex.main = .9)
+        
+        #caluclate mean and median
+        mean_value = round(mean(x), 1)
+        median_value = round(median(x), 1)
+        
+        #lines for mean and median on histogram
+        abline(v=mean_value, lwd = 3, col = 'blue')
+        abline(v=median_value, lwd = 3, col = 'red')
+        
+        #legend
+        legend('topright', lty = 1, lwd = 3, col = c("blue", "red"),
+               cex = .8, 
+               legend = c(paste('Mean: ', mean_value),
+               paste('Median: ', median_value))
+               )
+}
+
+hist_it(table1_summary$total_steps, 'Number of Steps Taken Per Day')
+```
+
+
+
+
+##Daily Activity Pattern
+
+----------------------------
+
+
+```{r}
+#summarize dataset by interval
+summary_intv = table1[, list(avg_steps = mean(steps, na.rm = T)), 
+                          by = interval]
+#plot the time series
+with(summary_intv, {
+        plot(interval, avg_steps, type = 'l',
+             main = 'Average Steps by Time Interval',
+             xlab = '5 Minute Time Interval',
+             ylab = 'Average Number of Steps')
+        })
+#Find Interval That Has The Maximum Avg Steps
+max_steps = summary_intv[which.max(avg_steps), ]
+
+#Generate Label String
+max_lab = paste('Maximum Of ', round(max_steps$avg_steps, 1), ' Steps \n On ', max_steps$interval, 'th Time Interval', sep = '')
+
+#Collect Cooridinates of The Max Interval For Graphing
+points(max_steps$interval,  max_steps$avg_steps, col = 'red', lwd = 3, pch = 19)
+
+#Add Label To Annotate Maximum # Steps And Interval
+legend("topright",
+       legend = max_lab,
+       text.col = 'red',
+       bty = 'n'
+       )
+
+```
+
+---
+
+###Missing Values
+
+1. Calculate & Report The Number of Missing Values
+```{r}
+sum(is.na(dat$steps))
+```
+
+#Filling missing data
+```{r}
+setkey(dat_tbl, interval)
+setkey(summary_intv, interval)
+
+
+#Create function that will return the second value if the first value is NA
+NA_replace = function(x,y){
+        if(is.na(x)){
+                
+                return(y)
+        }
+        return(x)
+}
+
+#create new dataset that replaces NAs with average values
+dat_tbl_miss = dat_tbl[dat_tbl_summary_intv]
+dat_tbl_miss$new_steps = mapply(NA_replace,dat_tbl_miss$steps, dat_tbl_miss$avg_steps)
+
+#summaryize new dataset by day
+dat_tbl_summary_miss = dat_tbl_miss[, list(new_steps = sum(new_steps, na.rm = T)), 
+                          by = date]
+#preview new dataset
+head(dat_tbl_summary_miss)
+```
+
+4.  Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+**Note: Mean and Median Are Reported In Legend Of Histogram**
+
+```{r}
+
+gen_hist(dat_tbl_summary$total_steps, 'Missing Values Removed')
+gen_hist(dat_tbl_summary_miss$new_steps, 'Missing Values Replaced With \n Mean For Interval')
+
+```
+
+**Answer To Question:**
+The mean and the median are now almost the same after replacing missing values with the mean value for the relevant interval. It makes sense that the median value would now move closer to the mean. So the Median value increased after this method of missing value replacement.
+
+###Are there differences in activity patterns between weekdays and weekends?
+
+---
+1.  Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r}
+#Make Function To Return Either "Weekday" or "Weekend"
+weekpart = function(x){
+        if(x %in% c('Saturday', 'Sunday')){
+                return('Weekend')
+        }
+        
+        return('Weekday')
+}
+
+#Add Name of Week
+dat_tbl_miss$dayname = weekdays(as.Date(dat_tbl_miss$date))
+
+#Add Factor Variable To Differentiate Weekday and Weekend
+dat_tbl_miss$daytype = as.factor(apply(as.matrix(dat_tbl_miss$dayname), 1, weekpart))
+
+#Summarize Dataset: Mean grouped by interval and daytype
+dat_tbl_summary_miss = dat_tbl_miss[, list(avg_steps = mean(new_steps, na.rm = T)), 
+                          by = list(interval, daytype)]
+
+#inspect dataset
+str(dat_tbl_summary_miss)
+```
+panel plot:
+```{r}
+library(lattice)
+xyplot(avg_steps~interval | daytype, data = dat_tbl_summary_miss,
+      type = 'l',
+      xlab = 'Interval',
+      ylab = 'Number of Steps',
+      layout = c(1,2))
+```
+
