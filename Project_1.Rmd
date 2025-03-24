@@ -1,0 +1,169 @@
+# Reproducible Research - Activity Monitoring (Project 1)
+
+================================================================================
+
+There is a rise in the so-called "quantified self" movement, where people
+track their physical activity and collect large data sets in order to find
+patterns about themselves in pursuit of self-improvement.
+
+However, there are often large sets of raw data being collected that are not
+processed, and as a result often go under-utilized.
+
+In this project, data from an anonymous individual were collected over a
+two-month time period in October and November 2012 using a personal activity
+monitoring device.
+
+## - Loading and Transforming Activity Monitoring Data
+
+```{r}
+echo = TRUE
+# Load ggplot2 functions
+
+library(ggplot2)
+
+# When the .csv file is in your local R/RStudio directory and already unzipped:
+
+ActMon <- read.csv("activity.csv")
+```
+
+These data contain the following three variables:
+
+- steps (5-minute interval inclusive of the number of steps)
+- date (YYYY-MM-DD format for when data were collected)
+- interval (identifies the particular time interval data were collected)
+
+The following questions have been addressed in this markdown document:
+
+## - What is the mean total number of steps taken per day?
+
+```{r}
+echo = TRUE
+# Find the total number of steps taken per day, then summary to find the 
+# Mean and Median at the same time, along with other distribution data
+
+T_Steps <- aggregate(steps ~ date, ActMon, sum)
+print(summary(T_Steps))
+```
+
+## - How does the distribution of values for total number of steps change
+##   over the course of the period in quesion?
+```{r}
+echo = TRUE
+# Simple histogram demonstrating the number of steps was close to Mean/Median
+
+hist(T_Steps$steps, breaks = 16, xlab = "Total Steps per Day", main = "Frequency
+     of Daily Step Totals from October-November 2012")
+```
+
+## 3. What is the average daily activity pattern for this individual like?
+
+```{r}
+echo = TRUE
+# Compute the mean of all steps based on the interval in which they occurred,
+# then save the output as an object
+Int_Act <- aggregate(steps ~ interval, ActMon, mean)
+
+# Plot the average activity pattern seen in a 24-hour period of time
+ggplot(data = Int_Act) +
+  geom_line(aes(interval,steps)) +
+  xlab("5-Minute Interval over 24 hour Period") +
+  ylab("Number of Steps") +
+  ggtitle("Average Step Count by Time of Day (in 5 min Increments)")
+
+```
+## - At what 5-interval point is the highest average number of steps taken?
+```{r}
+echo = TRUE
+# Display the interval where most number of average steps are taken
+
+print(Int_Act[which.max(Int_Act$steps),])
+```
+We can see in the 835 interval that the highest average number of steps is
+about 206.
+
+## - How many entries are missing data?
+```{r}
+echo = TRUE
+# Determining the total missing values by the total number flagged by the
+# system
+
+print(colSums(is.na(ActMon)))
+```
+
+There are 2,304 steps entries that are NA.
+
+## - What do the data look like when missing values are changed to the original
+##   data's mean or median values?
+```{r}
+echo = TRUE
+# Start transforming NA values in steps into the mean of the original data set
+# for values in the original data set where NA values are present
+
+ActMon -> ActMon2
+
+ActMon2$steps <- ifelse(is.na(ActMon2$steps) == TRUE,
+                       Int_Act$steps[Int_Act$interval %in%
+                                       ActMon2$interval],
+                       ActMon2$steps)
+print(head(ActMon2))
+```
+## - How did the Mean and Median change from the initial data?
+
+```{r}
+echo = TRUE
+# Find the total number of steps taken per day, then summary to find the 
+# Mean and Median at the same time, along with other distribution data
+
+T_Steps2 <- aggregate(steps ~ date, ActMon2, sum)
+print(summary(T_Steps2))
+```
+
+The steps distribution data are nearly similar, except the Median here
+is 1 higher than the original data.
+
+## - How does the distribution of values for total number of steps change
+##   over the course of the period in quesion? 
+```{r}
+echo = TRUE
+# Simple histogram demonstrating the number of steps was close to Mean/Median
+# using the transformed data set T_Steps2
+
+hist(T_Steps2$steps, breaks = 16, xlab = "Total Steps per Day", main = "Frequency
+     of Daily Step Totals (Transformed) from October-November 2012")
+```
+Based on this new plot, adding the mean values in place of NA values biased 
+this histogram to have a higher frequency of values close to the mean.
+
+##  Are there any activity/ or differences between weekdays and holidays?
+
+```{r}
+echo = TRUE
+# Create a new column in the original data set ActMon flagging the data
+# as either Weekday or Weekend, while also making sure that the date
+# column is formatted as the "Date" class
+
+ActMon$date <- as.Date(ActMon$date, "%Y-%m-%d")
+
+ActMon$weekendType <- factor(ifelse(weekdays(ActMon$date) %in% 
+                                   c("Saturday", "Sunday"),
+                                 "Weekend", "Weekday"))
+
+# Compute the mean of all steps based on the interval in which they occurred,
+# then save the output as an object
+T_Steps3 <- aggregate(steps ~ date, ActMon, sum)
+print(summary(T_Steps3$steps))
+```
+
+```{r}
+echo = TRUE
+# Compute the mean of all steps based on the interval in which they occurred,
+# then save the output as an object
+Int_Act3 <- aggregate(steps ~ interval + weekendType, ActMon, mean)
+
+# Plot the Weekday vs Weekend graphs of activity data
+qplot(interval, steps, data = Int_Act3, facets = .~weekendType,
+      geom = "line") +
+  xlab("5-Minute Interval over 24 hour Period") +
+  ylab("Number of Steps") +
+  ggtitle("Weekday vs. Weekend")
+```
