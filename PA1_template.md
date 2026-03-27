@@ -1,0 +1,247 @@
+---
+title: "Solucion"
+author: "Juan Rossano"
+date: "2026-03-25"
+output: html_document
+---
+
+#### 1. Carga del conjunto de datos
+
+
+
+#### Caracteristicas
+
+variables incluidas en este conjunto de datos son:
+
+* **steps**:    Número de pasos dados en un intervalo de 5 minutos (los valores 
+                faltantes se codifican como `NA`).
+
+* **date**:     Fecha en que se tomó la medición en formato AAAA-MM-DD
+
+* **interval**: Identificador del intervalo de 5 minutos en el que se tomó la 
+                medición
+
+
+#### 2. Procesar/transformar los datos
+
+
+
+
+### ¿Cuál es el número medio total de pasos dados por día?
+
+Para esta parte de la tarea, puede ignorar los valores faltantes en el conjunto 
+de datos.
+
+1. Cree un histograma del número total de pasos dados cada día.
+
+2. Calcule e indique la **media** y la **mediana** del número total de pasos 
+dados por día.
+
+
+``` r
+total_steps_day <- aggregate(steps ~ date, data = activity, FUN = sum, na.rm = TRUE)
+
+hist(total_steps_day$steps,
+    main = "Total de pasos por día",
+    xlab = "Pasos por día",
+    ylab = "Frecuencia",
+    col = "lightblue",
+    border = "white")
+```
+
+![plot of chunk PA1_activity-PPD](figure/PA1_activity-PPD-1.png)
+
+``` r
+mean_steps_day <- mean(total_steps_day$steps)
+median_steps_day <- median(total_steps_day$steps)
+
+mean_steps_day
+```
+
+```
+## [1] 10766.19
+```
+
+``` r
+median_steps_day
+```
+
+```
+## [1] 10765
+```
+
+### ¿Cuál es el patrón de actividad diaria promedio?
+
+1. Crea un gráfico de series temporales (es decir, `type = "l"`) con el 
+intervalo de 5 minutos (eje x) y el número promedio de pasos dados, promediado a 
+lo largo de todos los días (eje y).
+
+2. ¿Qué intervalo de 5 minutos, en promedio a lo largo de todos los días del 
+conjunto de datos, contiene el mayor número de pasos?
+
+
+``` r
+avg_steps_interval <- aggregate(steps ~ interval, data = activity, FUN = mean, na.rm = TRUE)
+
+plot(avg_steps_interval$interval,
+    avg_steps_interval$steps,
+    type = "l",
+    xlab = "Intervalo de 5 minutos",
+    ylab = "Promedio de pasos",
+    main = "Patrón de actividad diaria promedio")
+```
+
+![plot of chunk PA1_activity-ADP](figure/PA1_activity-ADP-1.png)
+
+``` r
+max_interval <- avg_steps_interval$interval[which.max(avg_steps_interval$steps)]
+max_interval
+```
+
+```
+## [1] 835
+```
+
+### Imputación de valores faltantes
+
+Tenga en cuenta que hay varios días/intervalos con valores faltantes 
+(codificados como `NA`). La presencia de días faltantes puede introducir sesgos 
+en algunos cálculos o resúmenes de los datos.
+
+1. Calcule e informe el número total de valores faltantes en el conjunto de 
+datos (es decir, el número total de filas con `NA`).
+
+2. Diseñe una estrategia para completar todos los valores faltantes en el 
+conjunto de datos. La estrategia no necesita ser compleja. Por ejemplo, podría 
+usar la media/mediana de ese día, o la media de ese intervalo de 5 minutos, etc.
+
+3. Cree un nuevo conjunto de datos idéntico al original, pero con los datos 
+faltantes completados.
+
+4. Cree un histograma del número total de pasos dados cada día y calcule e 
+informe la **media** y la **mediana** del número total de pasos dados por día. 
+¿Estos valores difieren de las estimaciones de la primera parte de la tarea? 
+¿Qué impacto tiene la imputación de datos faltantes en las estimaciones del 
+número total de pasos diarios?
+
+
+``` r
+na_total <- sum(is.na(activity$steps))
+na_total
+```
+
+```
+## [1] 2304
+```
+
+``` r
+# Estrategia: imputar cada NA de steps con la media de su intervalo de 5 minutos.
+interval_means <- aggregate(steps ~ interval, data = activity, FUN = mean, na.rm = TRUE)
+
+activity_filled <- activity
+na_index <- is.na(activity_filled$steps)
+activity_filled$steps[na_index] <- interval_means$steps[
+    match(activity_filled$interval[na_index], interval_means$interval)
+]
+
+total_steps_day_filled <- aggregate(steps ~ date, data = activity_filled, FUN = sum)
+
+hist(total_steps_day_filled$steps,
+         main = "Total de pasos por día (con imputación)",
+         xlab = "Pasos por día",
+         ylab = "Frecuencia",
+         col = "lightgreen",
+         border = "white")
+```
+
+![plot of chunk PA1_activity-TPD](figure/PA1_activity-TPD-1.png)
+
+``` r
+mean_steps_day_filled <- mean(total_steps_day_filled$steps)
+median_steps_day_filled <- median(total_steps_day_filled$steps)
+
+mean_steps_day_filled
+```
+
+```
+## [1] 10766.19
+```
+
+``` r
+median_steps_day_filled
+```
+
+```
+## [1] 10766.19
+```
+
+``` r
+cat("Media sin imputar:", mean_steps_day, "\n")
+```
+
+```
+## Media sin imputar: 10766.19
+```
+
+``` r
+cat("Mediana sin imputar:", median_steps_day, "\n")
+```
+
+```
+## Mediana sin imputar: 10765
+```
+
+``` r
+cat("Media con imputación:", mean_steps_day_filled, "\n")
+```
+
+```
+## Media con imputación: 10766.19
+```
+
+``` r
+cat("Mediana con imputación:", median_steps_day_filled, "\n")
+```
+
+```
+## Mediana con imputación: 10766.19
+```
+
+### ¿Existen diferencias en los patrones de actividad entre los días laborables y los fines de semana?
+
+Para esta parte, la función `weekdays()` puede ser útil. Utilice el conjunto de 
+datos con los valores faltantes completados.
+
+1. Cree una nueva variable categórica en el conjunto de datos con dos niveles: 
+"weekday" y "weekend", que indiquen si una fecha determinada es un día laborable 
+o un fin de semana.
+
+1. Cree un gráfico de panel que contenga una serie temporal (es decir, `type = 
+"l"`) del intervalo de 5 minutos (eje x) y el número promedio de pasos dados, 
+promediado para todos los días laborables o fines de semana (eje y).
+
+
+``` r
+library(lattice)
+
+activity_filled$day_type <- ifelse(
+    weekdays(activity_filled$date) %in% c("Saturday", "Sunday", "sábado", "domingo"),
+    "weekend",
+    "weekday"
+)
+
+activity_filled$day_type <- factor(activity_filled$day_type, levels = c("weekday", "weekend"))
+
+avg_by_daytype <- aggregate(steps ~ interval + day_type,
+                                                        data = activity_filled,
+                                                        FUN = mean)
+
+xyplot(steps ~ interval | day_type,
+             data = avg_by_daytype,
+             type = "l",
+             layout = c(1, 2),
+             xlab = "Intervalo de 5 minutos",
+             ylab = "Número promedio de pasos")
+```
+
+![plot of chunk PA1_activity-DSF](figure/PA1_activity-DSF-1.png)
